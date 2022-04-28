@@ -76,7 +76,7 @@
       }
     ],
     "@typescript-eslint/prefer-enum-initializers": "error",
-    // "no-console": "error",
+    "no-console": "off",
     "no-debugger": "error",
     "import/no-cycle": "off", // TODO: revert
     "react/jsx-uses-react": "off",

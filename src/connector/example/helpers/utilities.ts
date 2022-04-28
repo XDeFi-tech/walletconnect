@@ -1,7 +1,5 @@
 import * as ethUtil from 'ethereumjs-util'
 
-import { IChainData } from './types'
-import supportedChains from './chains'
 import { apiGetGasPrices, apiGetAccountNonce } from './api'
 import { convertAmountToRawNumber, convertStringToHex } from './bignumber'
 
@@ -98,33 +96,6 @@ export function isMobile(): boolean {
   mobile = hasMobileUserAgent()
 
   return mobile
-}
-
-export function getChainData(chainId: number): IChainData {
-  const chainData = supportedChains.filter(
-    (chain: any) => chain.chain_id === chainId
-  )[0]
-
-  if (!chainData) {
-    throw new Error('ChainId missing or not supported')
-  }
-
-  const API_KEY = process.env.REACT_APP_INFURA_ID
-
-  if (
-    chainData.rpc_url.includes('infura.io') &&
-    chainData.rpc_url.includes('%API_KEY%') &&
-    API_KEY
-  ) {
-    const rpcUrl = chainData.rpc_url.replace('%API_KEY%', API_KEY)
-
-    return {
-      ...chainData,
-      rpc_url: rpcUrl,
-    }
-  }
-
-  return chainData
 }
 
 export function hashPersonalMessage(msg: string): string {

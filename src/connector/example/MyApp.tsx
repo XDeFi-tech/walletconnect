@@ -1,8 +1,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import Web3 from 'web3'
 
 import { NetworkContext } from '../NetworkManager'
+import { SupportedChainId } from '../helpers'
 
 import Button from './components/Button'
 import Column from './components/Column'
@@ -11,10 +11,8 @@ import Header from './components/Header'
 import Loader from './components/Loader'
 import ModalResult from './components/ModalResult'
 import ConnectButton from './components/ConnectButton'
-import { IAssetData } from './helpers/types'
 import { fonts } from './styles'
 import { ETH_SEND_TRANSACTION, ETH_SIGN, PERSONAL_SIGN } from './constants'
-import { SupportedChainId } from '../helpers'
 
 const SLayout = styled.div`
   position: relative;
@@ -94,7 +92,6 @@ interface IAppState {
 
 const INITIAL_STATE: IAppState = {
   fetching: false,
-  address: '',
   provider: null,
   connected: false,
   pendingRequest: false,
@@ -138,29 +135,14 @@ const MyApp = () => {
 
     provider.on('close', () => resetApp())
     provider.on('accountsChanged', async (accounts: string[]) => {
-      await setState({
-        ...state,
-        address: accounts[0],
-      })
+      console.log('accounts', accounts)
     })
     provider.on('chainChanged', async (chainId: number) => {
-      const { web3 } = state
-      const networkId = await web3.eth.net.getId()
-      await setState({
-        ...state,
-        chainId,
-        networkId,
-      })
+      console.log('chainId', chainId)
     })
 
     provider.on('networkChanged', async (networkId: number) => {
-      const { web3 } = state
-      const chainId = await web3.eth.chainId()
-      await setState({
-        ...state,
-        chainId,
-        networkId,
-      })
+      console.log('networkId', networkId)
     })
   }
 

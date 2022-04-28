@@ -2,10 +2,8 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 
-import { ellipseAddress, getChainData } from '../helpers/utilities'
 import { transitions } from '../styles'
 
-import Blockie from './Blockie'
 import Banner from './Banner'
 
 const SHeader = styled.div`
@@ -38,10 +36,6 @@ const SActiveChain = styled(SActiveAccount)`
   & p:nth-child(2) {
     font-weight: bold;
   }
-`
-
-const SBlockie = styled(Blockie)`
-  margin-right: 10px;
 `
 
 interface IHeaderStyle {
@@ -81,28 +75,17 @@ interface IHeaderProps {
 
 const Header = (props: IHeaderProps) => {
   const { connected, killSession } = props
-  const chainData = chainId ? getChainData(chainId) : null
   return (
     <SHeader {...props}>
-      {connected && chainData ? (
-        <SActiveChain>
-          <p>{`Connected to`}</p>
-          <p>{chainData.name}</p>
-        </SActiveChain>
-      ) : (
-        <Banner />
-      )}
-      {address && (
-        <SActiveAccount>
-          <SAddress connected={connected}>
-            {' '}
-            {connected ? 'Connected' : 'Not Connected'}{' '}
-          </SAddress>
-          <SDisconnect connected={connected} onClick={killSession}>
-            {'Disconnect'}
-          </SDisconnect>
-        </SActiveAccount>
-      )}
+      {connected ? <SActiveChain>Chain</SActiveChain> : <Banner />}
+      <SActiveAccount>
+        <SAddress connected={connected}>
+          {connected ? 'Connected' : 'Not Connected'}{' '}
+        </SAddress>
+        <SDisconnect connected={connected} onClick={killSession}>
+          {'Disconnect'}
+        </SDisconnect>
+      </SActiveAccount>
     </SHeader>
   )
 }

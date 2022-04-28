@@ -1,10 +1,10 @@
 import { ethers } from 'ethers'
-
-import { IProviderOptions, SupportedChainId } from './helpers'
 import { convertUtf8ToHex } from '@walletconnect/utils'
-import WalletConnect from './index'
 import Web3 from 'web3'
 import { recoverPublicKey } from 'ethers/lib/utils'
+
+import { IProviderOptions, SupportedChainId } from './helpers'
+import WalletConnect from './index'
 import {
   ETH_SEND_TRANSACTION,
   ETH_SIGN,
@@ -69,12 +69,11 @@ export class NetworkConnector {
   }
 
   getAccounts = (): IChainWithAccount => {
-    debugger
     return {}
   }
 
   getAddress = (chainId: SupportedChainId) => {
-    let accounts = this.getAccounts()
+    const accounts = this.getAccounts()
 
     const { address } = accounts[chainId]
 
