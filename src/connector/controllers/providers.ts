@@ -24,6 +24,8 @@ import {
   getInjectedProvider,
   findMatchingRequiredOptions,
   IProviderOption,
+  IChainType,
+  IChainToAccounts,
 } from '../helpers'
 
 import { EventController } from './events'
@@ -42,7 +44,7 @@ export class ProviderController {
 
   constructor(opts: IProviderControllerOptions) {
     this.cachedProvider = getLocal(CACHED_PROVIDER_KEY) || ''
-    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY)
+    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
 
     this.disableInjectedProvider = opts.disableInjectedProvider
     this.shouldCacheProvider = opts.cacheProvider
@@ -174,6 +176,31 @@ export class ProviderController {
     return userOptions
   }
 
+  public connectToChains = async (): Promise<IChainToAccounts[]> => {
+    if (
+      this.injectedChains &&
+      this.injectedChains.length > 0 &&
+      this.injectedProvider &&
+      this.injectedProvider?.chains
+    ) {
+      const chains = this.injectedProvider?.chains
+      return Promise.all(
+        this.injectedChains.map((chain) => {
+          const target = chains[chain]
+
+          return target.methods.getAccounts().then((accounts: string[]) => {
+            return {
+              chain: chain,
+              accounts: accounts,
+            }
+          })
+        })
+      )
+    }
+
+    return []
+  }
+
   public getProvider(id: string) {
     return filterMatches<IProviderDisplayWithConnector>(
       this.providers,
@@ -217,12 +244,15 @@ export class ProviderController {
       const opts = { network: this.network || undefined, ...providerOptions }
       const provider = await connector(providerPackage, opts, chains)
 
-      const cachedChains = chains ? chains : ['ethereum']
+      const cachedChains = chains ? chains : [IChainType.ethereum]
 
       this.eventController.trigger(CONNECT_EVENT, provider)
+
       if (this.shouldCacheProvider && this.cachedProvider !== id) {
         this.setCachedProvider(id, cachedChains)
       }
+
+      this.connectToChains()
     } catch (error) {
       this.eventController.trigger(ERROR_EVENT, error)
     }
@@ -231,7 +261,7 @@ export class ProviderController {
   public async connectToCachedProvider() {
     const provider = this.getProvider(this.cachedProvider)
     if (typeof provider !== 'undefined') {
-      await this.connectTo(provider.id, provider.connector)
+      await this.connectTo(provider.id, provider.connector, this.injectedChains)
     }
   }
 

@@ -3,7 +3,12 @@ import { convertUtf8ToHex } from '@walletconnect/utils'
 import Web3 from 'web3'
 import { recoverPublicKey } from 'ethers/lib/utils'
 
-import { IChainType, IProviderOptions, SupportedChainId } from './helpers'
+import {
+  IChainToAccounts,
+  IChainWithAccount,
+  IProviderOptions,
+  SupportedChainId,
+} from './helpers'
 import WalletConnect from './index'
 import {
   ETH_SEND_TRANSACTION,
@@ -32,20 +37,13 @@ function initWeb3(provider: any) {
   return web3
 }
 
-interface IAccount {
-  address: string
-}
-
-interface IChainWithAccount {
-  [chainId: number]: IAccount
-}
-
 export class WalletsConnector {
   public provider: ethers.providers.Web3Provider | null = null
   public web3Signer: ethers.providers.JsonRpcSigner | null = null
   public web3: Web3 | null = null
 
   public connector: WalletConnect
+  public accounts: IChainWithAccount = {}
 
   constructor(providerOptions: IProviderOptions) {
     const connector = new WalletConnect({
@@ -54,41 +52,40 @@ export class WalletsConnector {
       providerOptions, // required
     })
 
-    connector.connect().then((instance) => {
-      this.provider = new ethers.providers.Web3Provider(instance)
-      this.web3Signer = this.provider.getSigner()
+    connector
+      .connect()
+      .then((instance) => {
+        this.provider = new ethers.providers.Web3Provider(instance)
+        this.web3Signer = this.provider.getSigner()
 
-      this.web3 = initWeb3(this.provider)
-    })
+        this.web3 = initWeb3(this.provider)
+      })
+      .then(() => {
+        this.loadAccounts()
+      })
 
     this.connector = connector
   }
 
-  connect = async () => {
-    return {}
+  loadAccounts = async () => {
+    const accounts = await this.connector.loadAccounts()
+
+    const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
+      acc[item.chain] = item.accounts
+      return acc
+    }, {})
+
+    this.accounts = map
   }
 
-  getAccounts = async (): Promise<IChainWithAccount> => {
-    const result: any = {}
-
-    if (this.web3) {
-      const accounts = await this.web3.eth.getAccounts()
-      result[IChainType.ethereum] = accounts
-    }
-
-    if (this.web3) {
-      console.log(this.web3)
-    }
-
-    return result
+  getAccounts = (): IChainWithAccount => {
+    return this.accounts
   }
 
-  getAddress = async (chainId: SupportedChainId) => {
-    const accounts = await this.getAccounts()
+  getAddress = (chainId: SupportedChainId): string => {
+    const accounts = this.getAccounts()
 
-    const { address } = accounts[chainId]
-
-    return address
+    return accounts[chainId][0] as string
   }
 
   getAvailableChains = () => {
@@ -100,7 +97,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = await this.getAddress(chainId)
+    const address = this.getAddress(chainId)
 
     const tx = await formatTestTransaction(address, chainId)
 
@@ -138,7 +135,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = await this.getAddress(chainId)
+    const address = this.getAddress(chainId)
 
     // test message
     const message = 'My email is john@doe.com - 1537836206101'
@@ -175,7 +172,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = await this.getAddress(chainId)
+    const address = this.getAddress(chainId)
 
     // test message
     const message = 'My email is john@doe.com - 1537836206101'

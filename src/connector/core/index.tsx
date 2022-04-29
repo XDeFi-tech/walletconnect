@@ -61,13 +61,17 @@ export class Core {
     return this.providerController.injectedChains
   }
 
+  public loadAccounts(): Promise<any> {
+    return this.providerController.connectToChains()
+  }
+
   // --------------- PUBLIC METHODS --------------- //
 
   public connect = (): Promise<any> =>
     new Promise(async (resolve, reject) => {
       this.on(CONNECT_EVENT, (provider) => resolve(provider))
       this.on(ERROR_EVENT, (error) => reject(error))
-      this.on(CLOSE_EVENT, () => reject('Modal closed by user'))
+      this.on(CLOSE_EVENT, () => reject('Closed by user'))
       await this.toggle()
     })
 
@@ -75,7 +79,7 @@ export class Core {
     new Promise(async (resolve, reject) => {
       this.on(CONNECT_EVENT, (provider) => resolve(provider))
       this.on(ERROR_EVENT, (error) => reject(error))
-      this.on(CLOSE_EVENT, () => reject('Modal closed by user'))
+      this.on(CLOSE_EVENT, () => reject('Closed by user'))
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(

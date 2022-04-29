@@ -183,22 +183,36 @@ export const XDEFI: IProviderInfo = {
     [IChainType.bitcoin]: {
       methods: {
         getAccounts: () => {
-          return window.xfi.bitcoin.request(
-            { method: 'request_accounts', params: [] },
-            (error: any, accounts: any) =>
-              console.log(`Bitcoin accounts ${accounts}`, error)
-          )
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
         },
       },
     },
-    [IChainType.terra]: {
+    [IChainType.thorchain]: {
       methods: {
         getAccounts: () => {
-          return window.xfi.terra.request(
-            { method: 'request_accounts', params: [] },
-            (error: any, accounts: any) =>
-              console.log(`Terra accounts ${accounts}`, error)
-          )
+          return new Promise((resolve, reject) => {
+            window.xfi.thorchain.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
         },
       },
     },

@@ -24,10 +24,14 @@ export interface IProviderDisplay {
 
 export interface ISupportedChain {
   methods: {
-    sign?: () => void
-    sendTx?: () => void
-    getAccounts: () => void
+    sign?: () => Promise<any>
+    sendTx?: () => Promise<any>
+    getAccounts: () => Promise<any>
   }
+}
+
+export interface IChainWithAccount {
+  [chainId: string]: string[]
 }
 
 export enum IChainType {
@@ -42,6 +46,11 @@ export enum IChainType {
   thorchain = 'thorchain',
   terra = 'terra',
   dogecoin = 'dogecoin',
+}
+
+export interface IChainToAccounts {
+  chain: string
+  accounts: string[]
 }
 
 export interface IProviderInfo extends IProviderDisplay {

@@ -2,6 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 
+import { IChainWithAccount } from '../../helpers'
 import { WalletsContext } from '../../WalletsManager'
 import { transitions } from '../styles'
 
@@ -80,17 +81,17 @@ const Header = (props: IHeaderProps) => {
   const current = context.connector.injectedProvider
   const connected = !!current
 
+  const accounts = React.useMemo(() => {
+    return context.accounts
+  }, [context])
+
   return (
     <SHeader>
       {current ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       <SAddress connected={connected}>
         {connected ? (
           <>
-            {current.chains ? (
-              <RenderChains chains={current.chains} />
-            ) : (
-              'Ethereum'
-            )}
+            {current.chains ? <RenderChains accounts={accounts} /> : 'Ethereum'}
           </>
         ) : (
           'Not Connected'
@@ -105,11 +106,13 @@ const Header = (props: IHeaderProps) => {
   )
 }
 
-const RenderChains = ({ chains }: { chains: any }) => {
+const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
   return (
     <>
-      {Object.keys(chains).map((c) => (
-        <div key={c}>{c}</div>
+      {Object.keys(accounts).map((chain: string) => (
+        <div key={chain}>
+          {chain}: {accounts[chain].join(',')}
+        </div>
       ))}
     </>
   )

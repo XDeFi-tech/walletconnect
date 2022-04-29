@@ -4,7 +4,7 @@
   function App() {
     return (
         <NetworkManager>
-        <MyApp />
+            <MyApp />
         </NetworkManager>
     )
   }
