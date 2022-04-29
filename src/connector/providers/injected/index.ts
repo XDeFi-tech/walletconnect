@@ -1,4 +1,4 @@
-import { IProviderInfo, SupportedChain } from '../../helpers'
+import { IChainType, IProviderInfo } from '../../helpers'
 import Web3DefaultLogo from '../logos/web3-default.svg'
 import MetaMaskLogo from '../logos/metamask.svg'
 import SafeLogo from '../logos/safe.svg'
@@ -180,7 +180,7 @@ export const XDEFI: IProviderInfo = {
   type: 'injected',
   check: '__XDEFI',
   chains: {
-    [SupportedChain.bitcoin]: {
+    [IChainType.bitcoin]: {
       methods: {
         getAccounts: () => {
           return window.xfi.bitcoin.request(
@@ -191,7 +191,7 @@ export const XDEFI: IProviderInfo = {
         },
       },
     },
-    [SupportedChain.terra]: {
+    [IChainType.terra]: {
       methods: {
         getAccounts: () => {
           return window.xfi.terra.request(

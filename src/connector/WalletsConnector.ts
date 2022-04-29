@@ -3,7 +3,7 @@ import { convertUtf8ToHex } from '@walletconnect/utils'
 import Web3 from 'web3'
 import { recoverPublicKey } from 'ethers/lib/utils'
 
-import { IProviderOptions, SupportedChainId } from './helpers'
+import { IChainType, IProviderOptions, SupportedChainId } from './helpers'
 import WalletConnect from './index'
 import {
   ETH_SEND_TRANSACTION,
@@ -68,15 +68,23 @@ export class WalletsConnector {
     return {}
   }
 
-  getAccounts = (): IChainWithAccount => {
+  getAccounts = async (): Promise<IChainWithAccount> => {
+    const result: any = {}
+
     if (this.web3) {
+      const accounts = await this.web3.eth.getAccounts()
+      result[IChainType.ethereum] = accounts
     }
 
-    return {}
+    if (this.web3) {
+      console.log(this.web3)
+    }
+
+    return result
   }
 
-  getAddress = (chainId: SupportedChainId) => {
-    const accounts = this.getAccounts()
+  getAddress = async (chainId: SupportedChainId) => {
+    const accounts = await this.getAccounts()
 
     const { address } = accounts[chainId]
 
@@ -92,7 +100,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = this.getAddress(chainId)
+    const address = await this.getAddress(chainId)
 
     const tx = await formatTestTransaction(address, chainId)
 
@@ -130,7 +138,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = this.getAddress(chainId)
+    const address = await this.getAddress(chainId)
 
     // test message
     const message = 'My email is john@doe.com - 1537836206101'
@@ -167,7 +175,7 @@ export class WalletsConnector {
       return
     }
 
-    const address = this.getAddress(chainId)
+    const address = await this.getAddress(chainId)
 
     // test message
     const message = 'My email is john@doe.com - 1537836206101'

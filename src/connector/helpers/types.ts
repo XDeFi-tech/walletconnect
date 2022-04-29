@@ -30,6 +30,20 @@ export interface ISupportedChain {
   }
 }
 
+export enum IChainType {
+  ethereum = 'ethereum',
+  avalanche = 'avalanche',
+  binance = 'binance',
+  binancesmartchain = 'binancesmartchain',
+  polygon = 'polygon',
+  bitcoin = 'bitcoin',
+  litecoin = 'litecoin',
+  bitcoincash = 'bitcoincash',
+  thorchain = 'thorchain',
+  terra = 'terra',
+  dogecoin = 'dogecoin',
+}
+
 export interface IProviderInfo extends IProviderDisplay {
   id: string
   type: string
@@ -68,7 +82,7 @@ export interface IProviderUserOptions {
   name: string
   logo: string
   description: string
-  onClick: () => Promise<void>
+  onClick: (chains?: string[]) => Promise<void>
   chains?: {
     [name: string]: ISupportedChain
   }
@@ -96,12 +110,6 @@ export type Connector = (provider?: any, opts?: any) => Promise<any>
 
 export interface IConnectorsMap {
   [id: string]: Connector
-}
-
-export const SupportedChain = {
-  bitcoin: 'bitcoin',
-  terra: 'terra',
-  ethereum: 'ethereum',
 }
 
 export enum SupportedChainId {

@@ -28,8 +28,6 @@ export const Wallets = () => {
     return context.connector.getUserOptions()
   }, [context])
 
-  console.log('userOptions', userOptions)
-
   return (
     <SCard>
       {userOptions.map((provider: any) =>

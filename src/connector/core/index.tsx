@@ -57,6 +57,10 @@ export class Core {
     return this.providerController.cachedProvider
   }
 
+  get injectedChains(): string[] {
+    return this.providerController.injectedChains
+  }
+
   // --------------- PUBLIC METHODS --------------- //
 
   public connect = (): Promise<any> =>
@@ -124,10 +128,6 @@ export class Core {
 
   public clearCachedProvider(): void {
     this.providerController.clearCachedProvider()
-  }
-
-  public setCachedProvider(id: string): void {
-    this.providerController.setCachedProvider(id)
   }
 
   // --------------- PRIVATE METHODS --------------- //

@@ -6,6 +6,7 @@ import {
   SELECT_EVENT,
   INJECTED_PROVIDER_ID,
   CACHED_PROVIDER_KEY,
+  CACHED_PROVIDER_CHAINS_KEY,
 } from '../constants'
 import {
   isMobile,
@@ -33,6 +34,7 @@ export class ProviderController {
   public disableInjectedProvider = false
 
   private eventController: EventController = new EventController()
+  public injectedChains: string[] = []
   public injectedProvider: IProviderInfo | null = null
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
@@ -40,6 +42,7 @@ export class ProviderController {
 
   constructor(opts: IProviderControllerOptions) {
     this.cachedProvider = getLocal(CACHED_PROVIDER_KEY) || ''
+    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY)
 
     this.disableInjectedProvider = opts.disableInjectedProvider
     this.shouldCacheProvider = opts.cacheProvider
@@ -162,7 +165,7 @@ export class ProviderController {
           name,
           logo,
           description: getProviderDescription(provider),
-          onClick: () => this.connectTo(id, connector),
+          onClick: (chains?: string[]) => this.connectTo(id, connector, chains),
           ...rest,
         })
       }
@@ -188,26 +191,37 @@ export class ProviderController {
   public clearCachedProvider() {
     this.cachedProvider = ''
     removeLocal(CACHED_PROVIDER_KEY)
+    removeLocal(CACHED_PROVIDER_CHAINS_KEY)
   }
 
-  public setCachedProvider(id: string) {
+  public setCachedProvider(id: string, chains: string[]) {
     this.cachedProvider = id
+    this.injectedChains = chains
     setLocal(CACHED_PROVIDER_KEY, id)
+    setLocal(CACHED_PROVIDER_CHAINS_KEY, chains)
   }
 
   public connectTo = async (
     id: string,
-    connector: (providerPackage: any, opts: any) => Promise<any>
+    connector: (
+      providerPackage: any,
+      opts: any,
+      chains?: string[]
+    ) => Promise<any>,
+    chains?: string[]
   ) => {
     try {
       this.eventController.trigger(SELECT_EVENT, id)
       const providerPackage = this.getProviderOption(id)?.package
       const providerOptions = this.getProviderOption(id)?.options
       const opts = { network: this.network || undefined, ...providerOptions }
-      const provider = await connector(providerPackage, opts)
+      const provider = await connector(providerPackage, opts, chains)
+
+      const cachedChains = chains ? chains : ['ethereum']
+
       this.eventController.trigger(CONNECT_EVENT, provider)
       if (this.shouldCacheProvider && this.cachedProvider !== id) {
-        this.setCachedProvider(id)
+        this.setCachedProvider(id, cachedChains)
       }
     } catch (error) {
       this.eventController.trigger(ERROR_EVENT, error)

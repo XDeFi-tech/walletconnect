@@ -43,7 +43,7 @@ interface IHeaderStyle {
   connected: boolean
 }
 
-const SAddress = styled.p<IHeaderStyle>`
+const SAddress = styled.div<IHeaderStyle>`
   transition: ${transitions.base};
   font-weight: bold;
   margin: ${({ connected }) => (connected ? '-2px auto 0.7em' : '0')};

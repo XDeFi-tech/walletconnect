@@ -57,10 +57,6 @@ const SProviderContainer = styled.div`
   }
 `
 
-const SChain = styled.div`
-  margin-left: 12px;
-`
-
 const SProviderWrapper = styled.div<{ connected: boolean }>`
   padding: 8px;
   display: flex;
@@ -76,6 +72,14 @@ const SProviderWrapper = styled.div<{ connected: boolean }>`
   }
 `
 
+const SButton = styled.button`
+  margin-top: 24px;
+`
+
+const STitle = styled.div`
+  margin: 16px 0;
+`
+
 interface IProviderProps {
   provider: IProviderUserOptions
 }
@@ -89,28 +93,67 @@ export function Provider(props: IProviderProps) {
   const context = React.useContext(WalletsContext)
 
   const current = context.connector.injectedProvider
+  const injectedChains = context.connector.injectedChains
+
+  const [selectedChains, setChains] = React.useState<any>({})
+
+  const supportedChains = React.useMemo(() => {
+    return chains ? Object.keys(chains) : []
+  }, [chains])
+
+  const toggleChain = (chain: string) => {
+    const newChains = { ...selectedChains }
+
+    if (newChains[chain]) {
+      delete newChains[chain]
+    } else {
+      newChains[chain] = true
+    }
+
+    setChains(newChains)
+  }
 
   return (
-    <SProviderWrapper
-      onClick={onClick}
-      {...otherProps}
-      connected={name === current?.name}
-    >
+    <SProviderWrapper {...otherProps} connected={name === current?.name}>
       <SProviderContainer>
         <SIcon>
           <img src={logo} alt={name} />
         </SIcon>
         <SName>{name}</SName>
         <SDescription>{description}</SDescription>
-        {chains ? (
+        {chains ? 'Cross chain' : 'Only etherum'}
+
+        <>
           <>
-            {Object.keys(chains).map((i) => (
-              <SChain key={i}>{i}</SChain>
-            ))}
+            {supportedChains.length && (
+              <>
+                <STitle>Select chain:</STitle>
+
+                {supportedChains.map((i) => {
+                  const isInjected =
+                    name === current?.name && injectedChains.indexOf(i) !== -1
+
+                  return (
+                    <SButton
+                      key={i}
+                      disabled={isInjected}
+                      onClick={() => toggleChain(i)}
+                    >
+                      {selectedChains[i] ? 'Delete' : 'Add'} {i}
+                    </SButton>
+                  )
+                })}
+              </>
+            )}
           </>
-        ) : (
-          'Only etherum'
-        )}
+        </>
+
+        <SButton
+          disabled={current?.name === name}
+          onClick={() => onClick(Object.keys(selectedChains))}
+        >
+          Connect
+        </SButton>
       </SProviderContainer>
     </SProviderWrapper>
   )
