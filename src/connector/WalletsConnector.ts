@@ -40,8 +40,8 @@ interface IChainWithAccount {
   [chainId: number]: IAccount
 }
 
-export class NetworkConnector {
-  public web3Provider: ethers.providers.Web3Provider | null = null
+export class WalletsConnector {
+  public provider: ethers.providers.Web3Provider | null = null
   public web3Signer: ethers.providers.JsonRpcSigner | null = null
   public web3: Web3 | null = null
 
@@ -55,10 +55,10 @@ export class NetworkConnector {
     })
 
     connector.connect().then((instance) => {
-      this.web3Provider = new ethers.providers.Web3Provider(instance)
-      this.web3Signer = this.web3Provider.getSigner()
+      this.provider = new ethers.providers.Web3Provider(instance)
+      this.web3Signer = this.provider.getSigner()
 
-      this.web3 = initWeb3(this.web3Provider)
+      this.web3 = initWeb3(this.provider)
     })
 
     this.connector = connector
@@ -69,6 +69,9 @@ export class NetworkConnector {
   }
 
   getAccounts = (): IChainWithAccount => {
+    if (this.web3) {
+    }
+
     return {}
   }
 
@@ -78,6 +81,10 @@ export class NetworkConnector {
     const { address } = accounts[chainId]
 
     return address
+  }
+
+  getAvailableChains = () => {
+    return this.connector.cachedProvider
   }
 
   testSendTransaction = async (chainId: SupportedChainId) => {

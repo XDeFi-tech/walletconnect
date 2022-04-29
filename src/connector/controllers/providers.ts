@@ -33,7 +33,7 @@ export class ProviderController {
   public disableInjectedProvider = false
 
   private eventController: EventController = new EventController()
-  private injectedProvider: IProviderInfo | null = null
+  public injectedProvider: IProviderInfo | null = null
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
   private network = ''
@@ -156,13 +156,14 @@ export class ProviderController {
     providerList.forEach((id: string) => {
       const provider = this.getProvider(id)
       if (typeof provider !== 'undefined') {
-        const { id, name, logo, connector } = provider
+        const { id, name, logo, connector, ...rest } = provider
         userOptions.push({
           id,
           name,
           logo,
           description: getProviderDescription(provider),
           onClick: () => this.connectTo(id, connector),
+          ...rest,
         })
       }
     })

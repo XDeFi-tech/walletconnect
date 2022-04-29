@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-import { NetworkContext } from '../NetworkManager'
+import { WalletsContext } from '../WalletsManager'
 import { SupportedChainId } from '../helpers'
 
 import Button from './components/Button'
@@ -85,7 +85,6 @@ const STestButton = styled(Button)`
 interface IAppState {
   fetching: boolean
   provider: any
-  connected: boolean
   pendingRequest: boolean
   result: any | null
 }
@@ -93,13 +92,12 @@ interface IAppState {
 const INITIAL_STATE: IAppState = {
   fetching: false,
   provider: null,
-  connected: false,
   pendingRequest: false,
   result: null,
 }
 
 const MyApp = () => {
-  const context = React.useContext(NetworkContext)
+  const context = React.useContext(WalletsContext)
 
   const [state, setState] = React.useState<IAppState>(INITIAL_STATE)
 
@@ -124,7 +122,6 @@ const MyApp = () => {
     setState({
       ...state,
       provider,
-      connected: true,
     })
   }
 
@@ -151,7 +148,7 @@ const MyApp = () => {
     setState(INITIAL_STATE)
   }
 
-  const { connected, fetching, pendingRequest, result } = state
+  const { fetching, pendingRequest, result } = state
 
   const { testSendTransaction, testSignMessage, testSignPersonalMessage } =
     context
@@ -159,7 +156,7 @@ const MyApp = () => {
   return (
     <SLayout>
       <Column maxWidth={1000} spanHeight>
-        <Header connected={connected} killSession={resetApp} />
+        <Header killSession={resetApp} />
         <SContent>
           {fetching ? (
             <Column center>

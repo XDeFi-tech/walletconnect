@@ -22,11 +22,22 @@ export interface IProviderDisplay {
   description?: string
 }
 
+export interface ISupportedChain {
+  methods: {
+    sign?: () => void
+    sendTx?: () => void
+    getAccounts: () => void
+  }
+}
+
 export interface IProviderInfo extends IProviderDisplay {
   id: string
   type: string
   check: string
   package?: IProviderPackageOptions
+  chains?: {
+    [name: string]: ISupportedChain
+  }
 }
 
 export type RequiredOption = string | string[]
@@ -58,6 +69,9 @@ export interface IProviderUserOptions {
   logo: string
   description: string
   onClick: () => Promise<void>
+  chains?: {
+    [name: string]: ISupportedChain
+  }
 }
 
 export type SimpleFunction = (input?: any) => void
@@ -82,6 +96,12 @@ export type Connector = (provider?: any, opts?: any) => Promise<any>
 
 export interface IConnectorsMap {
   [id: string]: Connector
+}
+
+export const SupportedChain = {
+  bitcoin: 'bitcoin',
+  terra: 'terra',
+  ethereum: 'ethereum',
 }
 
 export enum SupportedChainId {

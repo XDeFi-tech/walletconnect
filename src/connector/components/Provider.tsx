@@ -1,6 +1,9 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
+import { IProviderUserOptions } from '../helpers'
+import { WalletsContext } from '../WalletsManager'
+
 const SIcon = styled.div`
   width: 45px;
   height: 45px;
@@ -54,37 +57,60 @@ const SProviderContainer = styled.div`
   }
 `
 
-const SProviderWrapper = styled.div`
+const SChain = styled.div`
+  margin-left: 12px;
+`
+
+const SProviderWrapper = styled.div<{ connected: boolean }>`
   padding: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   cursor: pointer;
-  border-radius: 0;
-  @media (hover: hover) {
-    &:hover ${SProviderContainer} {
-    }
+  border-radius: 16px;
+  border: ${({ connected }) => (connected ? '1px solid green' : 'none')};
+
+  &:hover {
+    border: 1px solid blue;
   }
 `
 
 interface IProviderProps {
-  name: string
-  logo: string
-  description: string
-  onClick: () => void
+  provider: IProviderUserOptions
 }
 
 export function Provider(props: IProviderProps) {
-  const { name, logo, description, onClick, ...otherProps } = props
+  const { provider } = props
+
+  const { name, logo, description, onClick, chains } = provider
+  const { ...otherProps } = props
+
+  const context = React.useContext(WalletsContext)
+
+  const current = context.connector.injectedProvider
+
   return (
-    <SProviderWrapper onClick={onClick} {...otherProps}>
+    <SProviderWrapper
+      onClick={onClick}
+      {...otherProps}
+      connected={name === current?.name}
+    >
       <SProviderContainer>
         <SIcon>
           <img src={logo} alt={name} />
         </SIcon>
         <SName>{name}</SName>
         <SDescription>{description}</SDescription>
+        {chains ? (
+          <>
+            {Object.keys(chains).map((i) => (
+              <SChain key={i}>{i}</SChain>
+            ))}
+          </>
+        ) : (
+          'Only etherum'
+        )}
       </SProviderContainer>
     </SProviderWrapper>
   )

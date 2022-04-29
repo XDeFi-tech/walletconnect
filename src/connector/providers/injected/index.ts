@@ -1,4 +1,4 @@
-import { IProviderInfo } from '../../helpers'
+import { IProviderInfo, SupportedChain } from '../../helpers'
 import Web3DefaultLogo from '../logos/web3-default.svg'
 import MetaMaskLogo from '../logos/metamask.svg'
 import SafeLogo from '../logos/safe.svg'
@@ -26,6 +26,17 @@ import SequenceLogo from '../logos/sequence.svg'
 import BraveLogo from '../logos/brave.svg'
 import RabbyLogo from '../logos/rabby.svg'
 
+declare global {
+  interface Window {
+    // @ts-ignore
+    ethereum: any
+    BinanceChain: any
+    web3: any
+    celo: any
+    updateWeb3Modal: any
+    xfi: any
+  }
+}
 export const FALLBACK: IProviderInfo = {
   id: 'injected',
   name: 'Web3',
@@ -168,6 +179,30 @@ export const XDEFI: IProviderInfo = {
   logo: XDEFILogo,
   type: 'injected',
   check: '__XDEFI',
+  chains: {
+    [SupportedChain.bitcoin]: {
+      methods: {
+        getAccounts: () => {
+          return window.xfi.bitcoin.request(
+            { method: 'request_accounts', params: [] },
+            (error: any, accounts: any) =>
+              console.log(`Bitcoin accounts ${accounts}`, error)
+          )
+        },
+      },
+    },
+    [SupportedChain.terra]: {
+      methods: {
+        getAccounts: () => {
+          return window.xfi.terra.request(
+            { method: 'request_accounts', params: [] },
+            (error: any, accounts: any) =>
+              console.log(`Terra accounts ${accounts}`, error)
+          )
+        },
+      },
+    },
+  },
 }
 
 export const BITPIE: IProviderInfo = {

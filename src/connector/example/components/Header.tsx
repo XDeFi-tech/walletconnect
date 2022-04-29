@@ -2,6 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 
+import { WalletsContext } from '../../WalletsManager'
 import { transitions } from '../styles'
 
 import Banner from './Banner'
@@ -70,23 +71,47 @@ const SDisconnect = styled.div<IHeaderStyle>`
 
 interface IHeaderProps {
   killSession: () => void
-  connected: boolean
 }
 
 const Header = (props: IHeaderProps) => {
-  const { connected, killSession } = props
+  const { killSession } = props
+  const context = React.useContext(WalletsContext)
+
+  const current = context.connector.injectedProvider
+  const connected = !!current
+
   return (
-    <SHeader {...props}>
-      {connected ? <SActiveChain>Chain</SActiveChain> : <Banner />}
+    <SHeader>
+      {current ? <SActiveChain>Connected</SActiveChain> : <Banner />}
+      <SAddress connected={connected}>
+        {connected ? (
+          <>
+            {current.chains ? (
+              <RenderChains chains={current.chains} />
+            ) : (
+              'Ethereum'
+            )}
+          </>
+        ) : (
+          'Not Connected'
+        )}{' '}
+      </SAddress>
       <SActiveAccount>
-        <SAddress connected={connected}>
-          {connected ? 'Connected' : 'Not Connected'}{' '}
-        </SAddress>
         <SDisconnect connected={connected} onClick={killSession}>
           {'Disconnect'}
         </SDisconnect>
       </SActiveAccount>
     </SHeader>
+  )
+}
+
+const RenderChains = ({ chains }: { chains: any }) => {
+  return (
+    <>
+      {Object.keys(chains).map((c) => (
+        <div key={c}>{c}</div>
+      ))}
+    </>
   )
 }
 

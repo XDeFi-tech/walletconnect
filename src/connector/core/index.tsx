@@ -1,4 +1,9 @@
-import { ICoreOptions, IProviderUserOptions, SimpleFunction } from '../helpers'
+import {
+  ICoreOptions,
+  IProviderInfo,
+  IProviderUserOptions,
+  SimpleFunction,
+} from '../helpers'
 import {
   CONNECT_EVENT,
   ERROR_EVENT,
@@ -42,6 +47,10 @@ export class Core {
     this.providerController.on(SELECT_EVENT, this.onProviderSelect)
 
     this.userOptions = this.providerController.getUserOptions()
+  }
+
+  get injectedProvider(): IProviderInfo | null {
+    return this.providerController.injectedProvider
   }
 
   get cachedProvider(): string {

@@ -12,7 +12,7 @@ export interface IWalletConnectConnectorOptions
 const ConnectToWalletConnect = (
   WalletConnectProvider: any,
   opts: IWalletConnectConnectorOptions
-) => {
+): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     let bridge = 'https://bridge.walletconnect.org'
     let qrcode = true
