@@ -7,6 +7,7 @@ import {
   INJECTED_PROVIDER_ID,
   CACHED_PROVIDER_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
+  CLOSE_EVENT,
 } from '../constants'
 import {
   isMobile,
@@ -77,6 +78,7 @@ export class ProviderController {
         package: providerInfo.package,
       }
     })
+
     // parse custom providers
     Object.keys(this.providerOptions)
       .filter((key) => key.startsWith('custom-'))
@@ -162,6 +164,7 @@ export class ProviderController {
       const provider = this.getProvider(id)
       if (typeof provider !== 'undefined') {
         const { id, name, logo, connector, ...rest } = provider
+
         userOptions.push({
           id,
           name,
@@ -177,25 +180,34 @@ export class ProviderController {
   }
 
   public connectToChains = async (): Promise<IChainToAccounts[]> => {
+    const currentProviderChains = this.injectedProvider
+      ? this.injectedProvider?.chains
+      : undefined
+
     if (
       this.injectedChains &&
       this.injectedChains.length > 0 &&
-      this.injectedProvider &&
-      this.injectedProvider?.chains
+      currentProviderChains
     ) {
-      const chains = this.injectedProvider?.chains
       return Promise.all(
-        this.injectedChains.map((chain) => {
-          const target = chains[chain]
+        this.injectedChains
+          .filter((chain) => !!currentProviderChains[chain])
+          .map((chain) => {
+            const target = currentProviderChains[chain]
 
-          return target.methods.getAccounts().then((accounts: string[]) => {
-            return {
-              chain: chain,
-              accounts: accounts,
-            }
+            return target.methods.getAccounts().then((accounts: string[]) => {
+              return {
+                chain: chain,
+                accounts: accounts,
+              }
+            })
           })
-        })
       )
+    } else {
+      if (this.injectedProvider) {
+        console.log('setInjectedChains', currentProviderChains)
+        this.setInjectedChains([IChainType.ethereum])
+      }
     }
 
     return []
@@ -219,12 +231,18 @@ export class ProviderController {
     this.cachedProvider = ''
     removeLocal(CACHED_PROVIDER_KEY)
     removeLocal(CACHED_PROVIDER_CHAINS_KEY)
+
+    this.eventController.trigger(CLOSE_EVENT)
   }
 
   public setCachedProvider(id: string, chains: string[]) {
     this.cachedProvider = id
-    this.injectedChains = chains
     setLocal(CACHED_PROVIDER_KEY, id)
+    this.setInjectedChains(chains)
+  }
+
+  public setInjectedChains(chains: string[]) {
+    this.injectedChains = chains
     setLocal(CACHED_PROVIDER_CHAINS_KEY, chains)
   }
 
@@ -251,6 +269,7 @@ export class ProviderController {
       if (this.shouldCacheProvider && this.cachedProvider !== id) {
         this.setCachedProvider(id, cachedChains)
       }
+      this.setInjectedChains(cachedChains)
 
       this.connectToChains()
     } catch (error) {

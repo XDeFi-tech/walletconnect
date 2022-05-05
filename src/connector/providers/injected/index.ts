@@ -196,6 +196,20 @@ export const XDEFI: IProviderInfo = {
             )
           })
         },
+        signTransaction: (hash: string) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'sign_transaction', params: [hash] },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
+        },
       },
     },
     [IChainType.thorchain]: {

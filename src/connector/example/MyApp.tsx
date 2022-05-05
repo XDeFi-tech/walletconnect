@@ -1,18 +1,18 @@
 import * as React from 'react'
 import styled from 'styled-components'
+import { convertUtf8ToHex } from '@walletconnect/utils'
 
 import { WalletsContext } from '../WalletsManager'
-import { SupportedChainId } from '../helpers'
+import { IChainType } from '../helpers'
 
 import Button from './components/Button'
 import Column from './components/Column'
 import Wrapper from './components/Wrapper'
 import Header from './components/Header'
-import Loader from './components/Loader'
-import ModalResult from './components/ModalResult'
 import ConnectButton from './components/ConnectButton'
 import { fonts } from './styles'
-import { ETH_SEND_TRANSACTION, ETH_SIGN, PERSONAL_SIGN } from './constants'
+import { SIGN, PERSONAL_SIGN } from './constants'
+import { hashPersonalMessage } from './helpers/utilities'
 
 const SLayout = styled.div`
   position: relative;
@@ -27,39 +27,11 @@ const SContent = styled(Wrapper)`
   padding: 0 16px;
 `
 
-const SContainer = styled.div`
-  height: 100%;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  word-break: break-word;
-`
+const SLanding = styled(Column)``
 
-const SLanding = styled(Column)`
-  height: 600px;
-`
-
-const SModalContainer = styled.div`
-  width: 100%;
-  position: relative;
-  word-wrap: break-word;
-`
-
-const SModalTitle = styled.div`
-  margin: 1em 0;
-  font-size: 20px;
-  font-weight: 700;
-`
-
-const SModalParagraph = styled.p`
-  margin-top: 30px;
-`
-
-// @ts-ignore
 const SBalances = styled(SLanding)`
   height: 100%;
+
   & h3 {
     padding-top: 30px;
   }
@@ -83,17 +55,11 @@ const STestButton = styled(Button)`
 `
 
 interface IAppState {
-  fetching: boolean
   provider: any
-  pendingRequest: boolean
-  result: any | null
 }
 
 const INITIAL_STATE: IAppState = {
-  fetching: false,
   provider: null,
-  pendingRequest: false,
-  result: null,
 }
 
 const MyApp = () => {
@@ -148,55 +114,66 @@ const MyApp = () => {
     setState(INITIAL_STATE)
   }
 
-  const { fetching, pendingRequest, result } = state
+  const { signMessage, signPersonalMessage } = context
 
-  const { testSendTransaction, testSignMessage, testSignPersonalMessage } =
-    context
+  const accounts = React.useMemo(() => {
+    return context.getAccounts()
+  }, [context])
+
+  const sign = async (chain: IChainType) => {
+    // test message
+    const message = 'My email is john@doe.com - 1537836206101'
+
+    // hash message
+    const hash = hashPersonalMessage(message)
+    const result = await signMessage(chain, hash)
+
+    alert(result)
+  }
+
+  const personalSign = async (chain: IChainType) => {
+    // verify signature
+    // test message
+    // test message
+    const message = 'My email is john@doe.com - 1537836206101'
+
+    // encode message (hex)
+    const hexMsg = convertUtf8ToHex(message)
+
+    // hash message
+    const result = await signPersonalMessage(chain, hexMsg)
+
+    alert(result)
+  }
 
   return (
     <SLayout>
       <Column maxWidth={1000} spanHeight>
         <Header killSession={resetApp} />
         <SContent>
-          {fetching ? (
-            <Column center>
-              <SContainer>
-                <Loader />
-              </SContainer>
-            </Column>
-          ) : (
-            <SBalances>
-              <h3>Actions</h3>
-              <Column center>
-                <STestButtonContainer>
-                  <STestButton
-                    left
-                    onClick={() =>
-                      testSendTransaction(SupportedChainId.MAINNET)
-                    }
-                  >
-                    {ETH_SEND_TRANSACTION}
-                  </STestButton>
+          {Object.keys(accounts).map((chain: string) => {
+            return (
+              <SBalances key={chain}>
+                <h3>
+                  Actions for {chain} with account {accounts[chain][0]}
+                </h3>
+                <Column center>
+                  <STestButtonContainer>
+                    <STestButton left onClick={() => sign(chain as IChainType)}>
+                      {SIGN}
+                    </STestButton>
 
-                  <STestButton
-                    left
-                    onClick={() => testSignMessage(SupportedChainId.MAINNET)}
-                  >
-                    {ETH_SIGN}
-                  </STestButton>
-
-                  <STestButton
-                    left
-                    onClick={() =>
-                      testSignPersonalMessage(SupportedChainId.MAINNET)
-                    }
-                  >
-                    {PERSONAL_SIGN}
-                  </STestButton>
-                </STestButtonContainer>
-              </Column>
-            </SBalances>
-          )}
+                    <STestButton
+                      left
+                      onClick={() => personalSign(chain as IChainType)}
+                    >
+                      {PERSONAL_SIGN}
+                    </STestButton>
+                  </STestButtonContainer>
+                </Column>
+              </SBalances>
+            )
+          })}
 
           <SLanding center>
             <h3>{`Test Connect`}</h3>
@@ -204,27 +181,6 @@ const MyApp = () => {
           </SLanding>
         </SContent>
       </Column>
-
-      {pendingRequest ? (
-        <SModalContainer>
-          <SModalTitle>{'Pending Call Request'}</SModalTitle>
-          <SContainer>
-            <Loader />
-            <SModalParagraph>
-              {'Approve or reject request using your wallet'}
-            </SModalParagraph>
-          </SContainer>
-        </SModalContainer>
-      ) : result ? (
-        <SModalContainer>
-          <SModalTitle>{'Call Request Approved'}</SModalTitle>
-          <ModalResult>{result}</ModalResult>
-        </SModalContainer>
-      ) : (
-        <SModalContainer>
-          <SModalTitle>{'Call Request Rejected'}</SModalTitle>
-        </SModalContainer>
-      )}
     </SLayout>
   )
 }

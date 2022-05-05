@@ -1,25 +1,13 @@
 import { ethers } from 'ethers'
-import { convertUtf8ToHex } from '@walletconnect/utils'
 import Web3 from 'web3'
-import { recoverPublicKey } from 'ethers/lib/utils'
 
 import {
   IChainToAccounts,
+  IChainType,
   IChainWithAccount,
   IProviderOptions,
-  SupportedChainId,
 } from './helpers'
 import WalletConnect from './index'
-import {
-  ETH_SEND_TRANSACTION,
-  ETH_SIGN,
-  PERSONAL_SIGN,
-} from './example/constants'
-import {
-  formatTestTransaction,
-  hashPersonalMessage,
-  recoverPersonalSignature,
-} from './example/helpers/utilities'
 
 function initWeb3(provider: any) {
   const web3: any = new Web3(provider)
@@ -38,8 +26,6 @@ function initWeb3(provider: any) {
 }
 
 export class WalletsConnector {
-  public provider: ethers.providers.Web3Provider | null = null
-  public web3Signer: ethers.providers.JsonRpcSigner | null = null
   public web3: Web3 | null = null
 
   public connector: WalletConnect
@@ -54,11 +40,9 @@ export class WalletsConnector {
 
     connector
       .connect()
-      .then((instance) => {
-        this.provider = new ethers.providers.Web3Provider(instance)
-        this.web3Signer = this.provider.getSigner()
-
-        this.web3 = initWeb3(this.provider)
+      .then((provider) => {
+        this.web3 = initWeb3(new ethers.providers.Web3Provider(provider))
+        return provider.enable()
       })
       .then(() => {
         this.loadAccounts()
@@ -68,12 +52,19 @@ export class WalletsConnector {
   }
 
   loadAccounts = async () => {
+    if (!this.web3) {
+      return
+    }
+
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
       acc[item.chain] = item.accounts
       return acc
     }, {})
+
+    console.log(this.web3)
+    map[IChainType.ethereum] = await this.web3.eth.getAccounts()
 
     this.accounts = map
   }
@@ -82,128 +73,58 @@ export class WalletsConnector {
     return this.accounts
   }
 
-  getAddress = (chainId: SupportedChainId): string => {
+  getAddress = (chainId: IChainType): string => {
     const accounts = this.getAccounts()
 
     return accounts[chainId][0] as string
   }
 
-  getAvailableChains = () => {
-    return this.connector.cachedProvider
+  getAvailableChains = (): string[] => {
+    return this.connector.injectedChains
   }
 
-  testSendTransaction = async (chainId: SupportedChainId) => {
+  getChainMethods = (chain: IChainType) => {
+    const chains = this.connector.injectedProvider?.chains
+    return chains ? chains[chain] : undefined
+  }
+
+  signMessage = async (chainId: IChainType, hash: string) => {
     if (!this.web3) {
       return
     }
 
     const address = this.getAddress(chainId)
 
-    const tx = await formatTestTransaction(address, chainId)
-
-    try {
-      // @ts-ignore
-      function sendTransaction(_tx: any, web3: any) {
-        return new Promise((resolve, reject) => {
-          web3.eth
-            .sendTransaction(_tx)
-            .once('transactionHash', (txHash: string) => resolve(txHash))
-            .catch((err: any) => reject(err))
-        })
+    switch (chainId) {
+      case IChainType.ethereum: {
+        return await this.web3.eth.sign(hash, address)
       }
 
-      // send transaction
-      const result = await sendTransaction(tx, this.web3)
-
-      // format displayed result
-      const formattedResult = {
-        action: ETH_SEND_TRANSACTION,
-        txHash: result,
-        from: address,
-        to: address,
-        value: '0 ETH',
+      default: {
+        const targetProvider = this.getChainMethods(chainId)
+        if (targetProvider && targetProvider.methods.signTransaction) {
+          console.log(chainId, targetProvider)
+          return await targetProvider.methods.signTransaction(hash)
+        }
       }
-
-      return formattedResult
-    } catch (error) {
-      console.error(error) // tslint:disable-line
     }
   }
 
-  testSignMessage = async (chainId: SupportedChainId) => {
+  signPersonalMessage = async (chainId: IChainType, hexMsg: string) => {
     if (!this.web3) {
       return
     }
 
     const address = this.getAddress(chainId)
 
-    // test message
-    const message = 'My email is john@doe.com - 1537836206101'
-
-    // hash message
-    const hash = hashPersonalMessage(message)
-
-    try {
-      // send message
-      const result = await this.web3.eth.sign(hash, address)
-
-      // verify signature
-      const signer = recoverPublicKey(result, hash)
-      const verified = signer.toLowerCase() === address.toLowerCase()
-
-      // format displayed result
-      const formattedResult = {
-        action: ETH_SIGN,
-        address,
-        signer,
-        verified,
-        result,
+    switch (chainId) {
+      case IChainType.ethereum: {
+        // @ts-ignore
+        return await this.web3.eth.personal.sign(hexMsg, address)
       }
-
-      // display result
-      return formattedResult
-    } catch (error) {
-      console.error(error) // tslint:disable-line
-    }
-  }
-
-  testSignPersonalMessage = async (chainId: SupportedChainId) => {
-    if (!this.web3) {
-      return
-    }
-
-    const address = this.getAddress(chainId)
-
-    // test message
-    const message = 'My email is john@doe.com - 1537836206101'
-
-    // encode message (hex)
-    const hexMsg = convertUtf8ToHex(message)
-
-    try {
-      // toggle pending request indicator
-
-      // send message
-      // @ts-ignore
-      const result = await this.web3.eth.personal.sign(hexMsg, address)
-
-      // verify signature
-      const signer = recoverPersonalSignature(result, message)
-      const verified = signer.toLowerCase() === address.toLowerCase()
-
-      // format displayed result
-      const formattedResult = {
-        action: PERSONAL_SIGN,
-        address,
-        signer,
-        verified,
-        result,
+      default: {
+        throw new Error('Not supported chain for personal sign')
       }
-
-      // display result
-      return formattedResult
-    } catch (error) {
-      console.error(error) // tslint:disable-line
     }
   }
 }

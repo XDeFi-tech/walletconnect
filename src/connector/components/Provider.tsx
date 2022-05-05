@@ -125,7 +125,7 @@ export function Provider(props: IProviderProps) {
 
         <>
           <>
-            {supportedChains.length && (
+            {supportedChains.length ? (
               <>
                 <STitle>Select chain:</STitle>
 
@@ -144,14 +144,11 @@ export function Provider(props: IProviderProps) {
                   )
                 })}
               </>
-            )}
+            ) : null}
           </>
         </>
 
-        <SButton
-          disabled={current?.name === name}
-          onClick={() => onClick(Object.keys(selectedChains))}
-        >
+        <SButton onClick={() => onClick(Object.keys(selectedChains))}>
           Connect
         </SButton>
       </SProviderContainer>
