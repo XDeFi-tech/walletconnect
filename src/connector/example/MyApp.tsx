@@ -81,31 +81,11 @@ const MyApp = () => {
 
     const provider = await context.connector.connect()
 
-    await subscribeProvider(provider)
-
     await provider.enable()
 
     setState({
       ...state,
       provider,
-    })
-  }
-
-  const subscribeProvider = async (provider: any) => {
-    if (!provider.on) {
-      return
-    }
-
-    provider.on('close', () => resetApp())
-    provider.on('accountsChanged', async (accounts: string[]) => {
-      console.log('accounts', accounts)
-    })
-    provider.on('chainChanged', async (chainId: number) => {
-      console.log('chainId', chainId)
-    })
-
-    provider.on('networkChanged', async (networkId: number) => {
-      console.log('networkId', networkId)
     })
   }
 
@@ -116,9 +96,7 @@ const MyApp = () => {
 
   const { signMessage, signPersonalMessage } = context
 
-  const accounts = React.useMemo(() => {
-    return context.getAccounts()
-  }, [context])
+  const accounts = context.getAccounts()
 
   const sign = async (chain: IChainType) => {
     // test message
@@ -132,8 +110,6 @@ const MyApp = () => {
   }
 
   const personalSign = async (chain: IChainType) => {
-    // verify signature
-    // test message
     // test message
     const message = 'My email is john@doe.com - 1537836206101'
 

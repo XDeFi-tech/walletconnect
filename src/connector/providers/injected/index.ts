@@ -210,6 +210,20 @@ export const XDEFI: IProviderInfo = {
             )
           })
         },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
+        },
       },
     },
     [IChainType.thorchain]: {
@@ -224,6 +238,20 @@ export const XDEFI: IProviderInfo = {
                 }
 
                 resolve(accounts)
+              }
+            )
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.thorchain.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
               }
             )
           })

@@ -27,6 +27,7 @@ export interface ISupportedChain {
     signTransaction?: (hash: string) => Promise<any>
     sendTransaction?: (txData: any) => Promise<any>
     getAccounts: () => Promise<any>
+    request?: (type: string, data: any) => Promise<any>
   }
 }
 

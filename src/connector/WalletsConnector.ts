@@ -9,49 +9,33 @@ import {
 } from './helpers'
 import WalletConnect from './index'
 
-function initWeb3(provider: any) {
-  const web3: any = new Web3(provider)
-
-  web3.eth.extend({
-    methods: [
-      {
-        name: 'chainId',
-        call: 'eth_chainId',
-        outputFormatter: web3.utils.hexToNumber,
-      },
-    ],
-  })
-
-  return web3
-}
-
 export class WalletsConnector {
   public web3: Web3 | null = null
 
   public connector: WalletConnect
   public accounts: IChainWithAccount = {}
 
-  constructor(providerOptions: IProviderOptions) {
+  constructor(providerOptions: IProviderOptions, network = 'mainnet') {
     const connector = new WalletConnect({
-      network: 'mainnet', // optional
-      cacheProvider: true, // optional
-      providerOptions, // required
+      network,
+      cacheProvider: true,
+      providerOptions,
     })
 
     connector
       .connect()
       .then((provider) => {
-        this.web3 = initWeb3(new ethers.providers.Web3Provider(provider))
+        this.web3 = new Web3(provider)
         return provider.enable()
       })
-      .then(() => {
-        this.loadAccounts()
+      .then((ethAccounts) => {
+        this.loadAccounts(ethAccounts)
       })
 
     this.connector = connector
   }
 
-  loadAccounts = async () => {
+  loadAccounts = async (ethAccounts: string[]) => {
     if (!this.web3) {
       return
     }
@@ -63,8 +47,7 @@ export class WalletsConnector {
       return acc
     }, {})
 
-    console.log(this.web3)
-    map[IChainType.ethereum] = await this.web3.eth.getAccounts()
+    map[IChainType.ethereum] = ethAccounts
 
     this.accounts = map
   }
@@ -103,7 +86,6 @@ export class WalletsConnector {
       default: {
         const targetProvider = this.getChainMethods(chainId)
         if (targetProvider && targetProvider.methods.signTransaction) {
-          console.log(chainId, targetProvider)
           return await targetProvider.methods.signTransaction(hash)
         }
       }
@@ -126,5 +108,16 @@ export class WalletsConnector {
         throw new Error('Not supported chain for personal sign')
       }
     }
+  }
+
+  request = async (chainId: IChainType, type: string, data: any) => {
+    const address = this.getAddress(chainId)
+    const targetProvider = this.getChainMethods(chainId)
+
+    if (targetProvider && targetProvider.methods.request) {
+      return await targetProvider.methods.request(type, data)
+    }
+
+    throw new Error(`Not supported ${type} for ${chainId}`)
   }
 }
