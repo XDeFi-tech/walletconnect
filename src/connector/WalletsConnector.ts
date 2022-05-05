@@ -1,4 +1,3 @@
-import { ethers } from 'ethers'
 import Web3 from 'web3'
 
 import {
@@ -92,26 +91,7 @@ export class WalletsConnector {
     }
   }
 
-  signPersonalMessage = async (chainId: IChainType, hexMsg: string) => {
-    if (!this.web3) {
-      return
-    }
-
-    const address = this.getAddress(chainId)
-
-    switch (chainId) {
-      case IChainType.ethereum: {
-        // @ts-ignore
-        return await this.web3.eth.personal.sign(hexMsg, address)
-      }
-      default: {
-        throw new Error('Not supported chain for personal sign')
-      }
-    }
-  }
-
   request = async (chainId: IChainType, type: string, data: any) => {
-    const address = this.getAddress(chainId)
     const targetProvider = this.getChainMethods(chainId)
 
     if (targetProvider && targetProvider.methods.request) {

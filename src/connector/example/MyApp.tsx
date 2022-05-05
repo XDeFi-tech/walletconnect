@@ -1,6 +1,5 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { convertUtf8ToHex } from '@walletconnect/utils'
 
 import { WalletsContext } from '../WalletsManager'
 import { IChainType } from '../helpers'
@@ -11,7 +10,7 @@ import Wrapper from './components/Wrapper'
 import Header from './components/Header'
 import ConnectButton from './components/ConnectButton'
 import { fonts } from './styles'
-import { SIGN, PERSONAL_SIGN } from './constants'
+import { SIGN } from './constants'
 import { hashPersonalMessage } from './helpers/utilities'
 
 const SLayout = styled.div`
@@ -94,7 +93,7 @@ const MyApp = () => {
     setState(INITIAL_STATE)
   }
 
-  const { signMessage, signPersonalMessage } = context
+  const { signMessage } = context
 
   const accounts = context.getAccounts()
 
@@ -109,19 +108,6 @@ const MyApp = () => {
     alert(result)
   }
 
-  const personalSign = async (chain: IChainType) => {
-    // test message
-    const message = 'My email is john@doe.com - 1537836206101'
-
-    // encode message (hex)
-    const hexMsg = convertUtf8ToHex(message)
-
-    // hash message
-    const result = await signPersonalMessage(chain, hexMsg)
-
-    alert(result)
-  }
-
   return (
     <SLayout>
       <Column maxWidth={1000} spanHeight>
@@ -131,19 +117,12 @@ const MyApp = () => {
             return (
               <SBalances key={chain}>
                 <h3>
-                  Actions for {chain} with account {accounts[chain][0]}
+                  {chain} with account {accounts[chain][0]}
                 </h3>
                 <Column center>
                   <STestButtonContainer>
                     <STestButton left onClick={() => sign(chain as IChainType)}>
                       {SIGN}
-                    </STestButton>
-
-                    <STestButton
-                      left
-                      onClick={() => personalSign(chain as IChainType)}
-                    >
-                      {PERSONAL_SIGN}
                     </STestButton>
                   </STestButtonContainer>
                 </Column>

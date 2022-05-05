@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useState } from 'react'
 import WalletConnect from '@walletconnect/web3-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 
@@ -31,7 +31,7 @@ const connect = new WalletsConnector(getProviderOptions())
 export const WalletsContext = createContext<WalletsConnector>(connect)
 
 const NetworkManager = ({ children }: { children: JSX.Element }) => {
-  const [context, setContext] = useState<WalletsConnector>(connect)
+  const [context] = useState<WalletsConnector>(connect)
 
   return (
     <WalletsContext.Provider value={context}>

@@ -12,8 +12,6 @@ import {
 } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
-const INITIAL_STATE = {}
-
 const defaultOpts: ICoreOptions = {
   cacheProvider: false,
   disableInjectedProvider: false,
@@ -147,14 +145,4 @@ export class Core {
   private onConnect = async (provider: any) => {
     this.eventController.trigger(CONNECT_EVENT, provider)
   }
-
-  private updateState = async (state: any) => {
-    Object.keys(state).forEach((key) => {
-      // @ts-ignore
-      this[key] = state[key]
-    })
-    await window.updateWeb3Modal(state)
-  }
-
-  private resetState = () => this.updateState({ ...INITIAL_STATE })
 }
