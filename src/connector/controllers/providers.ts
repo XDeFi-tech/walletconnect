@@ -229,6 +229,7 @@ export class ProviderController {
 
   public clearCachedProvider() {
     this.cachedProvider = ''
+    this.injectedProvider = null
     removeLocal(CACHED_PROVIDER_KEY)
     removeLocal(CACHED_PROVIDER_CHAINS_KEY)
 
@@ -279,7 +280,7 @@ export class ProviderController {
 
   public async connectToCachedProvider() {
     const provider = this.getProvider(this.cachedProvider)
-    if (typeof provider !== 'undefined') {
+    if (provider) {
       await this.connectTo(provider.id, provider.connector, this.injectedChains)
     }
   }

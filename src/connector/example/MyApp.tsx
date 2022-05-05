@@ -1,14 +1,14 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
+import { WALLETS_EVENTS } from '../WalletsConnector'
 import { WalletsContext } from '../WalletsManager'
-import { IChainType } from '../helpers'
+import { IChainType, IChainWithAccount } from '../helpers'
 
 import Button from './components/Button'
 import Column from './components/Column'
 import Wrapper from './components/Wrapper'
 import Header from './components/Header'
-import ConnectButton from './components/ConnectButton'
 import { fonts } from './styles'
 import { SIGN } from './constants'
 import { hashPersonalMessage } from './helpers/utilities'
@@ -62,6 +62,7 @@ const INITIAL_STATE: IAppState = {
 }
 
 const MyApp = () => {
+  debugger
   const context = React.useContext(WalletsContext)
 
   const [state, setState] = React.useState<IAppState>(INITIAL_STATE)
@@ -89,21 +90,32 @@ const MyApp = () => {
   }
 
   const resetApp = async () => {
-    await context.connector.clearCachedProvider()
-    setState(INITIAL_STATE)
+    if (context) {
+      await context.connector.clearCachedProvider()
+      setState(INITIAL_STATE)
+    }
   }
 
-  const { signMessage } = context
+  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
 
-  const accounts = context.getAccounts()
+  React.useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
+        setAccounts(newList)
+      })
+    }
+  }, [context])
 
   const sign = async (chain: IChainType) => {
+    if (!context) {
+      return
+    }
     // test message
     const message = 'My email is john@doe.com - 1537836206101'
 
     // hash message
     const hash = hashPersonalMessage(message)
-    const result = await signMessage(chain, hash)
+    const result = await context.signMessage(chain, hash)
 
     alert(result)
   }
@@ -129,11 +141,6 @@ const MyApp = () => {
               </SBalances>
             )
           })}
-
-          <SLanding center>
-            <h3>{`Test Connect`}</h3>
-            <ConnectButton onClick={onConnect} />
-          </SLanding>
         </SContent>
       </Column>
     </SLayout>

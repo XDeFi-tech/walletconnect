@@ -25,7 +25,7 @@ export const Wallets = () => {
   const context = useContext(WalletsContext)
 
   const userOptions = useMemo(() => {
-    return context.connector.getUserOptions()
+    return context ? context.connector.getUserOptions() : []
   }, [context])
 
   return (

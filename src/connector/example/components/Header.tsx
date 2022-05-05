@@ -2,7 +2,8 @@ import * as React from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 
-import { IChainWithAccount } from '../../helpers'
+import { IChainWithAccount, IProviderInfo } from '../../helpers'
+import { WALLETS_EVENTS } from '../../WalletsConnector'
 import { WalletsContext } from '../../WalletsManager'
 import { transitions } from '../styles'
 
@@ -78,12 +79,25 @@ const Header = (props: IHeaderProps) => {
   const { killSession } = props
   const context = React.useContext(WalletsContext)
 
-  const current = context.connector.injectedProvider
-  const connected = !!current
+  const [current, setCurrentProvider] = React.useState<IProviderInfo>()
+  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
 
-  const accounts = React.useMemo(() => {
-    return context.accounts
+  React.useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
+        setCurrentProvider(provider)
+      })
+
+      context.on(
+        WALLETS_EVENTS.CURRENT_WALLET,
+        (newList: IChainWithAccount) => {
+          setAccounts(newList)
+        }
+      )
+    }
   }, [context])
+
+  const connected = !!current
 
   return (
     <SHeader>

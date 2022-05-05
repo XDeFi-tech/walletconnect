@@ -70,6 +70,7 @@ export class Core {
       this.on(CONNECT_EVENT, (provider) => resolve(provider))
       this.on(ERROR_EVENT, (error) => reject(error))
       this.on(CLOSE_EVENT, () => reject('Closed by user'))
+
       await this.toggle()
     })
 
@@ -78,6 +79,7 @@ export class Core {
       this.on(CONNECT_EVENT, (provider) => resolve(provider))
       this.on(ERROR_EVENT, (error) => reject(error))
       this.on(CLOSE_EVENT, () => reject('Closed by user'))
+
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(
@@ -90,6 +92,7 @@ export class Core {
     })
 
   public async toggle(): Promise<void> {
+    debugger
     if (this.cachedProvider) {
       await this.providerController.connectToCachedProvider()
       return

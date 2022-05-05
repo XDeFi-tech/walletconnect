@@ -1,7 +1,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-import { IProviderUserOptions } from '../helpers'
+import { IProviderInfo, IProviderUserOptions } from '../helpers'
+import { WALLETS_EVENTS } from '../WalletsConnector'
 import { WalletsContext } from '../WalletsManager'
 
 const SIcon = styled.div`
@@ -92,8 +93,22 @@ export function Provider(props: IProviderProps) {
 
   const context = React.useContext(WalletsContext)
 
-  const current = context.connector.injectedProvider
-  const injectedChains = context.connector.injectedChains
+  const [current, setCurrentProvider] = React.useState<IProviderInfo | null>(
+    null
+  )
+  const [injectedChains, setInjectedChains] = React.useState<string[]>([])
+
+  React.useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
+        setCurrentProvider(provider)
+      })
+
+      context.on(WALLETS_EVENTS.CONNECTED_CHAINS, (newList: string[]) => {
+        setInjectedChains(newList)
+      })
+    }
+  }, [context])
 
   const [selectedChains, setChains] = React.useState<any>({})
 
@@ -121,6 +136,7 @@ export function Provider(props: IProviderProps) {
         </SIcon>
         <SName>{name}</SName>
         <SDescription>{description}</SDescription>
+
         {chains ? 'Cross chain' : 'Only etherum'}
 
         <>

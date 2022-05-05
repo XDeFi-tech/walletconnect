@@ -1,11 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react'
+import WalletConnect from '@walletconnect/web3-provider'
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 
 import MyApp from './connector/example/MyApp'
 import NetworkManager from './connector/WalletsManager'
+import { IProviderOptions } from './connector'
+
+const getProviderOptions = (): IProviderOptions => {
+  const infuraId = 'blablaid'
+  const providerOptions = {
+    walletconnect: {
+      package: WalletConnect,
+      options: {
+        infuraId,
+      },
+    },
+    coinbasewallet: {
+      package: CoinbaseWalletSDK,
+      options: {
+        appName: 'Coinbase Example App',
+        infuraId,
+      },
+    },
+  }
+  return providerOptions
+}
 
 function App() {
+  const [options] = useState(() => getProviderOptions())
   return (
-    <NetworkManager>
+    <NetworkManager options={options}>
       <MyApp />
     </NetworkManager>
   )

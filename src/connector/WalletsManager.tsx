@@ -1,40 +1,28 @@
-import { createContext, useState } from 'react'
-import WalletConnect from '@walletconnect/web3-provider'
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
+import { createContext, useEffect, useState } from 'react'
 
 import { Wallets } from './index'
 import { WalletsConnector } from './WalletsConnector'
 import { IProviderOptions } from './helpers'
 
-const getProviderOptions = (): IProviderOptions => {
-  const infuraId = 'blablaid'
-  const providerOptions = {
-    walletconnect: {
-      package: WalletConnect,
-      options: {
-        infuraId,
-      },
-    },
-    coinbasewallet: {
-      package: CoinbaseWalletSDK,
-      options: {
-        appName: 'Coinbase Example App',
-        infuraId,
-      },
-    },
-  }
-  return providerOptions
-}
+export const WalletsContext = createContext<WalletsConnector | null>(null)
 
-const connect = new WalletsConnector(getProviderOptions())
+const NetworkManager = ({
+  children,
+  options,
+}: {
+  children: JSX.Element
+  options: IProviderOptions
+}) => {
+  const [c, setC] = useState<WalletsConnector>(
+    () => new WalletsConnector(options)
+  )
 
-export const WalletsContext = createContext<WalletsConnector>(connect)
-
-const NetworkManager = ({ children }: { children: JSX.Element }) => {
-  const [context] = useState<WalletsConnector>(connect)
+  useEffect(() => {
+    setC(new WalletsConnector(options))
+  }, [options])
 
   return (
-    <WalletsContext.Provider value={context}>
+    <WalletsContext.Provider value={c}>
       <Wallets />
       {children}
     </WalletsContext.Provider>

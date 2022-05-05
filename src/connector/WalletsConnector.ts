@@ -5,22 +5,33 @@ import {
   IChainType,
   IChainWithAccount,
   IProviderOptions,
+  SimpleFunction,
 } from './helpers'
+import { EventController } from './controllers'
 import WalletConnect from './index'
 
+export enum WALLETS_EVENTS {
+  ACCOUNTS = 'ACCOUNTS',
+  CURRENT_WALLET = 'CURRENT_WALLET',
+  CONNECTED_CHAINS = 'CONNECTED_CHAINS',
+}
+
 export class WalletsConnector {
-  public web3: Web3 | null = null
+  private web3: Web3 | null = null
 
   public connector: WalletConnect
-  public accounts: IChainWithAccount = {}
+  private accounts: IChainWithAccount = {}
+  private eventController: EventController = new EventController()
 
   constructor(providerOptions: IProviderOptions, network = 'mainnet') {
+    debugger
     const connector = new WalletConnect({
       network,
-      cacheProvider: true,
+      cacheProvider: false,
       providerOptions,
     })
 
+    debugger
     connector
       .connect()
       .then((provider) => {
@@ -28,13 +39,22 @@ export class WalletsConnector {
         return provider.enable()
       })
       .then((ethAccounts) => {
+        debugger
         this.loadAccounts(ethAccounts)
+        this.eventController.trigger(
+          WALLETS_EVENTS.CURRENT_WALLET,
+          this.connector.injectedProvider
+        )
+        this.eventController.trigger(
+          WALLETS_EVENTS.CONNECTED_CHAINS,
+          this.connector.injectedChains
+        )
       })
 
     this.connector = connector
   }
 
-  loadAccounts = async (ethAccounts: string[]) => {
+  private loadAccounts = async (ethAccounts: string[]) => {
     if (!this.web3) {
       return
     }
@@ -49,28 +69,26 @@ export class WalletsConnector {
     map[IChainType.ethereum] = ethAccounts
 
     this.accounts = map
+
+    this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
-  getAccounts = (): IChainWithAccount => {
+  private getAccounts = (): IChainWithAccount => {
     return this.accounts
   }
 
-  getAddress = (chainId: IChainType): string => {
+  private getAddress = (chainId: IChainType): string => {
     const accounts = this.getAccounts()
 
     return accounts[chainId][0] as string
   }
 
-  getAvailableChains = (): string[] => {
-    return this.connector.injectedChains
-  }
-
-  getChainMethods = (chain: IChainType) => {
+  public getChainMethods = (chain: IChainType) => {
     const chains = this.connector.injectedProvider?.chains
     return chains ? chains[chain] : undefined
   }
 
-  signMessage = async (chainId: IChainType, hash: string) => {
+  public signMessage = async (chainId: IChainType, hash: string) => {
     if (!this.web3) {
       return
     }
@@ -91,7 +109,7 @@ export class WalletsConnector {
     }
   }
 
-  request = async (chainId: IChainType, type: string, data: any) => {
+  public request = async (chainId: IChainType, type: string, data: any) => {
     const targetProvider = this.getChainMethods(chainId)
 
     if (targetProvider && targetProvider.methods.request) {
@@ -99,5 +117,19 @@ export class WalletsConnector {
     }
 
     throw new Error(`Not supported ${type} for ${chainId}`)
+  }
+
+  public on = (event: string, callback: SimpleFunction) => {
+    this.eventController.on({
+      event,
+      callback,
+    })
+  }
+
+  public off(event: string, callback?: SimpleFunction): void {
+    this.eventController.off({
+      event,
+      callback,
+    })
   }
 }
