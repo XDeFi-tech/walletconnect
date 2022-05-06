@@ -9,16 +9,22 @@ export const WalletsContext = createContext<WalletsConnector | null>(null)
 const NetworkManager = ({
   children,
   options,
+  network,
+  cacheEnabled,
 }: {
   children: JSX.Element
   options: IProviderOptions
+  network?: string
+  cacheEnabled?: boolean
 }) => {
   const [c, setC] = useState<WalletsConnector>(
-    () => new WalletsConnector(options)
+    () => new WalletsConnector(options, network, cacheEnabled)
   )
 
   useEffect(() => {
-    setC(new WalletsConnector(options))
+    if (Object.keys(options).length !== c.connector.getUserOptions().length) {
+      setC(new WalletsConnector(options, network, cacheEnabled))
+    }
   }, [options])
 
   return (

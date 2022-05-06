@@ -25,9 +25,9 @@ import {
   getInjectedProvider,
   findMatchingRequiredOptions,
   IProviderOption,
-  IChainType,
   IChainToAccounts,
 } from '../helpers'
+import { IChainType } from '../example/helpers/enums'
 
 import { EventController } from './events'
 

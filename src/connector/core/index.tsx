@@ -92,7 +92,6 @@ export class Core {
     })
 
   public async toggle(): Promise<void> {
-    debugger
     if (this.cachedProvider) {
       await this.providerController.connectToCachedProvider()
       return

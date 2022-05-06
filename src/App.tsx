@@ -29,7 +29,7 @@ const getProviderOptions = (): IProviderOptions => {
 function App() {
   const [options] = useState(() => getProviderOptions())
   return (
-    <NetworkManager options={options}>
+    <NetworkManager options={options} network="mainnet" cacheEnabled={true}>
       <MyApp />
     </NetworkManager>
   )

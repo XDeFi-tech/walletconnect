@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { WALLETS_EVENTS } from '../WalletsConnector'
 import { WalletsContext } from '../WalletsManager'
-import { IChainType, IChainWithAccount } from '../helpers'
+import { IChainWithAccount } from '../helpers'
 
 import Button from './components/Button'
 import Column from './components/Column'
@@ -12,6 +12,7 @@ import Header from './components/Header'
 import { fonts } from './styles'
 import { SIGN } from './constants'
 import { hashPersonalMessage } from './helpers/utilities'
+import { IChainType } from './helpers/enums'
 
 const SLayout = styled.div`
   position: relative;
@@ -62,7 +63,6 @@ const INITIAL_STATE: IAppState = {
 }
 
 const MyApp = () => {
-  debugger
   const context = React.useContext(WalletsContext)
 
   const [state, setState] = React.useState<IAppState>(INITIAL_STATE)

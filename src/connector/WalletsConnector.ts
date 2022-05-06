@@ -2,13 +2,13 @@ import Web3 from 'web3'
 
 import {
   IChainToAccounts,
-  IChainType,
   IChainWithAccount,
   IProviderOptions,
   SimpleFunction,
 } from './helpers'
 import { EventController } from './controllers'
 import WalletConnect from './index'
+import { IChainType } from './example/helpers/enums'
 
 export enum WALLETS_EVENTS {
   ACCOUNTS = 'ACCOUNTS',
@@ -23,15 +23,17 @@ export class WalletsConnector {
   private accounts: IChainWithAccount = {}
   private eventController: EventController = new EventController()
 
-  constructor(providerOptions: IProviderOptions, network = 'mainnet') {
-    debugger
+  constructor(
+    providerOptions: IProviderOptions,
+    network = 'mainnet',
+    cacheProvider = true
+  ) {
     const connector = new WalletConnect({
       network,
-      cacheProvider: false,
+      cacheProvider,
       providerOptions,
     })
 
-    debugger
     connector
       .connect()
       .then((provider) => {
@@ -39,16 +41,7 @@ export class WalletsConnector {
         return provider.enable()
       })
       .then((ethAccounts) => {
-        debugger
-        this.loadAccounts(ethAccounts)
-        this.eventController.trigger(
-          WALLETS_EVENTS.CURRENT_WALLET,
-          this.connector.injectedProvider
-        )
-        this.eventController.trigger(
-          WALLETS_EVENTS.CONNECTED_CHAINS,
-          this.connector.injectedChains
-        )
+        return this.loadAccounts(ethAccounts)
       })
 
     this.connector = connector
@@ -70,6 +63,15 @@ export class WalletsConnector {
 
     this.accounts = map
 
+    this.eventController.trigger(
+      WALLETS_EVENTS.CURRENT_WALLET,
+      this.connector.injectedProvider
+    )
+    this.eventController.trigger(
+      WALLETS_EVENTS.CONNECTED_CHAINS,
+      this.connector.injectedChains
+    )
+    console.log('emit', this.accounts)
     this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
