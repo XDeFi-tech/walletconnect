@@ -71,7 +71,6 @@ export class WalletsConnector {
       WALLETS_EVENTS.CONNECTED_CHAINS,
       this.connector.injectedChains
     )
-    console.log('emit', this.accounts)
     this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 

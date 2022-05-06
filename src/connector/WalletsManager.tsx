@@ -22,10 +22,8 @@ const NetworkManager = ({
   )
 
   useEffect(() => {
-    if (Object.keys(options).length !== c.connector.getUserOptions().length) {
-      setC(new WalletsConnector(options, network, cacheEnabled))
-    }
-  }, [options])
+    setC(new WalletsConnector(options, network, cacheEnabled))
+  }, [options, network, cacheEnabled])
 
   return (
     <WalletsContext.Provider value={c}>
