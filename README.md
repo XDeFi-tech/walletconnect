@@ -44,7 +44,7 @@
       })
 
       context.on(
-        WALLETS_EVENTS.CURRENT_WALLET,
+        WALLETS_EVENTS.ACCOUNTS,
         (newList: IChainWithAccount) => {
           setAccounts(newList)
         }

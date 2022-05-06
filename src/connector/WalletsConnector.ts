@@ -61,7 +61,7 @@ export class WalletsConnector {
 
     map[IChainType.ethereum] = ethAccounts
 
-    this.accounts = map
+    this.setAccounts(map)
 
     this.eventController.trigger(
       WALLETS_EVENTS.CURRENT_WALLET,
@@ -71,17 +71,26 @@ export class WalletsConnector {
       WALLETS_EVENTS.CONNECTED_CHAINS,
       this.connector.injectedChains
     )
+  }
+
+  private setAccounts = (map: IChainWithAccount) => {
+    this.accounts = map
     this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
-  private getAccounts = (): IChainWithAccount => {
-    return this.accounts
-  }
+  public disconnect = () => {
+    this.connector.clearCachedProvider()
 
-  private getAddress = (chainId: IChainType): string => {
-    const accounts = this.getAccounts()
+    this.setAccounts({})
 
-    return accounts[chainId][0] as string
+    this.eventController.trigger(
+      WALLETS_EVENTS.CURRENT_WALLET,
+      this.connector.injectedProvider
+    )
+    this.eventController.trigger(
+      WALLETS_EVENTS.CONNECTED_CHAINS,
+      this.connector.injectedChains
+    )
   }
 
   public getChainMethods = (chain: IChainType) => {
@@ -132,5 +141,15 @@ export class WalletsConnector {
       event,
       callback,
     })
+  }
+
+  private getAccounts = (): IChainWithAccount => {
+    return this.accounts
+  }
+
+  private getAddress = (chainId: IChainType): string => {
+    const accounts = this.getAccounts()
+
+    return accounts[chainId][0] as string
   }
 }

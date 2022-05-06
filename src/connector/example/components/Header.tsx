@@ -88,12 +88,9 @@ const Header = (props: IHeaderProps) => {
         setCurrentProvider(provider)
       })
 
-      context.on(
-        WALLETS_EVENTS.CURRENT_WALLET,
-        (newList: IChainWithAccount) => {
-          setAccounts(newList)
-        }
-      )
+      context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
+        setAccounts(newList)
+      })
     }
   }, [context])
 
@@ -121,6 +118,7 @@ const Header = (props: IHeaderProps) => {
 }
 
 const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
+  console.log('accounts', accounts)
   return (
     <>
       {Object.keys(accounts).map((chain: string) => (

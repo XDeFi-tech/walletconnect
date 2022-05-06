@@ -91,7 +91,7 @@ const MyApp = () => {
 
   const resetApp = async () => {
     if (context) {
-      await context.connector.clearCachedProvider()
+      await context.disconnect()
       setState(INITIAL_STATE)
     }
   }
