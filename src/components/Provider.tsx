@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { IProviderInfo, IProviderUserOptions } from '../helpers'
 import { WALLETS_EVENTS } from '../WalletsConnector'
-import { WalletsContext } from '../WalletsManager'
+import { WalletsContext } from '../NetworkManager'
 
 const SIcon = styled.div`
   width: 45px;

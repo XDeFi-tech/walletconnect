@@ -1,36 +1,15 @@
 {
-  "name": "wallets-connector",
+  "name": "wallets-connector-example",
   "version": "0.1.0",
-  "author": "Web3Modal <web3modal.com>",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "unpkg": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "typings": "dist/index.d.ts",
-  "directories": {
-    "dist": "dist",
-    "test": "test"
-  },
-  "files": [
-    "dist"
-  ],
+  "private": true,
   "scripts": {
     "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "format": "./node_modules/.bin/prettier --write --parser typescript --config ./.prettierrc",
-    "prepare": "yarn clean && yarn build",
-    "clean": "rm -rf dist",
-    "clean:example": "rm -rf example/build",
-    "build": "webpack",
-    "clean:node_modules": "rm -rf node_modules && cd example && rm -rf node_modules",
-    "clean:all": "yarn clean && yarn clean:example && yarn clean:node_modules",
-    "bootstrap": "yarn install && cd example && yarn install",
-    "build:example": "yarn bootstrap && yarn build && cd example && yarn build",
-    "check": "yarn clean && yarn lint && yarn format && yarn build && yarn test",
-    "reset": "yarn clean:all && yarn bootstrap && yarn check"
+    "format": "./node_modules/.bin/prettier --write --parser typescript --config ./.prettierrc"
   },
   "eslintConfig": {},
   "browserslist": {
@@ -158,14 +137,12 @@
     "url-loader": "4.1.1",
     "web-vitals": "^2.1.4",
     "web3": "^1.7.3",
-    "webpack": "^5.72.0",
-    "webpack-cli": "^4.9.2",
+    "webpack": "4.44.2",
     "webpack-dev-server": "3.11.1",
     "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "5.1.4"
   },
   "dependencies": {
-    "ts-loader": "^9.3.0",
     "wallets-connector": "file:.."
   }
 }

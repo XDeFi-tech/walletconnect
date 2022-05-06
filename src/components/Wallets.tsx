@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
 import styled from 'styled-components'
 
-import { WalletsContext } from '../WalletsManager'
+import { WalletsContext } from '../NetworkManager'
 
 import { Provider } from './Provider'
 

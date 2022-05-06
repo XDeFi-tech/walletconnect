@@ -19,7 +19,7 @@ const defaultOpts: ICoreOptions = {
   network: '',
 }
 
-export class Core {
+export class WalletConnect {
   private eventController: EventController = new EventController()
   private providerController: ProviderController
   private userOptions: IProviderUserOptions[]

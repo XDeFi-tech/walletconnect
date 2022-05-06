@@ -1,5 +1,4 @@
-import { IProviderInfo } from '../../helpers'
-import { IChainType } from '../../example/helpers/enums'
+import { IProviderInfo, IChainType } from '../../helpers'
 import Web3DefaultLogo from '../logos/web3-default.svg'
 import MetaMaskLogo from '../logos/metamask.svg'
 import SafeLogo from '../logos/safe.svg'

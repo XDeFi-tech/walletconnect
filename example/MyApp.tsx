@@ -2,7 +2,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 
 import { WALLETS_EVENTS } from '../WalletsConnector'
-import { WalletsContext } from '../WalletsManager'
+import { WalletsContext } from '../NetworkManager'
 import { IChainWithAccount } from '../helpers'
 
 import Button from './components/Button'

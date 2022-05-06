@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types'
 
 import { IChainWithAccount, IProviderInfo } from '../../helpers'
 import { WALLETS_EVENTS } from '../../WalletsConnector'
-import { WalletsContext } from '../../WalletsManager'
+import { WalletsContext } from '../../NetworkManager'
 import { transitions } from '../styles'
 
 import Banner from './Banner'

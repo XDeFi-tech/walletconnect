@@ -6,7 +6,7 @@ import { IProviderOptions } from './helpers'
 
 export const WalletsContext = createContext<WalletsConnector | null>(null)
 
-const NetworkManager = ({
+export const NetworkManager = ({
   children,
   options,
   network,
@@ -32,5 +32,3 @@ const NetworkManager = ({
     </WalletsContext.Provider>
   )
 }
-
-export default NetworkManager

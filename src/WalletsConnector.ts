@@ -2,13 +2,13 @@ import Web3 from 'web3'
 
 import {
   IChainToAccounts,
+  IChainType,
   IChainWithAccount,
   IProviderOptions,
   SimpleFunction,
 } from './helpers'
 import { EventController } from './controllers'
-import WalletConnect from './index'
-import { IChainType } from './example/helpers/enums'
+import { WalletConnect } from './core'
 
 export enum WALLETS_EVENTS {
   ACCOUNTS = 'ACCOUNTS',
@@ -36,11 +36,11 @@ export class WalletsConnector {
 
     connector
       .connect()
-      .then((provider) => {
+      .then((provider: any) => {
         this.web3 = new Web3(provider)
         return provider.enable()
       })
-      .then((ethAccounts) => {
+      .then((ethAccounts: string[]) => {
         return this.loadAccounts(ethAccounts)
       })
 
