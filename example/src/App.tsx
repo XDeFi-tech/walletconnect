@@ -1,8 +1,9 @@
-import * as React from 'react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import WalletConnect from '@walletconnect/web3-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import NetworkManager, { IProviderOptions } from 'wallets-connector'
+
+import 'wallets-connector/dist/index.css'
 
 import MyApp from './MyApp'
 
@@ -12,16 +13,16 @@ const getProviderOptions = (): IProviderOptions => {
     walletconnect: {
       package: WalletConnect,
       options: {
-        infuraId,
-      },
+        infuraId
+      }
     },
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
         appName: 'Coinbase Example App',
-        infuraId,
-      },
-    },
+        infuraId
+      }
+    }
   }
   return providerOptions
 }
@@ -29,7 +30,7 @@ const getProviderOptions = (): IProviderOptions => {
 function App() {
   const [options] = useState(() => getProviderOptions())
   return (
-    <NetworkManager options={options} network="mainnet" cacheEnabled={true}>
+    <NetworkManager options={options} network='mainnet' cacheEnabled={true}>
       <MyApp />
     </NetworkManager>
   )

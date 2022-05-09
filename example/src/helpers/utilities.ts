@@ -1,8 +1,5 @@
 import * as ethUtil from 'ethereumjs-util'
 
-import { apiGetGasPrices, apiGetAccountNonce } from './api'
-import { convertAmountToRawNumber, convertStringToHex } from './bignumber'
-
 export function capitalize(string: string): string {
   return string
     .split(' ')
@@ -122,49 +119,6 @@ export function recoverPersonalSignature(sig: string, msg: string): string {
   const hash = hashPersonalMessage(msg)
   const signer = recoverPublicKey(sig, hash)
   return signer
-}
-
-export async function formatTestTransaction(address: string, chainId: number) {
-  // from
-  const from = address
-
-  // to
-  const to = address
-
-  // nonce
-  const _nonce = await apiGetAccountNonce(address, chainId)
-  const nonce = sanitizeHex(convertStringToHex(_nonce))
-
-  // gasPrice
-  const gasPrices = await apiGetGasPrices()
-  const _gasPrice = gasPrices.slow.price
-  const gasPrice = sanitizeHex(
-    convertStringToHex(convertAmountToRawNumber(_gasPrice, 9))
-  )
-
-  // gasLimit
-  const _gasLimit = 21000
-  const gasLimit = sanitizeHex(convertStringToHex(_gasLimit))
-
-  // value
-  const _value = 0
-  const value = sanitizeHex(convertStringToHex(_value))
-
-  // data
-  const data = '0x'
-
-  // test transaction
-  const tx = {
-    from,
-    to,
-    nonce,
-    gasPrice,
-    gasLimit,
-    value,
-    data,
-  }
-
-  return tx
 }
 
 export function isObject(obj: any): boolean {

@@ -1,5 +1,5 @@
-node_modules/
+build/
 dist/
-extension/
-.yarn/
-tests/
+node_modules/
+.snapshots/
+*.min.js
