@@ -162,8 +162,5 @@
     "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "5.1.4",
     "ts-loader": "^9.3.0"
-  },
-  "dependencies": {
-    "wallets-connector": "file:.."
   }
 }
