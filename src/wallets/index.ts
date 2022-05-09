@@ -6,9 +6,9 @@ import {
   IChainWithAccount,
   IProviderOptions,
   SimpleFunction,
-} from './helpers'
-import { EventController } from './controllers'
-import { WalletConnect } from './core'
+} from '../helpers'
+import { EventController } from '../controllers'
+import { WalletConnect } from '../core'
 
 export enum WALLETS_EVENTS {
   ACCOUNTS = 'ACCOUNTS',

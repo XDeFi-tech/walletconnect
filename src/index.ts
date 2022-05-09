@@ -3,7 +3,6 @@ export * from './constants'
 export * from './controllers'
 export * from './providers'
 export * from './helpers'
-export * from './WalletsConnector'
-import { NetworkManager } from './NetworkManager'
+import { NetworkManager } from './manager'
 
 export default NetworkManager

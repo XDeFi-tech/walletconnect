@@ -1,9 +1,10 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-import { WALLETS_EVENTS } from '../WalletsConnector'
-import { WalletsContext } from '../NetworkManager'
-import { IChainWithAccount } from '../helpers'
+import { WALLETS_EVENTS } from 'wallets-connector'
+import { WalletsContext } from 'wallets-connector'
+import { IChainWithAccount } from 'wallets-connector'
+import { IChainType } from 'wallets-connector'
 
 import Button from './components/Button'
 import Column from './components/Column'
@@ -12,7 +13,6 @@ import Header from './components/Header'
 import { fonts } from './styles'
 import { SIGN } from './constants'
 import { hashPersonalMessage } from './helpers/utilities'
-import { IChainType } from './helpers/enums'
 
 const SLayout = styled.div`
   position: relative;

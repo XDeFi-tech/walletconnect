@@ -2,8 +2,8 @@ import * as React from 'react'
 import styled from 'styled-components'
 
 import { IProviderInfo, IProviderUserOptions } from '../helpers'
-import { WALLETS_EVENTS } from '../WalletsConnector'
-import { WalletsContext } from '../NetworkManager'
+import { WalletsContext } from '../manager'
+import { WALLETS_EVENTS } from '../wallets'
 
 const SIcon = styled.div`
   width: 45px;

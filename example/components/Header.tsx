@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 
 import { IChainWithAccount, IProviderInfo } from '../../helpers'
-import { WALLETS_EVENTS } from '../../WalletsConnector'
-import { WalletsContext } from '../../NetworkManager'
+import { WALLETS_EVENTS } from 'wallets-connector'
+import { WalletsContext } from 'wallets-connector'
 import { transitions } from '../styles'
 
 import Banner from './Banner'

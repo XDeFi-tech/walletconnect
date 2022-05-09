@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from 'react'
 
-import { Wallets } from './index'
-import { WalletsConnector } from './WalletsConnector'
-import { IProviderOptions } from './helpers'
+import { Wallets } from '../index'
+import { WalletsConnector } from '../wallets'
+import { IProviderOptions } from '../helpers'
 
 export const WalletsContext = createContext<WalletsConnector | null>(null)
 
