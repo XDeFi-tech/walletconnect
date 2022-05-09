@@ -1,7 +1,6 @@
 {
   "name": "wallets-connector",
   "version": "0.1.0",
-  "author": "Web3Modal <web3modal.com>",
   "license": "MIT",
   "main": "dist/index.js",
   "unpkg": "dist/index.js",
@@ -15,7 +14,6 @@
     "dist"
   ],
   "scripts": {
-    "start": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts,.tsx",
