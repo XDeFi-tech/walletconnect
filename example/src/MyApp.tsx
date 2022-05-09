@@ -1,10 +1,11 @@
 import * as React from 'react'
 import styled from 'styled-components'
-
-import { WALLETS_EVENTS } from 'wallets-connector'
-import { WalletsContext } from 'wallets-connector'
-import { IChainWithAccount } from 'wallets-connector'
-import { IChainType } from 'wallets-connector'
+import {
+  WALLETS_EVENTS,
+  IChainType,
+  WalletsContext,
+  IChainWithAccount,
+} from 'wallets-connector'
 
 import Button from './components/Button'
 import Column from './components/Column'

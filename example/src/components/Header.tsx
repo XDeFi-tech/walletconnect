@@ -1,13 +1,16 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
+import {
+  IChainWithAccount,
+  IProviderInfo,
+  WALLETS_EVENTS,
+  WalletsContext,
+} from 'wallets-connector'
 
-import { IChainWithAccount, IProviderInfo } from 'wallets-connector'
-import { WALLETS_EVENTS } from 'wallets-connector'
-import { WalletsContext } from 'wallets-connector'
+import { transitions } from '../styles'
 
 import Banner from './Banner'
-import { transitions } from '../styles'
 
 const SHeader = styled.div`
   margin-top: -1px;

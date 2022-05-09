@@ -2,11 +2,11 @@ import Web3 from 'web3'
 
 import {
   IChainToAccounts,
-  IChainType,
   IChainWithAccount,
   IProviderOptions,
   SimpleFunction,
 } from '../helpers'
+import { IChainType } from '../constants'
 import { EventController } from '../controllers'
 import { WalletConnect } from '../core'
 

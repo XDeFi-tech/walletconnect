@@ -26,8 +26,8 @@ import {
   findMatchingRequiredOptions,
   IProviderOption,
   IChainToAccounts,
-  IChainType,
 } from '../helpers'
+import { IChainType } from '../constants'
 
 import { EventController } from './events'
 
