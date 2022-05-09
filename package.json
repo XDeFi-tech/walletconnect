@@ -150,6 +150,7 @@
     "web-vitals": "^2.1.4",
     "web3": "^1.7.3",
     "webpack": "4.44.2",
-    "webpack-cli": "^3.2.1"
+    "webpack-cli": "^3.2.1",
+    "tslib": "^2.3.1"
   }
 }

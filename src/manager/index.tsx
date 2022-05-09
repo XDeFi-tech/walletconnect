@@ -1,10 +1,10 @@
-import { createContext, useEffect, useState } from 'react'
+import * as React from 'react'
 
 import { Wallets } from '../index'
 import { WalletsConnector } from '../wallets'
 import { IProviderOptions } from '../helpers'
 
-export const WalletsContext = createContext<WalletsConnector | null>(null)
+export const WalletsContext = React.createContext<WalletsConnector | null>(null)
 
 export const NetworkManager = ({
   children,
@@ -17,11 +17,11 @@ export const NetworkManager = ({
   network?: string
   cacheEnabled?: boolean
 }) => {
-  const [c, setC] = useState<WalletsConnector>(
+  const [c, setC] = React.useState<WalletsConnector>(
     () => new WalletsConnector(options, network, cacheEnabled)
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     setC(new WalletsConnector(options, network, cacheEnabled))
   }, [options, network, cacheEnabled])
 
