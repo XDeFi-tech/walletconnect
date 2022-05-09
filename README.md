@@ -32,12 +32,12 @@
 ```
 
 ```
-  const context = React.useContext(WalletsContext)
+  const context = useContext(WalletsContext)
 
-  const [current, setCurrentProvider] = React.useState<IProviderInfo>()
-  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
+  const [current, setCurrentProvider] = useState<IProviderInfo>()
+  const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context) {
       context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
         setCurrentProvider(provider)

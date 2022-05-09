@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
   WALLETS_EVENTS,
@@ -64,11 +64,11 @@ const INITIAL_STATE: IAppState = {
 }
 
 const MyApp = () => {
-  const context = React.useContext(WalletsContext)
+  const context = useContext(WalletsContext)
 
-  const [state, setState] = React.useState<IAppState>(INITIAL_STATE)
+  const [state, setState] = useState<IAppState>(INITIAL_STATE)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context && context.connector.cachedProvider) {
       onConnect()
     }
@@ -97,9 +97,9 @@ const MyApp = () => {
     }
   }
 
-  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
+  const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context) {
       context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
         setAccounts(newList)

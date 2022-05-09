@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
@@ -80,12 +80,12 @@ interface IHeaderProps {
 
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
-  const context = React.useContext(WalletsContext)
+  const context = useContext(WalletsContext)
 
-  const [current, setCurrentProvider] = React.useState<IProviderInfo>()
-  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
+  const [current, setCurrentProvider] = useState<IProviderInfo>()
+  const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context) {
       context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
         setCurrentProvider(provider)

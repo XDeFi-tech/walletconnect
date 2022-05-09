@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import styled from 'styled-components'
 
 import { IProviderInfo, IProviderUserOptions } from '../helpers'
@@ -91,14 +91,12 @@ export function Provider(props: IProviderProps) {
   const { name, logo, description, onClick, chains } = provider
   const { ...otherProps } = props
 
-  const context = React.useContext(WalletsContext)
+  const context = useContext(WalletsContext)
 
-  const [current, setCurrentProvider] = React.useState<IProviderInfo | null>(
-    null
-  )
-  const [injectedChains, setInjectedChains] = React.useState<string[]>([])
+  const [current, setCurrentProvider] = useState<IProviderInfo | null>(null)
+  const [injectedChains, setInjectedChains] = useState<string[]>([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context) {
       context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
         setCurrentProvider(provider)
@@ -110,9 +108,9 @@ export function Provider(props: IProviderProps) {
     }
   }, [context])
 
-  const [selectedChains, setChains] = React.useState<any>({})
+  const [selectedChains, setChains] = useState<any>({})
 
-  const supportedChains = React.useMemo(() => {
+  const supportedChains = useMemo(() => {
     return chains ? Object.keys(chains) : []
   }, [chains])
 
