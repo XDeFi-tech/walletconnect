@@ -1,54 +1,59 @@
-# Wallets Connector
+# wallets-connector
 
+## Install
+
+```bash
+yarn add wallets-connector
 ```
-  const getProviderOptions = (): IProviderOptions => {
-    const infuraId = 'blablaid'
-    const providerOptions = {
-      walletconnect: {
-        package: WalletConnect,
-        options: {
-          infuraId,
-        },
-      },
-      coinbasewallet: {
-        package: CoinbaseWalletSDK,
-        options: {
-          appName: 'Coinbase Example App',
-          infuraId,
-        },
-      },
+
+## Usage
+
+```tsx
+const getProviderOptions = (): IProviderOptions => {
+  const infuraId = 'blablaid'
+  const providerOptions = {
+    walletconnect: {
+      package: WalletConnect,
+      options: {
+        infuraId
+      }
+    },
+    coinbasewallet: {
+      package: CoinbaseWalletSDK,
+      options: {
+        appName: 'Coinbase Example App',
+        infuraId
+      }
     }
-    return providerOptions
   }
+  return providerOptions
+}
 
-  function App() {
-    const [options] = useState(() => getProviderOptions())
-    return (
-      <NetworkManager options={options}>
-        <MyApp />
-      </NetworkManager>
-    )
-  }
+function App() {
+  const [options] = useState(() => getProviderOptions())
+  return (
+    <NetworkManager options={options}>
+      <MyApp />
+    </NetworkManager>
+  )
+}
 ```
 
-```
-  const context = React.useContext(WalletsContext)
+```tsx
+const context = useContext(WalletsContext)
 
-  const [current, setCurrentProvider] = React.useState<IProviderInfo>()
-  const [accounts, setAccounts] = React.useState<IChainWithAccount>({})
+const [current, setCurrentProvider] = useState<IProviderInfo>()
+const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
-  React.useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-        setCurrentProvider(provider)
-      })
+useEffect(() => {
+  if (context) {
+    context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
+      setCurrentProvider(provider)
+    })
 
-      context.on(
-        WALLETS_EVENTS.ACCOUNTS,
-        (newList: IChainWithAccount) => {
-          setAccounts(newList)
-        }
-      )
-    }
-  }, [context])
+    context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
+      setAccounts(newList)
+    })
+  }
+}, [context])
 ```
