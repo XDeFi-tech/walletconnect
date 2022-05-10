@@ -1,4 +1,3 @@
-import React from 'react'
 import { IAssetData } from '../helpers/types'
 
 import Column from './Column'
