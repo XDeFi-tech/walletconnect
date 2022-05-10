@@ -105,7 +105,11 @@ const Header = (props: IHeaderProps) => {
       <SAddress connected={connected}>
         {connected ? (
           <Fragment>
-            {current.chains ? <RenderChains accounts={accounts} /> : 'Ethereum'}
+            {current && current.chains ? (
+              <RenderChains accounts={accounts} />
+            ) : (
+              'Ethereum'
+            )}
           </Fragment>
         ) : (
           'Not Connected'

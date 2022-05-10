@@ -3,8 +3,6 @@ import WalletConnect from '@walletconnect/web3-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import NetworkManager, { IProviderOptions } from 'wallets-connector'
 
-import 'wallets-connector/dist/index.css'
-
 import MyApp from './MyApp'
 
 const getProviderOptions = (): IProviderOptions => {

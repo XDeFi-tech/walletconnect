@@ -1,10 +1,10 @@
-import { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
   WALLETS_EVENTS,
   IChainType,
   WalletsContext,
-  IChainWithAccount,
+  IChainWithAccount
 } from 'wallets-connector'
 
 import Button from './components/Button'
@@ -60,7 +60,7 @@ interface IAppState {
 }
 
 const INITIAL_STATE: IAppState = {
-  provider: null,
+  provider: null
 }
 
 const MyApp = () => {
@@ -77,7 +77,7 @@ const MyApp = () => {
 
   const onConnect = async () => {
     if (!context) {
-      return null
+      return
     }
 
     const provider = await context.connector.connect()
@@ -86,7 +86,7 @@ const MyApp = () => {
 
     setState({
       ...state,
-      provider,
+      provider
     })
   }
 
