@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect, useContext, useMemo } from 'react'
+import { useState, useEffect, useContext, useMemo, Fragment } from 'react'
 import styled from 'styled-components'
 
 import { IProviderInfo, IProviderUserOptions } from '../helpers'
@@ -138,30 +138,26 @@ export function Provider(props: IProviderProps) {
 
         {chains ? 'Cross chain' : 'Only etherum'}
 
-        <>
-          <>
-            {supportedChains.length ? (
-              <>
-                <STitle>Select chain:</STitle>
+        {supportedChains.length ? (
+          <Fragment>
+            <STitle>Select chain:</STitle>
 
-                {supportedChains.map((i) => {
-                  const isInjected =
-                    name === current?.name && injectedChains.indexOf(i) !== -1
+            {supportedChains.map((i) => {
+              const isInjected =
+                name === current?.name && injectedChains.indexOf(i) !== -1
 
-                  return (
-                    <SButton
-                      key={i}
-                      disabled={isInjected}
-                      onClick={() => toggleChain(i)}
-                    >
-                      {selectedChains[i] ? 'Delete' : 'Add'} {i}
-                    </SButton>
-                  )
-                })}
-              </>
-            ) : null}
-          </>
-        </>
+              return (
+                <SButton
+                  key={i}
+                  disabled={isInjected}
+                  onClick={() => toggleChain(i)}
+                >
+                  {selectedChains[i] ? 'Delete' : 'Add'} {i}
+                </SButton>
+              )
+            })}
+          </Fragment>
+        ) : null}
 
         <SButton onClick={() => onClick(Object.keys(selectedChains))}>
           Connect

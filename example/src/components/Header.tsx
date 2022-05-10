@@ -1,11 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, Fragment } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
   IChainWithAccount,
   IProviderInfo,
   WALLETS_EVENTS,
-  WalletsContext,
+  WalletsContext
 } from 'wallets-connector'
 
 import { transitions } from '../styles'
@@ -104,9 +104,9 @@ const Header = (props: IHeaderProps) => {
       {current ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       <SAddress connected={connected}>
         {connected ? (
-          <>
+          <Fragment>
             {current.chains ? <RenderChains accounts={accounts} /> : 'Ethereum'}
-          </>
+          </Fragment>
         ) : (
           'Not Connected'
         )}{' '}
@@ -123,19 +123,19 @@ const Header = (props: IHeaderProps) => {
 const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
   console.log('accounts', accounts)
   return (
-    <>
+    <Fragment>
       {Object.keys(accounts).map((chain: string) => (
         <div key={chain}>
           {chain}: {accounts[chain].join(',')}
         </div>
       ))}
-    </>
+    </Fragment>
   )
 }
 
 Header.propTypes = {
   killSession: PropTypes.func.isRequired,
-  address: PropTypes.string,
+  address: PropTypes.string
 }
 
 export default Header
