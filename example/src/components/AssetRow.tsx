@@ -1,9 +1,9 @@
-import * as React from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import {
   handleSignificantDecimals,
-  convertAmountFromRawNumber,
+  convertAmountFromRawNumber
 } from '../helpers/bignumber'
 
 const SAssetRow = styled.div`

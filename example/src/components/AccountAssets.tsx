@@ -1,5 +1,4 @@
-import * as React from 'react'
-
+import React from 'react'
 import { IAssetData } from '../helpers/types'
 
 import Column from './Column'
@@ -14,14 +13,14 @@ const AccountAssets = (props: any) => {
           symbol: 'xDAI',
           name: 'xDAI',
           decimals: '18',
-          balance: '0',
+          balance: '0'
         }
       : {
           contractAddress: '',
           name: 'Ethereum',
           symbol: 'ETH',
           decimals: '18',
-          balance: '0',
+          balance: '0'
         }
 
   let nativeCurrency: IAssetData = defaultNativeCurrency

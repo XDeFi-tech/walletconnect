@@ -1,5 +1,10 @@
-import * as React from 'react'
-import { useState, useEffect, useContext, useMemo, Fragment } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  Fragment
+} from 'react'
 import styled from 'styled-components'
 
 import { IProviderInfo, IProviderUserOptions } from '../helpers'

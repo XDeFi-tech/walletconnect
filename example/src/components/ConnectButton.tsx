@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 const SConnectButtonContainer = styled.div`
@@ -118,7 +118,7 @@ const ConnectButton = (props: IConnectButtonProps) => (
   <SConnectButtonContainer>
     <SConnectButton
       {...props}
-      type="button"
+      type='button'
       disabled={props.disabled}
       icon={props.icon}
     >
@@ -131,7 +131,7 @@ const ConnectButton = (props: IConnectButtonProps) => (
 
 ConnectButton.defaultProps = {
   disabled: false,
-  icon: null,
+  icon: null
 }
 
 export default ConnectButton

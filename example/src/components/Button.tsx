@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { colors, fonts, shadows, transitions } from '../styles'
@@ -120,7 +120,7 @@ const Button = (props: IButtonProps) => (
   >
     <SHoverLayer />
     <SIcon />
-    {props.fetching ? <Loader size={20} color="white" /> : props.children}
+    {props.fetching ? <Loader size={20} color='white' /> : props.children}
   </SButton>
 )
 
@@ -131,7 +131,7 @@ Button.defaultProps = {
   color: 'lightBlue',
   disabled: false,
   icon: null,
-  left: false,
+  left: false
 }
 
 export default Button

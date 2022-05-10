@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import * as PropTypes from 'prop-types'
 import styled from 'styled-components'
 
@@ -42,13 +42,13 @@ Column.propTypes = {
   children: PropTypes.node.isRequired,
   spanHeight: PropTypes.bool,
   maxWidth: PropTypes.number,
-  center: PropTypes.bool,
+  center: PropTypes.bool
 }
 
 Column.defaultProps = {
   spanHeight: false,
   maxWidth: 600,
-  center: false,
+  center: false
 }
 
 export default Column

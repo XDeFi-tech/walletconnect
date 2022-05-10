@@ -1,3 +1,4 @@
+import React from 'react'
 import * as React from 'react'
 import * as PropTypes from 'prop-types'
 import styled, { keyframes } from 'styled-components'
@@ -40,11 +41,11 @@ const Wrapper = (props: IWrapperProps) => {
 
 Wrapper.propTypes = {
   children: PropTypes.node.isRequired,
-  center: PropTypes.bool,
+  center: PropTypes.bool
 }
 
 Wrapper.defaultProps = {
-  center: false,
+  center: false
 }
 
 export default Wrapper
