@@ -4,7 +4,7 @@ import {
   IChainToAccounts,
   IChainWithAccount,
   IProviderOptions,
-  SimpleFunction,
+  SimpleFunction
 } from '../helpers'
 import { IChainType } from '../constants'
 import { EventController } from '../controllers'
@@ -13,7 +13,7 @@ import { WalletConnect } from '../core'
 export enum WALLETS_EVENTS {
   ACCOUNTS = 'ACCOUNTS',
   CURRENT_WALLET = 'CURRENT_WALLET',
-  CONNECTED_CHAINS = 'CONNECTED_CHAINS',
+  CONNECTED_CHAINS = 'CONNECTED_CHAINS'
 }
 
 export class WalletsConnector {
@@ -31,7 +31,7 @@ export class WalletsConnector {
     const connector = new WalletConnect({
       network,
       cacheProvider,
-      providerOptions,
+      providerOptions
     })
 
     connector
@@ -76,6 +76,21 @@ export class WalletsConnector {
   private setAccounts = (map: IChainWithAccount) => {
     this.accounts = map
     this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
+  }
+
+  public getBalance = async (chain: IChainType = IChainType.ethereum) => {
+    if (!this.web3) {
+      return 0
+    }
+
+    switch (chain) {
+      case IChainType.ethereum: {
+        return this.web3.eth.getBalance(this.accounts[chain][0])
+      }
+      default: {
+        throw Error('Not supported chain for loading balance')
+      }
+    }
   }
 
   public disconnect = () => {
@@ -132,14 +147,14 @@ export class WalletsConnector {
   public on = (event: string, callback: SimpleFunction) => {
     this.eventController.on({
       event,
-      callback,
+      callback
     })
   }
 
   public off(event: string, callback?: SimpleFunction): void {
     this.eventController.off({
       event,
-      callback,
+      callback
     })
   }
 
