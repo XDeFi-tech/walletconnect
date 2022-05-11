@@ -1,7 +1,6 @@
-import React, { useContext, useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-
-import { WalletsContext } from '../manager'
+import { useWalletsOptions } from '../hooks'
 
 import { Provider } from './Provider'
 
@@ -22,11 +21,7 @@ const SCard = styled.div<IModalCardStyleProps>`
 `
 
 export const Wallets = () => {
-  const context = useContext(WalletsContext)
-
-  const userOptions = useMemo(() => {
-    return context ? context.connector.getUserOptions() : []
-  }, [context])
+  const userOptions = useWalletsOptions()
 
   return (
     <SCard>
