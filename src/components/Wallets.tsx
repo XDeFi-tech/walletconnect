@@ -21,7 +21,7 @@ const SCard = styled.div<IModalCardStyleProps>`
 `
 
 export const Wallets = () => {
-  const userOptions = useWalletsOptions()
+  const { providers: userOptions } = useWalletsOptions()
 
   return (
     <SCard>

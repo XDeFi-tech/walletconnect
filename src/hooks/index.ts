@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useMemo } from 'react'
+import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import { IChainWithAccount, IProviderInfo } from '../helpers'
 import { WalletsContext } from '../manager'
 import { WALLETS_EVENTS } from '../wallets'
@@ -46,7 +46,16 @@ export const useConnectedAccounts = () => {
 export const useWalletsOptions = () => {
   const context = useContext(WalletsContext)
 
-  return useMemo(() => {
+  const providers = useMemo(() => {
     return context ? context.connector.getUserOptions() : []
   }, [context])
+
+  const onDisconnect = useCallback(() => {
+    return context?.disconnect()
+  }, [context])
+
+  return {
+    providers,
+    onDisconnect
+  }
 }
