@@ -10,12 +10,14 @@ export const NetworkManager = ({
   children,
   options,
   network,
-  cacheEnabled
+  cacheEnabled,
+  showCustomConnector = false
 }: {
   children: JSX.Element
   options: IProviderOptions
   network?: string
   cacheEnabled?: boolean
+  showCustomConnector?: boolean
 }) => {
   const [c, setC] = useState<WalletsConnector>(
     () => new WalletsConnector(options, network, cacheEnabled)
@@ -28,7 +30,7 @@ export const NetworkManager = ({
   return (
     <WalletsContext.Provider value={c}>
       <Fragment>
-        <Wallets />
+        {showCustomConnector ? <Wallets /> : null}
         {children}
       </Fragment>
     </WalletsContext.Provider>

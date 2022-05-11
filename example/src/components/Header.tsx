@@ -1,12 +1,7 @@
-import { useState, useContext, useEffect, Fragment } from 'react'
+import { Fragment } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
-import {
-  IChainWithAccount,
-  IProviderInfo,
-  WALLETS_EVENTS,
-  WalletsContext
-} from 'wallets-connector'
+import { IChainWithAccount, useWalletsConnector } from 'wallets-connector'
 
 import { transitions } from '../styles'
 
@@ -80,32 +75,18 @@ interface IHeaderProps {
 
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
-  const context = useContext(WalletsContext)
 
-  const [current, setCurrentProvider] = useState<IProviderInfo>()
-  const [accounts, setAccounts] = useState<IChainWithAccount>({})
+  const { provider, accounts } = useWalletsConnector()
 
-  useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-        setCurrentProvider(provider)
-      })
-
-      context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
-        setAccounts(newList)
-      })
-    }
-  }, [context])
-
-  const connected = !!current
+  const connected = !!provider
 
   return (
     <SHeader>
-      {current ? <SActiveChain>Connected</SActiveChain> : <Banner />}
+      {provider ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       <SAddress connected={connected}>
         {connected ? (
           <Fragment>
-            {current && current.chains ? (
+            {provider && provider.chains ? (
               <RenderChains accounts={accounts} />
             ) : (
               'Ethereum'

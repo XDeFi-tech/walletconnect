@@ -1,10 +1,9 @@
 import { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
-  WALLETS_EVENTS,
   IChainType,
-  WalletsContext,
-  IChainWithAccount
+  useConnectedAccounts,
+  WalletsContext
 } from 'wallets-connector'
 
 import Button from './components/Button'
@@ -97,15 +96,7 @@ const MyApp = () => {
     }
   }
 
-  const [accounts, setAccounts] = useState<IChainWithAccount>({})
-
-  useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
-        setAccounts(newList)
-      })
-    }
-  }, [context])
+  const accounts = useConnectedAccounts()
 
   const sign = async (chain: IChainType) => {
     if (!context) {

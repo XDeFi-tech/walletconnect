@@ -42,18 +42,7 @@ function App() {
 ```tsx
 const context = useContext(WalletsContext)
 
-const [current, setCurrentProvider] = useState<IProviderInfo>()
-const [accounts, setAccounts] = useState<IChainWithAccount>({})
+const { provider, accounts } = useWalletsConnector()
 
-useEffect(() => {
-  if (context) {
-    context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-      setCurrentProvider(provider)
-    })
-
-    context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
-      setAccounts(newList)
-    })
-  }
-}, [context])
+const accounts = useConnectedAccounts()
 ```

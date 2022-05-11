@@ -1,15 +1,8 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useMemo,
-  Fragment
-} from 'react'
+import React, { useState, useMemo, Fragment } from 'react'
 import styled from 'styled-components'
 
-import { IProviderInfo, IProviderUserOptions } from '../helpers'
-import { WalletsContext } from '../manager'
-import { WALLETS_EVENTS } from '../wallets'
+import { IProviderUserOptions } from '../helpers'
+import { useWalletsConnector } from '../hooks'
 
 const SIcon = styled.div`
   width: 45px;
@@ -97,23 +90,7 @@ export function Provider(props: IProviderProps) {
   const { name, logo, description, onClick, chains } = provider
   const { ...otherProps } = props
 
-  const context = useContext(WalletsContext)
-
-  const [current, setCurrentProvider] = useState<IProviderInfo | null>(null)
-  const [injectedChains, setInjectedChains] = useState<string[]>([])
-
-  useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-        setCurrentProvider(provider)
-      })
-
-      context.on(WALLETS_EVENTS.CONNECTED_CHAINS, (newList: string[]) => {
-        setInjectedChains(newList)
-      })
-    }
-  }, [context])
-
+  const { provider: current, injectedChains } = useWalletsConnector()
   const [selectedChains, setChains] = useState<any>({})
 
   const supportedChains = useMemo(() => {

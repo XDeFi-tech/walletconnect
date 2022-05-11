@@ -4,6 +4,7 @@ export * from './controllers'
 export * from './providers'
 export * from './helpers'
 export * from './wallets'
+export * from './hooks'
 export { WalletsContext } from './manager'
 
 import { NetworkManager } from './manager'
