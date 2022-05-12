@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import WalletConnect from '@walletconnect/web3-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import NetworkManager, { IProviderOptions } from 'wallets-connector'
@@ -28,7 +28,12 @@ const getProviderOptions = (): IProviderOptions => {
 function App() {
   const [options] = useState(() => getProviderOptions())
   return (
-    <NetworkManager options={options} network='mainnet' cacheEnabled={true}>
+    <NetworkManager
+      options={options}
+      network='mainnet'
+      cacheEnabled={true}
+      showCustomConnector
+    >
       <MyApp />
     </NetworkManager>
   )

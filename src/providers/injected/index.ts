@@ -43,7 +43,7 @@ export const FALLBACK: IProviderInfo = {
   name: 'Web3',
   logo: Web3DefaultLogo,
   type: 'injected',
-  check: 'isWeb3',
+  check: 'isWeb3'
 }
 
 export const METAMASK: IProviderInfo = {
@@ -51,7 +51,7 @@ export const METAMASK: IProviderInfo = {
   name: 'MetaMask',
   logo: MetaMaskLogo,
   type: 'injected',
-  check: 'isMetaMask',
+  check: 'isMetaMask'
 }
 
 export const SAFE: IProviderInfo = {
@@ -59,7 +59,7 @@ export const SAFE: IProviderInfo = {
   name: 'Safe',
   logo: SafeLogo,
   type: 'injected',
-  check: 'isSafe',
+  check: 'isSafe'
 }
 
 export const NIFTY: IProviderInfo = {
@@ -67,7 +67,7 @@ export const NIFTY: IProviderInfo = {
   name: 'Nifty',
   logo: NiftyWalletLogo,
   type: 'injected',
-  check: 'isNiftyWallet',
+  check: 'isNiftyWallet'
 }
 
 export const DAPPER: IProviderInfo = {
@@ -75,7 +75,7 @@ export const DAPPER: IProviderInfo = {
   name: 'Dapper',
   logo: DapperLogo,
   type: 'injected',
-  check: 'isDapper',
+  check: 'isDapper'
 }
 
 export const OPERA: IProviderInfo = {
@@ -83,7 +83,7 @@ export const OPERA: IProviderInfo = {
   name: 'Opera',
   logo: OperaLogo,
   type: 'injected',
-  check: 'isOpera',
+  check: 'isOpera'
 }
 
 export const TRUST: IProviderInfo = {
@@ -91,7 +91,7 @@ export const TRUST: IProviderInfo = {
   name: 'Trust',
   logo: TrustLogo,
   type: 'injected',
-  check: 'isTrust',
+  check: 'isTrust'
 }
 
 export const COINBASE: IProviderInfo = {
@@ -99,7 +99,7 @@ export const COINBASE: IProviderInfo = {
   name: 'Coinbase',
   logo: CoinbaseLogo,
   type: 'injected',
-  check: 'isCoinbaseWallet',
+  check: 'isCoinbaseWallet'
 }
 
 export const CIPHER: IProviderInfo = {
@@ -107,7 +107,7 @@ export const CIPHER: IProviderInfo = {
   name: 'Cipher',
   logo: CipherLogo,
   type: 'injected',
-  check: 'isCipher',
+  check: 'isCipher'
 }
 
 export const IMTOKEN: IProviderInfo = {
@@ -115,7 +115,7 @@ export const IMTOKEN: IProviderInfo = {
   name: 'imToken',
   logo: imTokenLogo,
   type: 'injected',
-  check: 'isImToken',
+  check: 'isImToken'
 }
 
 export const STATUS: IProviderInfo = {
@@ -123,7 +123,7 @@ export const STATUS: IProviderInfo = {
   name: 'Status',
   logo: StatusLogo,
   type: 'injected',
-  check: 'isStatus',
+  check: 'isStatus'
 }
 
 export const TOKENARY: IProviderInfo = {
@@ -131,7 +131,7 @@ export const TOKENARY: IProviderInfo = {
   name: 'Tokenary',
   logo: TokenaryLogo,
   type: 'injected',
-  check: 'isTokenary',
+  check: 'isTokenary'
 }
 
 export const FRAMEINJECTED: IProviderInfo = {
@@ -139,7 +139,7 @@ export const FRAMEINJECTED: IProviderInfo = {
   name: 'Frame',
   logo: FrameLogo,
   type: 'injected',
-  check: 'isFrame',
+  check: 'isFrame'
 }
 
 export const LIQUALITY: IProviderInfo = {
@@ -147,7 +147,7 @@ export const LIQUALITY: IProviderInfo = {
   name: 'Liquality',
   logo: LiqualityLogo,
   type: 'injected',
-  check: 'isLiquality',
+  check: 'isLiquality'
 }
 
 export const BOLTX: IProviderInfo = {
@@ -155,7 +155,7 @@ export const BOLTX: IProviderInfo = {
   name: 'Bolt-X',
   logo: BoltXLogo,
   type: 'injected',
-  check: 'isBoltX',
+  check: 'isBoltX'
 }
 
 export const MATHWALLET: IProviderInfo = {
@@ -163,7 +163,7 @@ export const MATHWALLET: IProviderInfo = {
   name: 'Math Wallet',
   logo: MathWalletLogo,
   type: 'injected',
-  check: 'isMathWallet',
+  check: 'isMathWallet'
 }
 
 export const RWALLET: IProviderInfo = {
@@ -171,7 +171,7 @@ export const RWALLET: IProviderInfo = {
   name: 'rWallet',
   logo: RWalletLogo,
   type: 'injected',
-  check: 'isRWallet',
+  check: 'isRWallet'
 }
 
 export const XDEFI: IProviderInfo = {
@@ -224,8 +224,8 @@ export const XDEFI: IProviderInfo = {
               }
             )
           })
-        },
-      },
+        }
+      }
     },
     [IChainType.thorchain]: {
       methods: {
@@ -256,10 +256,82 @@ export const XDEFI: IProviderInfo = {
               }
             )
           })
-        },
-      },
+        }
+      }
     },
-  },
+    [IChainType.dogecoin]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    },
+    [IChainType.litecoin]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    },
+    [IChainType.bitcoincash]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    },
+    [IChainType.terra]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    }
+  }
 }
 
 export const BITPIE: IProviderInfo = {
@@ -267,7 +339,7 @@ export const BITPIE: IProviderInfo = {
   name: 'Bitpie',
   logo: BitpieLogo,
   type: 'injected',
-  check: 'isBitpie',
+  check: 'isBitpie'
 }
 
 export const CELOINJECTED: IProviderInfo = {
@@ -275,7 +347,7 @@ export const CELOINJECTED: IProviderInfo = {
   name: 'Celo extension wallet',
   logo: CeloExtensionWalletLogo,
   type: 'injected',
-  check: 'isCelo',
+  check: 'isCelo'
 }
 
 export const BLOCKWALLET: IProviderInfo = {
@@ -283,7 +355,7 @@ export const BLOCKWALLET: IProviderInfo = {
   name: 'BlockWallet',
   logo: BlockWalletLogo,
   type: 'injected',
-  check: 'isBlockWallet',
+  check: 'isBlockWallet'
 }
 
 export const TALLYINJECTED: IProviderInfo = {
@@ -291,7 +363,7 @@ export const TALLYINJECTED: IProviderInfo = {
   name: 'Tally',
   logo: TallyLogo,
   type: 'injected',
-  check: 'isTally',
+  check: 'isTally'
 }
 
 export const PORTAL: IProviderInfo = {
@@ -299,7 +371,7 @@ export const PORTAL: IProviderInfo = {
   name: 'Ripio Portal',
   logo: PortalLogo,
   type: 'injected',
-  check: 'isPortal',
+  check: 'isPortal'
 }
 
 export const SEQUENCEINJECTED: IProviderInfo = {
@@ -307,7 +379,7 @@ export const SEQUENCEINJECTED: IProviderInfo = {
   name: 'Sequence',
   logo: SequenceLogo,
   type: 'injected',
-  check: 'isSequence',
+  check: 'isSequence'
 }
 
 export const RABBY: IProviderInfo = {
@@ -315,7 +387,7 @@ export const RABBY: IProviderInfo = {
   name: 'Rabby',
   logo: RabbyLogo,
   type: 'injected',
-  check: 'isRabby',
+  check: 'isRabby'
 }
 
 export const BRAVE: IProviderInfo = {
@@ -323,5 +395,5 @@ export const BRAVE: IProviderInfo = {
   name: 'Brave',
   logo: BraveLogo,
   type: 'injected',
-  check: 'isBraveWallet',
+  check: 'isBraveWallet'
 }

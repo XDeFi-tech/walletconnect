@@ -1,7 +1,11 @@
-import { Fragment } from 'react'
+import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
-import { IChainWithAccount, useWalletsConnector } from 'wallets-connector'
+import {
+  IChainWithAccount,
+  useConnectedAccounts,
+  useWalletsConnector
+} from 'wallets-connector'
 
 import { transitions } from '../styles'
 
@@ -76,7 +80,8 @@ interface IHeaderProps {
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
-  const { provider, accounts } = useWalletsConnector()
+  const { provider } = useWalletsConnector()
+  const accounts = useConnectedAccounts()
 
   const connected = !!provider
 
