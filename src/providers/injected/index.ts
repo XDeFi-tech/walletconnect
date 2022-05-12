@@ -258,29 +258,6 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
-    }
-    /*[IChainType.dogecoin]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.xfi.dogecoin) {
-              reject([])
-              return
-            }
-
-            window.xfi.dogecoin.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        }
-      }
     },
     [IChainType.litecoin]: {
       methods: {
@@ -317,8 +294,31 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
+    },
+    [IChainType.dogecoin]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            if (!window.xfi.dogecoin) {
+              resolve([])
+              return
+            }
+
+            window.xfi.dogecoin.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
     }
-    [IChainType.terra]: {
+    /*[IChainType.terra]: {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
