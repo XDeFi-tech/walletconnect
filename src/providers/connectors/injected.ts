@@ -6,14 +6,14 @@ const ConnectToInjected = async () => {
       // @ts-ignore
       await provider.request({ method: 'eth_requestAccounts' })
     } catch (error) {
-      throw new Error('User Rejected')
+      console.log('User Rejected')
     }
   } else if (window.web3) {
     provider = window.web3.currentProvider
   } else if (window.celo) {
     provider = window.celo
   } else {
-    throw new Error('No Web3 Provider found')
+    console.log('No Web3 Provider found')
   }
   return provider
 }
