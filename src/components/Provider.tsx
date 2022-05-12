@@ -76,10 +76,6 @@ const SButton = styled.button`
   margin-top: 24px;
 `
 
-const STitle = styled.div`
-  margin: 16px 0;
-`
-
 interface IProviderProps {
   provider: IProviderUserOptions
 }
@@ -122,8 +118,6 @@ export function Provider(props: IProviderProps) {
 
         {supportedChains.length ? (
           <Fragment>
-            <STitle>Select chain:</STitle>
-
             {supportedChains.map((i) => {
               const isInjected =
                 name === current?.name && injectedChains.indexOf(i) !== -1

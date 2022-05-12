@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import {
   IChainType,
   useConnectedAccounts,
+  useSign,
   WalletsContext
 } from 'wallets-connector'
 
@@ -98,16 +99,15 @@ const MyApp = () => {
 
   const accounts = useConnectedAccounts()
 
+  const providerSign = useSign()
+
   const sign = async (chain: IChainType) => {
-    if (!context) {
-      return
-    }
     // test message
     const message = 'My email is john@doe.com - 1537836206101'
 
     // hash message
     const hash = hashPersonalMessage(message)
-    const result = await context.signMessage(chain, hash)
+    const result = await providerSign(chain, hash)
 
     alert(result)
   }

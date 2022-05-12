@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import { IChainType } from '../constants'
 import { IChainWithAccount, IProviderInfo } from '../helpers'
 import { WalletsContext } from '../manager'
 import { WALLETS_EVENTS } from '../wallets'
@@ -58,4 +59,21 @@ export const useWalletsOptions = () => {
     providers,
     onDisconnect
   }
+}
+
+export const useSign = () => {
+  const context = useContext(WalletsContext)
+  const sign = useCallback(
+    async (chainId: IChainType, hash: string) => {
+      if (!context) {
+        return
+      }
+
+      // hash message
+      return await context.signMessage(chainId, hash)
+    },
+    [context]
+  )
+
+  return sign
 }

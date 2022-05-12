@@ -258,12 +258,17 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
-    },
-    [IChainType.dogecoin]: {
+    }
+    /*[IChainType.dogecoin]: {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
-            window.xfi.bitcoin.request(
+            if (!window.xfi.dogecoin) {
+              reject([])
+              return
+            }
+
+            window.xfi.dogecoin.request(
               { method: 'request_accounts', params: [] },
               (error: any, accounts: any) => {
                 if (error) {
@@ -281,7 +286,7 @@ export const XDEFI: IProviderInfo = {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
-            window.xfi.bitcoin.request(
+            window.xfi.litecoin.request(
               { method: 'request_accounts', params: [] },
               (error: any, accounts: any) => {
                 if (error) {
@@ -299,25 +304,7 @@ export const XDEFI: IProviderInfo = {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
-            window.xfi.bitcoin.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.terra]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            window.xfi.bitcoin.request(
+            window.xfi.bitcoincash.request(
               { method: 'request_accounts', params: [] },
               (error: any, accounts: any) => {
                 if (error) {
@@ -331,6 +318,24 @@ export const XDEFI: IProviderInfo = {
         }
       }
     }
+    [IChainType.terra]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.terra.request(
+              { method: 'connect', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    }*/
   }
 }
 
