@@ -259,6 +259,24 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
+    [IChainType.binance]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            window.xfi.binance.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        }
+      }
+    },
     [IChainType.litecoin]: {
       methods: {
         getAccounts: () => {
