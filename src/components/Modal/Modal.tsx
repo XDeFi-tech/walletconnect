@@ -149,7 +149,7 @@ const BodyStyled = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 740px;
+  max-width: 840px;
   max-height: 720px;
   opacity: 1;
   background: #2b2b2b;
