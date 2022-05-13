@@ -1,17 +1,14 @@
-import WalletConnectLogo from '../logos/walletconnect-circle.svg'
-import PortisLogo from '../logos/portis.svg'
-import FortmaticLogo from '../logos/fortmatic.svg'
-import VenlyLogo from '../logos/venly.svg'
-import TorusLogo from '../logos/torus.svg'
-import AuthereumLogo from '../logos/authereum.svg'
-import BurnerWalletLogo from '../logos/burnerwallet.png'
-import MEWwallet from '../logos/mewwallet.png'
-import DcentWalletLogo from '../logos/dcentwallet.png'
-import BitskiLogo from '../logos/bitski.svg'
-import FrameLogo from '../logos/frame.svg'
-import BinanceChainWalletLogo from '../logos/binancechainwallet.svg'
-import CoinbaseWalletLogo from '../logos/coinbasewallet.svg'
-import SequenceLogo from '../logos/sequence.svg'
+import { ReactComponent as WalletConnectLogo } from '../logos/walletconnect-circle.svg'
+import { ReactComponent as PortisLogo } from '../logos/portis.svg'
+import { ReactComponent as FortmaticLogo } from '../logos/fortmatic.svg'
+import { ReactComponent as VenlyLogo } from '../logos/venly.svg'
+import { ReactComponent as TorusLogo } from '../logos/torus.svg'
+import { ReactComponent as AuthereumLogo } from '../logos/authereum.svg'
+import { ReactComponent as BitskiLogo } from '../logos/bitski.svg'
+import { ReactComponent as FrameLogo } from '../logos/frame.svg'
+import { ReactComponent as BinanceChainWalletLogo } from '../logos/binancechainwallet.svg'
+import { ReactComponent as CoinbaseWalletLogo } from '../logos/coinbasewallet.svg'
+import { ReactComponent as SequenceLogo } from '../logos/sequence.svg'
 import { IProviderInfo } from '../../helpers'
 
 export * from '../injected'
@@ -23,8 +20,8 @@ export const WALLETCONNECT: IProviderInfo = {
   type: 'qrcode',
   check: 'isWalletConnect',
   package: {
-    required: [['infuraId', 'rpc']],
-  },
+    required: [['infuraId', 'rpc']]
+  }
 }
 
 export const PORTIS: IProviderInfo = {
@@ -34,8 +31,8 @@ export const PORTIS: IProviderInfo = {
   type: 'web',
   check: 'isPortis',
   package: {
-    required: ['id'],
-  },
+    required: ['id']
+  }
 }
 
 export const FORTMATIC: IProviderInfo = {
@@ -45,8 +42,8 @@ export const FORTMATIC: IProviderInfo = {
   type: 'web',
   check: 'isFortmatic',
   package: {
-    required: ['key'],
-  },
+    required: ['key']
+  }
 }
 
 export const TORUS: IProviderInfo = {
@@ -54,7 +51,7 @@ export const TORUS: IProviderInfo = {
   name: 'Torus',
   logo: TorusLogo,
   type: 'web',
-  check: 'isTorus',
+  check: 'isTorus'
 }
 
 export const VENLY: IProviderInfo = {
@@ -64,8 +61,8 @@ export const VENLY: IProviderInfo = {
   type: 'web',
   check: 'isVenly',
   package: {
-    required: ['clientId'],
-  },
+    required: ['clientId']
+  }
 }
 
 export const AUTHEREUM: IProviderInfo = {
@@ -73,37 +70,7 @@ export const AUTHEREUM: IProviderInfo = {
   name: 'Authereum',
   logo: AuthereumLogo,
   type: 'web',
-  check: 'isAuthereum',
-}
-
-export const BURNERCONNECT: IProviderInfo = {
-  id: 'burnerconnect',
-  name: 'Burner Connect',
-  logo: BurnerWalletLogo,
-  type: 'web',
-  check: 'isBurnerProvider',
-}
-
-export const MEWCONNECT: IProviderInfo = {
-  id: 'mewconnect',
-  name: 'MEW wallet',
-  logo: MEWwallet,
-  type: 'qrcode',
-  check: 'isMEWconnect',
-  package: {
-    required: [['infuraId', 'rpc']],
-  },
-}
-
-export const DCENT: IProviderInfo = {
-  id: 'dcentwallet',
-  name: "D'CENT",
-  logo: DcentWalletLogo,
-  type: 'hardware',
-  check: 'isDcentWallet',
-  package: {
-    required: ['rpcUrl'],
-  },
+  check: 'isAuthereum'
 }
 
 export const BITSKI: IProviderInfo = {
@@ -113,8 +80,8 @@ export const BITSKI: IProviderInfo = {
   type: 'web',
   check: 'isBitski',
   package: {
-    required: ['clientId', 'callbackUrl'],
-  },
+    required: ['clientId', 'callbackUrl']
+  }
 }
 
 export const FRAME: IProviderInfo = {
@@ -122,7 +89,7 @@ export const FRAME: IProviderInfo = {
   name: 'Frame',
   logo: FrameLogo,
   type: 'web',
-  check: 'isFrameNative',
+  check: 'isFrameNative'
 }
 
 export const BINANCECHAINWALLET: IProviderInfo = {
@@ -130,7 +97,7 @@ export const BINANCECHAINWALLET: IProviderInfo = {
   name: 'Binance Chain',
   logo: BinanceChainWalletLogo,
   type: 'injected',
-  check: 'isBinanceChainWallet',
+  check: 'isBinanceChainWallet'
 }
 
 /**
@@ -143,8 +110,8 @@ export const WALLETLINK: IProviderInfo = {
   type: 'qrcode',
   check: 'isWalletLink',
   package: {
-    required: [['appName', 'infuraId', 'rpc']],
-  },
+    required: [['appName', 'infuraId', 'rpc']]
+  }
 }
 
 export const COINBASEWALLET: IProviderInfo = {
@@ -154,8 +121,8 @@ export const COINBASEWALLET: IProviderInfo = {
   type: 'injected',
   check: 'isWalletLink',
   package: {
-    required: [['appName', 'infuraId', 'rpc']],
-  },
+    required: [['appName', 'infuraId', 'rpc']]
+  }
 }
 
 export const SEQUENCE: IProviderInfo = {
@@ -163,5 +130,5 @@ export const SEQUENCE: IProviderInfo = {
   name: 'Sequence',
   logo: SequenceLogo,
   type: 'web',
-  check: 'isSequenceWeb',
+  check: 'isSequenceWeb'
 }

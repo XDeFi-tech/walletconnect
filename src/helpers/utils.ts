@@ -1,4 +1,5 @@
 import * as env from 'detect-browser'
+import ReactDOMServer from 'react-dom/server'
 
 import { providers, injected } from '../providers'
 
@@ -7,12 +8,19 @@ import {
   IInjectedProvidersMap,
   ChainData,
   RequiredOption,
-  CHAIN_DATA_LIST,
+  CHAIN_DATA_LIST
 } from './types'
+
+export function encodeSvg(reactElement: any) {
+  return (
+    'data:image/svg+xml,' +
+    escape(ReactDOMServer.renderToStaticMarkup(reactElement))
+  )
+}
 
 export function checkInjectedProviders(): IInjectedProvidersMap {
   const result: any = {
-    injectedAvailable: !!window.ethereum || !!window.web3,
+    injectedAvailable: !!window.ethereum || !!window.web3
   }
   if (result.injectedAvailable) {
     let fallbackProvider = true

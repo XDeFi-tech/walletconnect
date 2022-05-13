@@ -4,7 +4,8 @@ import * as PropTypes from 'prop-types'
 import {
   IChainWithAccount,
   useConnectedAccounts,
-  useWalletsConnector
+  useWalletsConnector,
+  WalletsModal
 } from 'wallets-connector'
 
 import { transitions } from '../styles'
@@ -73,6 +74,18 @@ const SDisconnect = styled.div<IHeaderStyle>`
   }
 `
 
+const BtnOpen = styled.button`
+  max-width: 154px;
+  width: 154px;
+  border-radius: 8px;
+  padding: 0 15px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`
+
 interface IHeaderProps {
   killSession: () => void
 }
@@ -98,7 +111,9 @@ const Header = (props: IHeaderProps) => {
             )}
           </Fragment>
         ) : (
-          'Not Connected'
+          <WalletsModal
+            trigger={(props: any) => <BtnOpen {...props}>Connect</BtnOpen>}
+          />
         )}{' '}
       </SAddress>
       <SActiveAccount>

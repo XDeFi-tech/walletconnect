@@ -1,31 +1,26 @@
 import { IProviderInfo } from '../../helpers'
 import { IChainType } from '../../constants'
-import Web3DefaultLogo from '../logos/web3-default.svg'
-import MetaMaskLogo from '../logos/metamask.svg'
-import SafeLogo from '../logos/safe.svg'
-import NiftyWalletLogo from '../logos/niftyWallet.png'
-import TrustLogo from '../logos/trust.svg'
-import DapperLogo from '../logos/dapper.png'
-import CoinbaseLogo from '../logos/coinbase.svg'
-import CipherLogo from '../logos/cipher.svg'
-import imTokenLogo from '../logos/imtoken.svg'
-import StatusLogo from '../logos/status.svg'
-import TokenaryLogo from '../logos/tokenary.png'
-import OperaLogo from '../logos/opera.svg'
-import FrameLogo from '../logos/frame.svg'
-import LiqualityLogo from '../logos/liquality.png'
-import BoltXLogo from '../logos/boltx.svg'
-import MathWalletLogo from '../logos/mathwallet.png'
-import RWalletLogo from '../logos/rwallet.svg'
-import BitpieLogo from '../logos/bitpie.svg'
-import XDEFILogo from '../logos/xdefi.svg'
-import CeloExtensionWalletLogo from '../logos/celoExtensionWallet.svg'
-import BlockWalletLogo from '../logos/blockwallet.svg'
-import TallyLogo from '../logos/tally.svg'
-import PortalLogo from '../logos/portal.svg'
-import SequenceLogo from '../logos/sequence.svg'
-import BraveLogo from '../logos/brave.svg'
-import RabbyLogo from '../logos/rabby.svg'
+import { ReactComponent as Web3DefaultLogo } from '../logos/web3-default.svg'
+import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
+import { ReactComponent as SafeLogo } from '../logos/safe.svg'
+import { ReactComponent as TrustLogo } from '../logos/trust.svg'
+import { ReactComponent as CoinbaseLogo } from '../logos/coinbase.svg'
+import { ReactComponent as CipherLogo } from '../logos/cipher.svg'
+import { ReactComponent as imTokenLogo } from '../logos/imtoken.svg'
+import { ReactComponent as StatusLogo } from '../logos/status.svg'
+import { ReactComponent as OperaLogo } from '../logos/opera.svg'
+import { ReactComponent as FrameLogo } from '../logos/frame.svg'
+import { ReactComponent as BoltXLogo } from '../logos/boltx.svg'
+import { ReactComponent as RWalletLogo } from '../logos/rwallet.svg'
+import { ReactComponent as BitpieLogo } from '../logos/bitpie.svg'
+import { ReactComponent as XDEFILogo } from '../logos/xdefi.svg'
+import { ReactComponent as CeloExtensionWalletLogo } from '../logos/celoExtensionWallet.svg'
+import { ReactComponent as BlockWalletLogo } from '../logos/blockwallet.svg'
+import { ReactComponent as TallyLogo } from '../logos/tally.svg'
+import { ReactComponent as PortalLogo } from '../logos/portal.svg'
+import { ReactComponent as SequenceLogo } from '../logos/sequence.svg'
+import { ReactComponent as BraveLogo } from '../logos/brave.svg'
+import { ReactComponent as RabbyLogo } from '../logos/rabby.svg'
 
 declare global {
   interface Window {
@@ -60,22 +55,6 @@ export const SAFE: IProviderInfo = {
   logo: SafeLogo,
   type: 'injected',
   check: 'isSafe'
-}
-
-export const NIFTY: IProviderInfo = {
-  id: 'injected',
-  name: 'Nifty',
-  logo: NiftyWalletLogo,
-  type: 'injected',
-  check: 'isNiftyWallet'
-}
-
-export const DAPPER: IProviderInfo = {
-  id: 'injected',
-  name: 'Dapper',
-  logo: DapperLogo,
-  type: 'injected',
-  check: 'isDapper'
 }
 
 export const OPERA: IProviderInfo = {
@@ -126,14 +105,6 @@ export const STATUS: IProviderInfo = {
   check: 'isStatus'
 }
 
-export const TOKENARY: IProviderInfo = {
-  id: 'injected',
-  name: 'Tokenary',
-  logo: TokenaryLogo,
-  type: 'injected',
-  check: 'isTokenary'
-}
-
 export const FRAMEINJECTED: IProviderInfo = {
   id: 'injected',
   name: 'Frame',
@@ -142,28 +113,12 @@ export const FRAMEINJECTED: IProviderInfo = {
   check: 'isFrame'
 }
 
-export const LIQUALITY: IProviderInfo = {
-  id: 'injected',
-  name: 'Liquality',
-  logo: LiqualityLogo,
-  type: 'injected',
-  check: 'isLiquality'
-}
-
 export const BOLTX: IProviderInfo = {
   id: 'boltx',
   name: 'Bolt-X',
   logo: BoltXLogo,
   type: 'injected',
   check: 'isBoltX'
-}
-
-export const MATHWALLET: IProviderInfo = {
-  id: 'injected',
-  name: 'Math Wallet',
-  logo: MathWalletLogo,
-  type: 'injected',
-  check: 'isMathWallet'
 }
 
 export const RWALLET: IProviderInfo = {

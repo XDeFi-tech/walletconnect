@@ -5,6 +5,7 @@
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "jsx": "react",
+    "baseUrl": ".",
     "sourceMap": true,
     "declaration": true,
     "esModuleInterop": true,

@@ -34,17 +34,27 @@ export class WalletsConnector {
       providerOptions
     })
 
-    connector
-      .connect()
-      .then((provider: any) => {
-        this.web3 = new Web3(provider)
-        return provider.enable()
-      })
-      .then((ethAccounts: string[]) => {
-        return this.loadAccounts(ethAccounts)
-      })
-
     this.connector = connector
+
+    this.connect()
+  }
+
+  private connect = () => {
+    try {
+      this.connector
+        .connect()
+        .then((provider: any) => {
+          this.web3 = new Web3(provider)
+          return provider.enable()
+        })
+        .then((ethAccounts: string[]) => {
+          return this.loadAccounts(ethAccounts)
+        })
+    } catch (e) {
+      console.log('Error', e)
+
+      setTimeout(() => this.connect(), 1000)
+    }
   }
 
   private loadAccounts = async (ethAccounts: string[]) => {

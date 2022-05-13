@@ -1,6 +1,5 @@
 import React, { Fragment, createContext, useState, useEffect } from 'react'
 
-import { Wallets } from '../index'
 import { WalletsConnector } from '../wallets'
 import { IProviderOptions } from '../helpers'
 
@@ -10,14 +9,12 @@ export const NetworkManager = ({
   children,
   options,
   network,
-  cacheEnabled,
-  showCustomConnector = false
+  cacheEnabled
 }: {
   children: JSX.Element
   options: IProviderOptions
   network?: string
   cacheEnabled?: boolean
-  showCustomConnector?: boolean
 }) => {
   const [c, setC] = useState<WalletsConnector>(
     () => new WalletsConnector(options, network, cacheEnabled)
@@ -29,10 +26,7 @@ export const NetworkManager = ({
 
   return (
     <WalletsContext.Provider value={c}>
-      <Fragment>
-        {showCustomConnector ? <Wallets /> : null}
-        {children}
-      </Fragment>
+      <Fragment>{children}</Fragment>
     </WalletsContext.Provider>
   )
 }

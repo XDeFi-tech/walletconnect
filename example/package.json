@@ -29,8 +29,11 @@
   },
   "devDependencies": {
     "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
+    "@toruslabs/torus-embed": "^1.22.6",
     "@types/styled-components": "^5.1.25",
     "@walletconnect/web3-provider": "^1.7.8",
+    "@web3modal/ledger-provider": "^1.0.0",
+    "@web3modal/trezor-provider": "^1.0.0",
     "styled-components": "^5.3.5"
   },
   "eslintConfig": {
