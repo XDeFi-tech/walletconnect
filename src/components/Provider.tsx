@@ -142,7 +142,9 @@ export function Provider(props: IProviderProps) {
       {!disabledByWallet && !needPrioritise ? <SName>{name}</SName> : null}
 
       {needPrioritise && <SPrioritise>Prioritise {name} wallet</SPrioritise>}
-      {disabledByWallet && <SPrioritise>Disable {name} wallet</SPrioritise>}
+      {disabledByWallet && (
+        <SPrioritise>Disable {disabledByWallet} wallet</SPrioritise>
+      )}
 
       {needInstall ? <SLink>Please, install {name}</SLink> : null}
     </SProviderWrapper>
