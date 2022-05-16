@@ -80,18 +80,9 @@ export const useWalletEvents = (
 
   useEffect(() => {
     if (context) {
-      onConnect &&
-        context.on(WALLETS_EVENTS.CONNECT, () => {
-          onConnect()
-        })
-      onClose &&
-        context.on(WALLETS_EVENTS.CLOSE, () => {
-          onClose()
-        })
-      onError &&
-        context.on(WALLETS_EVENTS.ERROR, (e: any) => {
-          onError(e)
-        })
+      onConnect && context.on(WALLETS_EVENTS.CONNECT, onConnect)
+      onClose && context.on(WALLETS_EVENTS.CLOSE, onClose)
+      onError && context.on(WALLETS_EVENTS.ERROR, onError)
     }
 
     return () => {
@@ -101,7 +92,7 @@ export const useWalletEvents = (
         context.off(WALLETS_EVENTS.ERROR, onError)
       }
     }
-  }, [onConnect, onClose])
+  }, [context, onConnect, onClose, onError])
 }
 
 export const useWalletsOptions = () => {

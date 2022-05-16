@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
+import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 
 import { IProviderUserOptions } from '../helpers'
@@ -68,8 +69,10 @@ interface IProviderProps {
 export function Provider(props: IProviderProps) {
   const { provider } = props
 
-  const { name, logo: El, onClick, chains } = provider
+  const { name, logo: El, chains, id } = provider
   const { ...otherProps } = props
+
+  const context = useContext(WalletsContext)
 
   const supportedChains = useMemo(() => {
     return chains ? Object.keys(chains) : []
@@ -78,7 +81,9 @@ export function Provider(props: IProviderProps) {
   return (
     <SProviderWrapper
       {...otherProps}
-      onClick={() => onClick(Object.keys(supportedChains))}
+      onClick={() =>
+        context && context.connector.connectTo(id, Object.keys(supportedChains))
+      }
     >
       <SIcon>
         <El />

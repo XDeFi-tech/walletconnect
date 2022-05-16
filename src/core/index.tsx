@@ -71,7 +71,7 @@ export class WalletConnect {
       await this.toggle()
     })
 
-  public connectTo = (id: string): Promise<any> =>
+  public connectTo = (id: string, chains: string[]): Promise<any> =>
     new Promise(async (resolve, reject) => {
       this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
       this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
@@ -85,7 +85,11 @@ export class WalletConnect {
           )
         )
       }
-      await this.providerController.connectTo(provider.id, provider.connector)
+      await this.providerController.connectTo(
+        provider.id,
+        provider.connector,
+        chains
+      )
     })
 
   public async toggle(): Promise<void> {
@@ -104,16 +108,19 @@ export class WalletConnect {
   }
 
   public on(event: string, callback: SimpleFunction): SimpleFunction {
+    console.log('on', event)
     this.eventController.on({
       event,
       callback
     })
 
-    return () =>
+    return () => {
+      console.log('off', event)
       this.eventController.off({
         event,
         callback
       })
+    }
   }
 
   public off(event: string, callback?: SimpleFunction): void {
@@ -124,6 +131,7 @@ export class WalletConnect {
   }
 
   public trigger(event: string, data: any = undefined): void {
+    console.log('triggered', event)
     this.eventController.trigger(event, data)
   }
 
@@ -133,6 +141,7 @@ export class WalletConnect {
 
   public clearCachedProvider(): void {
     this.providerController.clearCachedProvider()
+    this.trigger(WALLETS_EVENTS.CLOSE)
   }
 
   // --------------- PRIVATE METHODS --------------- //
