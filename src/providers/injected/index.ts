@@ -49,8 +49,14 @@ export const METAMASK: IProviderInfo = {
   check: 'isMetaMask',
   installationLink: 'https://metamask.io',
   disabledByWalletFunc: () => {
-    if (window.xfi && window.xfi.ethereum && window.xfi.ethereum.isXDEFI) {
-      return 'XDEFI'
+    if (window.xfi && window.xfi.info) {
+      const {
+        lastConfigChanges: { ethereumProvider }
+      } = window.xfi.info
+      const { inject, pretendMetamask } = ethereumProvider
+      if (inject && pretendMetamask) {
+        return 'XDEFI'
+      }
     }
 
     return undefined
@@ -145,8 +151,12 @@ export const XDEFI: IProviderInfo = {
   check: '__XDEFI',
   installationLink: 'https://metamask.io',
   needPrioritiseFunc: () => {
-    if (window.xfi && window.xfi.ethereum && !window.xfi.ethereum.isXDEFI) {
-      return true
+    if (window.xfi && window.xfi.info) {
+      const {
+        lastConfigChanges: { ethereumProvider }
+      } = window.xfi.info
+      const { inject, pretendMetamask } = ethereumProvider
+      return inject && !pretendMetamask
     }
 
     return false
