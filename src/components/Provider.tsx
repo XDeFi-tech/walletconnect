@@ -79,14 +79,33 @@ const SLink = styled.a`
   }
 `
 
+const SPrioritise = styled.a`
+  cursor: pointer;
+  margin-top: 14px;
+  color: #ffffff;
+  font-size: 16px;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 0;
+    margin-left: 4px;
+  }
+`
+
 interface IProviderProps {
   provider: IProviderUserOptions
 }
 
 export function Provider(props: IProviderProps) {
   const { provider } = props
-
-  const { name, logo: El, chains, id, installationLink } = provider
+  const {
+    name,
+    logo: El,
+    chains,
+    id,
+    installationLink,
+    disabledByWalletFunc,
+    needPrioritiseFunc
+  } = provider
   const { ...otherProps } = props
 
   const context = useContext(WalletsContext)
@@ -100,6 +119,16 @@ export function Provider(props: IProviderProps) {
     [installationLink]
   )
 
+  const disabledByWallet = useMemo(
+    () => disabledByWalletFunc && disabledByWalletFunc(),
+    [disabledByWalletFunc]
+  )
+
+  const needPrioritise = useMemo(
+    () => needPrioritiseFunc && needPrioritiseFunc(),
+    [needPrioritiseFunc]
+  )
+
   return (
     <SProviderWrapper
       {...otherProps}
@@ -110,7 +139,11 @@ export function Provider(props: IProviderProps) {
       <SIcon>
         <El />
       </SIcon>
-      <SName>{name}</SName>
+      {!disabledByWallet && !needPrioritise ? <SName>{name}</SName> : null}
+
+      {needPrioritise && <SPrioritise>Prioritise {name} wallet</SPrioritise>}
+      {disabledByWallet && <SPrioritise>Disable {name} wallet</SPrioritise>}
+
       {needInstall ? <SLink>Please, install {name}</SLink> : null}
     </SProviderWrapper>
   )

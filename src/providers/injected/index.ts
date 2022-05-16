@@ -47,7 +47,14 @@ export const METAMASK: IProviderInfo = {
   logo: MetaMaskLogo,
   type: 'injected',
   check: 'isMetaMask',
-  installationLink: 'https://metamask.io'
+  installationLink: 'https://metamask.io',
+  disabledByWalletFunc: () => {
+    if (window.xfi && window.xfi.ethereum && window.xfi.ethereum.isXDEFI) {
+      return 'XDEFI'
+    }
+
+    return undefined
+  }
 }
 
 export const SAFE: IProviderInfo = {
@@ -137,6 +144,13 @@ export const XDEFI: IProviderInfo = {
   type: 'injected',
   check: '__XDEFI',
   installationLink: 'https://metamask.io',
+  needPrioritiseFunc: () => {
+    if (window.xfi && window.xfi.ethereum && !window.xfi.ethereum.isXDEFI) {
+      return true
+    }
+
+    return false
+  },
   chains: {
     [IChainType.bitcoin]: {
       methods: {

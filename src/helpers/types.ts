@@ -49,6 +49,8 @@ export interface IProviderInfo extends IProviderDisplay {
     [name: string]: ISupportedChain
   }
   installationLink?: string
+  disabledByWalletFunc?: () => string | undefined
+  needPrioritiseFunc?: () => boolean
 }
 
 export type RequiredOption = string | string[]
@@ -84,6 +86,8 @@ export interface IProviderUserOptions {
     [name: string]: ISupportedChain
   }
   installationLink?: string
+  disabledByWalletFunc?: () => string | undefined
+  needPrioritiseFunc?: () => boolean
 }
 
 export type SimpleFunction = (input?: any) => void
