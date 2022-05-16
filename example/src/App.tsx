@@ -17,18 +17,15 @@ const getProviderOptions = (): IProviderOptions => {
         infuraId
       }
     },
+    torus: {
+      package: Torus
+    },
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
         appName: 'Coinbase Example App',
         infuraId
       }
-    },
-    binancechainwallet: {
-      package: true
-    },
-    torus: {
-      package: Torus
     },
     ledger: {
       package: Ledger

@@ -1,13 +1,10 @@
 /*eslint import/namespace: ['error', { allowComputed: true }]*/
 import * as list from '../providers'
 import {
-  CONNECT_EVENT,
-  ERROR_EVENT,
-  SELECT_EVENT,
   INJECTED_PROVIDER_ID,
   CACHED_PROVIDER_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
-  CLOSE_EVENT,
+  WALLETS_EVENTS
 } from '../constants'
 import {
   isMobile,
@@ -25,7 +22,7 @@ import {
   getInjectedProvider,
   findMatchingRequiredOptions,
   IProviderOption,
-  IChainToAccounts,
+  IChainToAccounts
 } from '../helpers'
 import { IChainType } from '../constants'
 
@@ -67,7 +64,7 @@ export class ProviderController {
         if (typeof options.display !== 'undefined') {
           providerInfo = {
             ...providerInfo,
-            ...this.providerOptions[id].display,
+            ...this.providerOptions[id].display
           }
         }
       }
@@ -75,7 +72,7 @@ export class ProviderController {
         ...providerInfo,
         // @ts-ignore
         connector: list.connectors[id],
-        package: providerInfo.package,
+        package: providerInfo.package
       }
     })
 
@@ -93,7 +90,7 @@ export class ProviderController {
               ...list.providers.FALLBACK,
               id,
               ...options.display,
-              connector: options.connector,
+              connector: options.connector
             })
           }
         }
@@ -171,7 +168,7 @@ export class ProviderController {
           logo,
           description: getProviderDescription(provider),
           onClick: (chains?: string[]) => this.connectTo(id, connector, chains),
-          ...rest,
+          ...rest
         })
       }
     })
@@ -198,14 +195,13 @@ export class ProviderController {
             return target.methods.getAccounts().then((accounts: string[]) => {
               return {
                 chain: chain,
-                accounts: accounts,
+                accounts: accounts
               }
             })
           })
       )
     } else {
       if (this.injectedProvider) {
-        console.log('setInjectedChains', currentProviderChains)
         this.setInjectedChains([IChainType.ethereum])
       }
     }
@@ -233,7 +229,7 @@ export class ProviderController {
     removeLocal(CACHED_PROVIDER_KEY)
     removeLocal(CACHED_PROVIDER_CHAINS_KEY)
 
-    this.eventController.trigger(CLOSE_EVENT)
+    this.trigger(WALLETS_EVENTS.CLOSE)
   }
 
   public setCachedProvider(id: string, chains: string[]) {
@@ -257,7 +253,7 @@ export class ProviderController {
     chains?: string[]
   ) => {
     try {
-      this.eventController.trigger(SELECT_EVENT, id)
+      this.trigger(WALLETS_EVENTS.SELECT, id)
       const providerPackage = this.getProviderOption(id)?.package
       const providerOptions = this.getProviderOption(id)?.options
       const opts = { network: this.network || undefined, ...providerOptions }
@@ -265,7 +261,7 @@ export class ProviderController {
 
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
-      this.eventController.trigger(CONNECT_EVENT, provider)
+      this.trigger(WALLETS_EVENTS.CONNECT, provider)
 
       if (this.shouldCacheProvider && this.cachedProvider !== id) {
         this.setCachedProvider(id, cachedChains)
@@ -274,7 +270,7 @@ export class ProviderController {
 
       this.connectToChains()
     } catch (error) {
-      this.eventController.trigger(ERROR_EVENT, error)
+      this.trigger(WALLETS_EVENTS.ERROR, error)
     }
   }
 
@@ -288,20 +284,24 @@ export class ProviderController {
   public on(event: string, callback: (result: any) => void): () => void {
     this.eventController.on({
       event,
-      callback,
+      callback
     })
 
     return () =>
       this.eventController.off({
         event,
-        callback,
+        callback
       })
   }
 
   public off(event: string, callback?: (result: any) => void): void {
     this.eventController.off({
       event,
-      callback,
+      callback
     })
+  }
+
+  public trigger(event: string, data: any = undefined): void {
+    this.eventController.trigger(event, data)
   }
 }

@@ -1,4 +1,9 @@
-export const CONNECT_EVENT = 'connect'
-export const ERROR_EVENT = 'error'
-export const CLOSE_EVENT = 'close'
-export const SELECT_EVENT = 'select'
+export enum WALLETS_EVENTS {
+  ACCOUNTS = 'ACCOUNTS',
+  CURRENT_WALLET = 'CURRENT_WALLET',
+  CONNECTED_CHAINS = 'CONNECTED_CHAINS',
+  CONNECT = 'connect',
+  ERROR = 'error',
+  CLOSE = 'close',
+  SELECT = 'SELECT'
+}

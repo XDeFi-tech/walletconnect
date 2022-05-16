@@ -57,7 +57,6 @@ const SAddress = styled.div<IHeaderStyle>`
 const SDisconnect = styled.div<IHeaderStyle>`
   transition: ${transitions.button};
   font-size: 12px;
-  font-family: monospace;
   position: absolute;
   right: 0;
   top: 20px;

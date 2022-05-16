@@ -15,6 +15,7 @@ const useWalletsModal = () => {
   const onClose = useCallback(() => {
     setOpen(false)
   }, [setOpen])
+
   const onOpen = useCallback(() => {
     setOpen(true)
   }, [setOpen])

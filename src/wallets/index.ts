@@ -6,22 +6,14 @@ import {
   IProviderOptions,
   SimpleFunction
 } from '../helpers'
-import { IChainType } from '../constants'
-import { EventController } from '../controllers'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
-
-export enum WALLETS_EVENTS {
-  ACCOUNTS = 'ACCOUNTS',
-  CURRENT_WALLET = 'CURRENT_WALLET',
-  CONNECTED_CHAINS = 'CONNECTED_CHAINS'
-}
 
 export class WalletsConnector {
   private web3: Web3 | null = null
 
   public connector: WalletConnect
   private accounts: IChainWithAccount = {}
-  private eventController: EventController = new EventController()
 
   constructor(
     providerOptions: IProviderOptions,
@@ -73,11 +65,11 @@ export class WalletsConnector {
 
     this.setAccounts(map)
 
-    this.eventController.trigger(
+    this.connector.trigger(
       WALLETS_EVENTS.CURRENT_WALLET,
       this.connector.injectedProvider
     )
-    this.eventController.trigger(
+    this.connector.trigger(
       WALLETS_EVENTS.CONNECTED_CHAINS,
       this.connector.injectedChains
     )
@@ -85,7 +77,7 @@ export class WalletsConnector {
 
   private setAccounts = (map: IChainWithAccount) => {
     this.accounts = map
-    this.eventController.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
+    this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
   public getBalance = async (chain: IChainType = IChainType.ethereum) => {
@@ -108,11 +100,11 @@ export class WalletsConnector {
 
     this.setAccounts({})
 
-    this.eventController.trigger(
+    this.connector.trigger(
       WALLETS_EVENTS.CURRENT_WALLET,
       this.connector.injectedProvider
     )
-    this.eventController.trigger(
+    this.connector.trigger(
       WALLETS_EVENTS.CONNECTED_CHAINS,
       this.connector.injectedChains
     )
@@ -155,17 +147,11 @@ export class WalletsConnector {
   }
 
   public on = (event: string, callback: SimpleFunction) => {
-    this.eventController.on({
-      event,
-      callback
-    })
+    this.connector.on(event, callback)
   }
 
   public off(event: string, callback?: SimpleFunction): void {
-    this.eventController.off({
-      event,
-      callback
-    })
+    this.connector.off(event, callback)
   }
 
   private getAccounts = (): IChainWithAccount => {

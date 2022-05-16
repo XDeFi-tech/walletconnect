@@ -2,21 +2,16 @@ import {
   ICoreOptions,
   IProviderInfo,
   IProviderUserOptions,
-  SimpleFunction,
+  SimpleFunction
 } from '../helpers'
-import {
-  CONNECT_EVENT,
-  ERROR_EVENT,
-  CLOSE_EVENT,
-  SELECT_EVENT,
-} from '../constants'
+import { WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
   cacheProvider: false,
   disableInjectedProvider: false,
   providerOptions: {},
-  network: '',
+  network: ''
 }
 
 export class WalletConnect {
@@ -27,22 +22,24 @@ export class WalletConnect {
   constructor(opts?: Partial<ICoreOptions>) {
     const options: ICoreOptions = {
       ...defaultOpts,
-      ...opts,
+      ...opts
     }
 
     this.providerController = new ProviderController({
       disableInjectedProvider: options.disableInjectedProvider,
       cacheProvider: options.cacheProvider,
       providerOptions: options.providerOptions,
-      network: options.network,
+      network: options.network
     })
 
-    this.providerController.on(CONNECT_EVENT, (provider) =>
+    this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
       this.onConnect(provider)
     )
-    this.providerController.on(ERROR_EVENT, (error) => this.onError(error))
+    this.providerController.on(WALLETS_EVENTS.ERROR, (error) =>
+      this.onError(error)
+    )
 
-    this.providerController.on(SELECT_EVENT, this.onProviderSelect)
+    this.providerController.on(WALLETS_EVENTS.SELECT, this.onProviderSelect)
 
     this.userOptions = this.providerController.getUserOptions()
   }
@@ -67,18 +64,18 @@ export class WalletConnect {
 
   public connect = (): Promise<any> =>
     new Promise(async (resolve, reject) => {
-      this.on(CONNECT_EVENT, (provider) => resolve(provider))
-      this.on(ERROR_EVENT, (error) => reject(error))
-      this.on(CLOSE_EVENT, () => reject('Closed by user'))
+      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
+      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
+      this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
 
       await this.toggle()
     })
 
   public connectTo = (id: string): Promise<any> =>
     new Promise(async (resolve, reject) => {
-      this.on(CONNECT_EVENT, (provider) => resolve(provider))
-      this.on(ERROR_EVENT, (error) => reject(error))
-      this.on(CLOSE_EVENT, () => reject('Closed by user'))
+      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
+      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
+      this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
 
       const provider = this.providerController.getProvider(id)
       if (!provider) {
@@ -109,21 +106,25 @@ export class WalletConnect {
   public on(event: string, callback: SimpleFunction): SimpleFunction {
     this.eventController.on({
       event,
-      callback,
+      callback
     })
 
     return () =>
       this.eventController.off({
         event,
-        callback,
+        callback
       })
   }
 
   public off(event: string, callback?: SimpleFunction): void {
     this.eventController.off({
       event,
-      callback,
+      callback
     })
+  }
+
+  public trigger(event: string, data: any = undefined): void {
+    this.eventController.trigger(event, data)
   }
 
   public getUserOptions(): IProviderUserOptions[] {
@@ -137,14 +138,14 @@ export class WalletConnect {
   // --------------- PRIVATE METHODS --------------- //
 
   private onError = async (error: any) => {
-    this.eventController.trigger(ERROR_EVENT, error)
+    this.eventController.trigger(WALLETS_EVENTS.ERROR, error)
   }
 
   private onProviderSelect = (providerId: string) => {
-    this.eventController.trigger(SELECT_EVENT, providerId)
+    this.eventController.trigger(WALLETS_EVENTS.SELECT, providerId)
   }
 
   private onConnect = async (provider: any) => {
-    this.eventController.trigger(CONNECT_EVENT, provider)
+    this.eventController.trigger(WALLETS_EVENTS.CONNECT, provider)
   }
 }

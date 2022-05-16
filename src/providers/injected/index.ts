@@ -35,7 +35,7 @@ declare global {
 }
 export const FALLBACK: IProviderInfo = {
   id: 'injected',
-  name: 'Web3',
+  name: 'Browser',
   logo: Web3DefaultLogo,
   type: 'injected',
   check: 'isWeb3'

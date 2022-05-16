@@ -1,8 +1,7 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
-import { IChainType } from '../constants'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount, IProviderInfo } from '../helpers'
 import { WalletsContext } from '../manager'
-import { WALLETS_EVENTS } from '../wallets'
 
 export const useWalletsConnector = () => {
   const context = useContext(WalletsContext)
@@ -10,15 +9,32 @@ export const useWalletsConnector = () => {
   const [provider, setCurrentProvider] = useState<IProviderInfo | null>(null)
   const [injectedChains, setInjectedChains] = useState<string[]>([])
 
+  const setProvidersHandler = useCallback(
+    (provider: IProviderInfo) => {
+      setCurrentProvider(provider)
+    },
+    [setCurrentProvider]
+  )
+
+  const setChainsHandler = useCallback(
+    (newList: string[]) => {
+      setInjectedChains(newList)
+    },
+    [setInjectedChains]
+  )
+
   useEffect(() => {
     if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-        setCurrentProvider(provider)
-      })
+      context.on(WALLETS_EVENTS.CURRENT_WALLET, setProvidersHandler)
 
-      context.on(WALLETS_EVENTS.CONNECTED_CHAINS, (newList: string[]) => {
-        setInjectedChains(newList)
-      })
+      context.on(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
+    }
+
+    return () => {
+      if (context) {
+        context.off(WALLETS_EVENTS.CURRENT_WALLET, setProvidersHandler)
+        context.off(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
+      }
     }
   }, [context])
 
@@ -33,15 +49,59 @@ export const useConnectedAccounts = () => {
 
   const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
+  const setAccountsHandler = useCallback(
+    (newList: IChainWithAccount) => {
+      setAccounts(newList)
+    },
+    [setAccounts]
+  )
+
   useEffect(() => {
     if (context) {
-      context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
-        setAccounts(newList)
-      })
+      context.on(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
+    }
+
+    return () => {
+      if (context) {
+        context.off(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
+      }
     }
   }, [context])
 
   return accounts
+}
+
+export const useWalletEvents = (
+  onConnect?: () => void,
+  onClose?: () => void,
+  onError?: (e: any) => void
+) => {
+  const context = useContext(WalletsContext)
+
+  useEffect(() => {
+    if (context) {
+      onConnect &&
+        context.on(WALLETS_EVENTS.CONNECT, () => {
+          onConnect()
+        })
+      onClose &&
+        context.on(WALLETS_EVENTS.CLOSE, () => {
+          onClose()
+        })
+      onError &&
+        context.on(WALLETS_EVENTS.ERROR, (e: any) => {
+          onError(e)
+        })
+    }
+
+    return () => {
+      if (context) {
+        context.off(WALLETS_EVENTS.CONNECT, onConnect)
+        context.off(WALLETS_EVENTS.CLOSE, onClose)
+        context.off(WALLETS_EVENTS.ERROR, onError)
+      }
+    }
+  }, [onConnect, onClose])
 }
 
 export const useWalletsOptions = () => {
