@@ -83,6 +83,7 @@ export interface IProviderUserOptions {
   chains?: {
     [name: string]: ISupportedChain
   }
+  installationLink?: string
 }
 
 export type SimpleFunction = (input?: any) => void

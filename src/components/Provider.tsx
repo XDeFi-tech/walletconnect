@@ -54,11 +54,28 @@ const SProviderWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 12px 24px;
 
   @media screen and (max-width: 768px) {
     flex-direction: row;
     width: 100%;
-    height: 50px;
+    min-height: 50px;
+  }
+`
+
+const SLink = styled.a`
+  cursor: pointer;
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 12px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @media screen and (max-width: 768px) {
+    margin-top: 0;
+    margin-left: 4px;
   }
 `
 
@@ -69,7 +86,7 @@ interface IProviderProps {
 export function Provider(props: IProviderProps) {
   const { provider } = props
 
-  const { name, logo: El, chains, id } = provider
+  const { name, logo: El, chains, id, installationLink } = provider
   const { ...otherProps } = props
 
   const context = useContext(WalletsContext)
@@ -77,6 +94,11 @@ export function Provider(props: IProviderProps) {
   const supportedChains = useMemo(() => {
     return chains ? Object.keys(chains) : []
   }, [chains])
+
+  const needInstall = useMemo(
+    () => installationLink && !window.web3 && !window.ethereum,
+    [installationLink]
+  )
 
   return (
     <SProviderWrapper
@@ -89,6 +111,7 @@ export function Provider(props: IProviderProps) {
         <El />
       </SIcon>
       <SName>{name}</SName>
+      {needInstall ? <SLink>Please, install {name}</SLink> : null}
     </SProviderWrapper>
   )
 }
