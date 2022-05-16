@@ -37,7 +37,7 @@ const SCard = styled.div<IModalCardStyleProps>`
   max-height: 100%;
   overflow: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 8px;
   margin-top: 24px;
 
@@ -72,6 +72,7 @@ export const WalletsModal = ({ trigger: Trigger }: IProps) => {
 
   const { isOpen, onClose, onOpen } = useWalletsModal()
 
+  console.log('userOptions', userOptions)
   return (
     <Fragment>
       <Modal isOpen={isOpen} onClose={onClose}>

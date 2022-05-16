@@ -4,21 +4,37 @@ import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import Torus from '@toruslabs/torus-embed'
 import Ledger from '@web3modal/ledger-provider'
 import Trezor from '@web3modal/trezor-provider'
-import NetworkManager, { IProviderOptions } from 'wallets-connector'
+import NetworkManager, {
+  IProviderOptions,
+  injected,
+  connectors
+} from 'wallets-connector'
 
 import MyApp from './MyApp'
 
 const getProviderOptions = (): IProviderOptions => {
   const infuraId = 'blablaid'
   const providerOptions = {
+    xdefi: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.XDEFI
+    },
+    injected: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.FALLBACK
+    },
+    metamask: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.METAMASK
+    },
     walletconnect: {
       package: WalletConnect,
       options: {
         infuraId
       }
-    },
-    torus: {
-      package: Torus
     },
     coinbasewallet: {
       package: CoinbaseWalletSDK,
@@ -26,6 +42,9 @@ const getProviderOptions = (): IProviderOptions => {
         appName: 'Coinbase Example App',
         infuraId
       }
+    },
+    torus: {
+      package: Torus
     },
     ledger: {
       package: Ledger

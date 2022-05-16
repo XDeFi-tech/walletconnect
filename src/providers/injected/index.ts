@@ -42,11 +42,12 @@ export const FALLBACK: IProviderInfo = {
 }
 
 export const METAMASK: IProviderInfo = {
-  id: 'injected',
+  id: 'metamask',
   name: 'MetaMask',
   logo: MetaMaskLogo,
   type: 'injected',
-  check: 'isMetaMask'
+  check: 'isMetaMask',
+  installationLink: 'https://metamask.io'
 }
 
 export const SAFE: IProviderInfo = {
@@ -130,11 +131,12 @@ export const RWALLET: IProviderInfo = {
 }
 
 export const XDEFI: IProviderInfo = {
-  id: 'injected',
+  id: 'xdefi',
   name: 'XDEFI',
   logo: XDEFILogo,
   type: 'injected',
   check: '__XDEFI',
+  installationLink: 'https://metamask.io',
   chains: {
     [IChainType.bitcoin]: {
       methods: {

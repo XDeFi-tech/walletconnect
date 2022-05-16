@@ -48,7 +48,7 @@ const SProviderWrapper = styled.div`
   align-items: center;
   flex-direction: column;
   cursor: pointer;
-  width: 180px;
+  min-width: 180px;
   height: 104px;
   display: flex;
   flex-direction: column;

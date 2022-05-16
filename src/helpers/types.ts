@@ -48,6 +48,7 @@ export interface IProviderInfo extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
+  installationLink?: string
 }
 
 export type RequiredOption = string | string[]

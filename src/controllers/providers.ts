@@ -7,7 +7,6 @@ import {
   WALLETS_EVENTS
 } from '../constants'
 import {
-  isMobile,
   IProviderControllerOptions,
   IProviderOptions,
   IProviderDisplayWithConnector,
@@ -51,50 +50,50 @@ export class ProviderController {
 
     this.injectedProvider = getInjectedProvider()
 
-    this.providers = Object.keys(list.connectors).map((id: string) => {
-      let providerInfo: IProviderInfo
-      if (id === INJECTED_PROVIDER_ID) {
-        providerInfo = this.injectedProvider || list.providers.FALLBACK
-      } else {
-        providerInfo = getProviderInfoById(id)
-      }
-      // parse custom display options
-      if (this.providerOptions[id]) {
+    // parse custom providers
+    Object.keys(this.providerOptions).map((id) => {
+      if (id && this.providerOptions[id]) {
         const options = this.providerOptions[id]
-        if (typeof options.display !== 'undefined') {
-          providerInfo = {
-            ...providerInfo,
-            ...this.providerOptions[id].display
-          }
+        if (
+          typeof options.display !== 'undefined' &&
+          typeof options.connector !== 'undefined'
+        ) {
+          this.providers.push({
+            ...list.providers.FALLBACK,
+            id,
+            ...options.display,
+            connector: options.connector
+          })
         }
-      }
-      return {
-        ...providerInfo,
-        // @ts-ignore
-        connector: list.connectors[id],
-        package: providerInfo.package
       }
     })
 
-    // parse custom providers
-    Object.keys(this.providerOptions)
-      .filter((key) => key.startsWith('custom-'))
-      .map((id) => {
-        if (id && this.providerOptions[id]) {
+    this.providers.push(
+      ...Object.keys(list.connectors).map((id: string) => {
+        let providerInfo: IProviderInfo
+        if (id === INJECTED_PROVIDER_ID) {
+          providerInfo = this.injectedProvider || list.providers.FALLBACK
+        } else {
+          providerInfo = getProviderInfoById(id)
+        }
+        // parse custom display options
+        if (this.providerOptions[id]) {
           const options = this.providerOptions[id]
-          if (
-            typeof options.display !== 'undefined' &&
-            typeof options.connector !== 'undefined'
-          ) {
-            this.providers.push({
-              ...list.providers.FALLBACK,
-              id,
-              ...options.display,
-              connector: options.connector
-            })
+          if (typeof options.display !== 'undefined') {
+            providerInfo = {
+              ...providerInfo,
+              ...this.providerOptions[id].display
+            }
           }
         }
+        return {
+          ...providerInfo,
+          // @ts-ignore
+          connector: list.connectors[id],
+          package: providerInfo.package
+        }
       })
+    )
   }
 
   public shouldDisplayProvider(id: string) {
@@ -107,6 +106,7 @@ export class ProviderController {
           const requiredOptions = provider.package
             ? provider.package.required
             : undefined
+
           if (requiredOptions && requiredOptions.length) {
             const providedOptions = providerPackageOptions.options
             if (providedOptions && Object.keys(providedOptions).length) {
@@ -128,34 +128,29 @@ export class ProviderController {
   }
 
   public getUserOptions = () => {
-    const mobile = isMobile()
-
-    const defaultProviderList = this.providers.map(({ id }) => id)
+    const defaultProviderList = Array.from(
+      new Set(this.providers.map(({ id }) => id))
+    )
 
     const displayInjected =
       !!this.injectedProvider && !this.disableInjectedProvider
-    const onlyInjected = displayInjected && mobile
 
-    const providerList = []
+    const providerList: string[] = []
 
-    if (onlyInjected) {
-      providerList.push(INJECTED_PROVIDER_ID)
-    } else {
-      if (displayInjected) {
+    defaultProviderList.forEach((id: string) => {
+      if (id !== INJECTED_PROVIDER_ID) {
+        const result = this.shouldDisplayProvider(id)
+        if (result) {
+          providerList.push(id)
+        }
+      } else if (displayInjected) {
         providerList.push(INJECTED_PROVIDER_ID)
       }
-
-      defaultProviderList.forEach((id: string) => {
-        if (id !== INJECTED_PROVIDER_ID) {
-          const result = this.shouldDisplayProvider(id)
-          if (result) {
-            providerList.push(id)
-          }
-        }
-      })
-    }
+    })
 
     const userOptions: IProviderUserOptions[] = []
+
+    console.log('providerList', providerList, defaultProviderList)
 
     providerList.forEach((id: string) => {
       const provider = this.getProvider(id)
