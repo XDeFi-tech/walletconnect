@@ -15,7 +15,6 @@ export class EventController {
 
   public off(eventObj?: Partial<IEventCallback>) {
     // remove specific event callback
-    console.log('remvoed event', eventObj?.event)
     if (eventObj) {
       if (eventObj.callback) {
         this._eventCallbacks = this._eventCallbacks.filter(
@@ -41,7 +40,6 @@ export class EventController {
     )
 
     if (eventCallbacks && eventCallbacks.length) {
-      console.log('events triggered', event, eventCallbacks.length)
       eventCallbacks.forEach((eventCallback: IEventCallback) => {
         eventCallback.callback(result)
       })

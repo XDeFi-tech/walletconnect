@@ -108,14 +108,12 @@ export class WalletConnect {
   }
 
   public on(event: string, callback: SimpleFunction): SimpleFunction {
-    console.log('on', event)
     this.eventController.on({
       event,
       callback
     })
 
     return () => {
-      console.log('off', event)
       this.eventController.off({
         event,
         callback
@@ -131,7 +129,6 @@ export class WalletConnect {
   }
 
   public trigger(event: string, data: any = undefined): void {
-    console.log('triggered', event)
     this.eventController.trigger(event, data)
   }
 
