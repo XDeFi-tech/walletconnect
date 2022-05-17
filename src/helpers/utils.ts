@@ -62,8 +62,10 @@ export function getInjectedProvider(): IProviderInfo | null {
   const injectedProviders = checkInjectedProviders()
 
   if (injectedProviders.injectedAvailable) {
-    injectedProviders.injectedAvailable = false
+    delete injectedProviders.injectedAvailable
     const checks = Object.keys(injectedProviders)
+
+    console.log('checks', checks)
     result = getProviderInfoFromChecksArray(checks)
   }
   return result
