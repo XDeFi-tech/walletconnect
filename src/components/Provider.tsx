@@ -128,18 +128,19 @@ export function Provider(props: IProviderProps) {
     () => needPrioritiseFunc && needPrioritiseFunc(),
     [needPrioritiseFunc]
   )
+  const available = !disabledByWallet && !needPrioritise
 
   return (
     <SProviderWrapper
       {...otherProps}
       onClick={() =>
-        context && context.connector.connectTo(id, supportedChains)
+        available && context && context.connector.connectTo(id, supportedChains)
       }
     >
       <SIcon>
         <El />
       </SIcon>
-      {!disabledByWallet && !needPrioritise ? <SName>{name}</SName> : null}
+      {available ? <SName>{name}</SName> : null}
 
       {needPrioritise && <SPrioritise>Prioritise {name} wallet</SPrioritise>}
       {disabledByWallet && (
