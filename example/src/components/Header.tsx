@@ -92,18 +92,18 @@ interface IHeaderProps {
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
-  const { provider } = useWalletsConnector()
+  const { wallet } = useWalletsConnector()
   const accounts = useConnectedAccounts()
 
-  const connected = !!provider
+  const connected = !!wallet
 
   return (
     <SHeader>
-      {provider ? <SActiveChain>Connected</SActiveChain> : <Banner />}
+      {wallet ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       <SAddress connected={connected}>
         {connected ? (
           <Fragment>
-            {provider && provider.chains ? (
+            {wallet && wallet.chains ? (
               <RenderChains accounts={accounts} />
             ) : (
               'Ethereum'
