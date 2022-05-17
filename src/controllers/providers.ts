@@ -195,7 +195,7 @@ export class ProviderController {
             return target.methods.getAccounts().then((accounts: string[]) => {
               return {
                 chain: chain,
-                accounts: accounts
+                account: accounts[0]
               }
             })
           })

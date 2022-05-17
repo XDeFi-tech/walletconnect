@@ -164,3 +164,28 @@ export const useSignAvailability = (chainId: IChainType) => {
     return context.isSignAvailable(chainId)
   }, [context, chainId])
 }
+
+export const useBalance = (chainId: IChainType) => {
+  const context = useContext(WalletsContext)
+
+  const [balance, setBalance] = useState('0')
+  const accounts = useConnectedAccounts()
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (!context) {
+        return
+      }
+
+      const b = await context.getBalance(chainId)
+
+      setBalance(b)
+    }
+
+    if (context && Object.keys(accounts).length > 0) {
+      fetch()
+    }
+  }, [context, chainId, accounts])
+
+  return balance
+}

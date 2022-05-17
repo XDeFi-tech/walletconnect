@@ -32,12 +32,12 @@ export interface ISupportedChain {
 }
 
 export interface IChainWithAccount {
-  [chainId: string]: string[]
+  [chainId: string]: string
 }
 
 export interface IChainToAccounts {
   chain: string
-  accounts: string[]
+  account: string
 }
 
 export interface IProviderInfo extends IProviderDisplay {

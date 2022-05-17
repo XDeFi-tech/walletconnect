@@ -2,10 +2,12 @@ import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
+  IChainType,
   IChainWithAccount,
   useConnectedAccounts,
   useWalletsConnector,
-  WalletsModal
+  WalletsModal,
+  useBalance
 } from 'wallets-connector'
 
 import { transitions } from '../styles'
@@ -97,9 +99,17 @@ const Header = (props: IHeaderProps) => {
 
   const connected = !!wallet
 
+  const ethBalance = useBalance(IChainType.ethereum)
+
+  console.log('ethBalance', ethBalance)
+
   return (
     <SHeader>
-      {wallet ? <SActiveChain>Connected</SActiveChain> : <Banner />}
+      {wallet ? (
+        <SActiveChain>Connected {ethBalance.toString()} ETH</SActiveChain>
+      ) : (
+        <Banner />
+      )}
       <SAddress connected={connected}>
         {connected ? (
           <Fragment>
@@ -129,7 +139,7 @@ const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
     <Fragment>
       {Object.keys(accounts).map((chain: string) => (
         <div key={chain}>
-          {chain}: {accounts[chain].join(',')}
+          {chain}: {accounts[chain]}
         </div>
       ))}
     </Fragment>

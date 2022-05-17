@@ -121,7 +121,7 @@ const MyApp = () => {
             return (
               <SBalances key={chain}>
                 <h3>
-                  {chain} with account {accounts[chain][0]}
+                  {chain} with account {accounts[chain]}
                 </h3>
                 <Column center>
                   <STestButtonContainer>

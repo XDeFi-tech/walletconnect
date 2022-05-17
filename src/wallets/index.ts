@@ -64,11 +64,11 @@ export class WalletsConnector {
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
-      acc[item.chain] = item.accounts
+      acc[item.chain] = item.account
       return acc
     }, {})
 
-    map[IChainType.ethereum] = ethAccounts
+    map[IChainType.ethereum] = ethAccounts[0]
 
     this.setAccounts(map)
 
@@ -89,15 +89,17 @@ export class WalletsConnector {
 
   public getBalance = async (chain: IChainType = IChainType.ethereum) => {
     if (!this.web3) {
-      return 0
+      return '0'
     }
 
     switch (chain) {
       case IChainType.ethereum: {
-        return this.web3.eth.getBalance(this.accounts[chain][0])
+        console.log('load for', this.accounts[chain], chain, this.accounts)
+        return this.web3.eth.getBalance(this.accounts[chain])
       }
       default: {
-        throw Error('Not supported chain for loading balance')
+        console.log(`Not supported chain ${chain} for loading balance`)
+        return '0'
       }
     }
   }
@@ -188,6 +190,6 @@ export class WalletsConnector {
   private getAddress = (chainId: IChainType): string => {
     const accounts = this.getAccounts()
 
-    return accounts[chainId][0] as string
+    return accounts[chainId] as string
   }
 }
