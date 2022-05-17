@@ -38,7 +38,11 @@ export class WalletsConnector {
         .then((provider: any) => {
           this.web3 = new Web3(provider)
 
-          this.connector.trigger(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, provider)
+          this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
+          this.connector.trigger(
+            WALLETS_EVENTS.CURRENT_WEB3_PROVIDER,
+            this.web3
+          )
 
           return provider.enable()
         })
