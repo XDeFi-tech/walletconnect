@@ -37,6 +37,9 @@ export class WalletsConnector {
         .connect()
         .then((provider: any) => {
           this.web3 = new Web3(provider)
+
+          this.connector.trigger(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, provider)
+
           return provider.enable()
         })
         .then((ethAccounts: string[]) => {
