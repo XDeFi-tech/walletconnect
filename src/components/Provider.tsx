@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 
-import { IProviderUserOptions } from '../helpers'
+import { canInject, IProviderUserOptions } from '../helpers'
 
 const SIcon = styled.div`
   width: 28px;
@@ -115,7 +115,7 @@ export function Provider(props: IProviderProps) {
   }, [chains])
 
   const needInstall = useMemo(
-    () => installationLink && !window.web3 && !window.ethereum,
+    () => installationLink && !canInject(),
     [installationLink]
   )
 
@@ -129,11 +129,13 @@ export function Provider(props: IProviderProps) {
     [needPrioritiseFunc]
   )
 
+  console.log('Object.keys(supportedChains)', name, supportedChains)
+
   return (
     <SProviderWrapper
       {...otherProps}
       onClick={() =>
-        context && context.connector.connectTo(id, Object.keys(supportedChains))
+        context && context.connector.connectTo(id, supportedChains)
       }
     >
       <SIcon>

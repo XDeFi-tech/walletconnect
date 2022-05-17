@@ -142,6 +142,8 @@ export function filterMatches<T>(
   return result
 }
 
+export const canInject = () => window.web3 || window.ethereum
+
 export function filterProviders(
   param: string,
   value: string | null

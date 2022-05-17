@@ -21,11 +21,13 @@ import {
   getInjectedProvider,
   findMatchingRequiredOptions,
   IProviderOption,
-  IChainToAccounts
+  IChainToAccounts,
+  canInject
 } from '../helpers'
 import { IChainType } from '../constants'
 
 import { EventController } from './events'
+import { METAMASK, XDEFI } from 'src/providers/injected'
 
 export class ProviderController {
   public cachedProvider = ''
@@ -132,8 +134,13 @@ export class ProviderController {
       new Set(this.providers.map(({ id }) => id))
     )
 
+    const hasOther =
+      defaultProviderList.indexOf(XDEFI.id) !== -1 ||
+      defaultProviderList.indexOf(METAMASK.id) !== -1
+
     const displayInjected =
-      !!this.injectedProvider && !this.disableInjectedProvider
+      (!!this.injectedProvider && !this.disableInjectedProvider && !hasOther) ||
+      !canInject()
 
     const providerList: string[] = []
 
@@ -175,6 +182,12 @@ export class ProviderController {
     const currentProviderChains = this.injectedProvider
       ? this.injectedProvider?.chains
       : undefined
+
+    console.log(
+      'currentProviderChains',
+      currentProviderChains,
+      this.injectedProvider
+    )
 
     if (
       this.injectedChains &&

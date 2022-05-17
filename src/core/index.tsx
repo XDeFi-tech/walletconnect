@@ -4,7 +4,7 @@ import {
   IProviderUserOptions,
   SimpleFunction
 } from '../helpers'
-import { WALLETS_EVENTS } from '../constants'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
@@ -71,7 +71,10 @@ export class WalletConnect {
       await this.toggle()
     })
 
-  public connectTo = (id: string, chains: string[]): Promise<any> =>
+  public connectTo = (
+    id: string,
+    chains: string[] = [IChainType.ethereum]
+  ): Promise<any> =>
     new Promise(async (resolve, reject) => {
       this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
       this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
