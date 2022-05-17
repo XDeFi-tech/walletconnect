@@ -70,6 +70,15 @@ export class WalletsConnector {
 
     map[IChainType.ethereum] = ethAccounts[0]
 
+    const evmChainsAvailable =
+      this.connector.injectedProvider?.supportedEvmChains
+
+    if (evmChainsAvailable) {
+      evmChainsAvailable.forEach((chain) => {
+        map[chain] = ethAccounts[0]
+      })
+    }
+
     this.setAccounts(map)
 
     this.connector.trigger(
@@ -94,7 +103,6 @@ export class WalletsConnector {
 
     switch (chain) {
       case IChainType.ethereum: {
-        console.log('load for', this.accounts[chain], chain, this.accounts)
         return this.web3.eth.getBalance(this.accounts[chain])
       }
       default: {

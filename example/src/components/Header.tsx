@@ -101,8 +101,6 @@ const Header = (props: IHeaderProps) => {
 
   const ethBalance = useBalance(IChainType.ethereum)
 
-  console.log('ethBalance', ethBalance)
-
   return (
     <SHeader>
       {wallet ? (

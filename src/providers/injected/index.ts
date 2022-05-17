@@ -161,6 +161,11 @@ export const XDEFI: IProviderInfo = {
 
     return false
   },
+  supportedEvmChains: [
+    IChainType.avalanche,
+    IChainType.binancesmartchain,
+    IChainType.polygon
+  ],
   chains: {
     [IChainType.bitcoin]: {
       methods: {

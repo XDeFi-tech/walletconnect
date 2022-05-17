@@ -1,3 +1,5 @@
+import { IChainType } from 'src/constants'
+
 export type ICoreOptions = IProviderControllerOptions
 
 export interface IProviderControllerOptions {
@@ -48,6 +50,7 @@ export interface IProviderInfo extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
+  supportedEvmChains?: IChainType[]
   installationLink?: string
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
@@ -88,6 +91,7 @@ export interface IProviderUserOptions {
   installationLink?: string
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
+  supportedEvmChains?: IChainType[]
 }
 
 export type SimpleFunction = (input?: any) => void
