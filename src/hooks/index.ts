@@ -129,7 +129,7 @@ export const useSign = () => {
   return sign
 }
 
-export const useSignAvailable = (chainId: IChainType) => {
+export const useSignAvailability = (chainId: IChainType) => {
   const context = useContext(WalletsContext)
 
   return useMemo(() => {
