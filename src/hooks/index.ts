@@ -128,3 +128,15 @@ export const useSign = () => {
 
   return sign
 }
+
+export const useSignAvailable = (chainId: IChainType) => {
+  const context = useContext(WalletsContext)
+
+  return useMemo(() => {
+    if (!context) {
+      return false
+    }
+
+    return context.isSignAvailable(chainId)
+  }, [context, chainId])
+}

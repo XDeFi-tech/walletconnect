@@ -72,7 +72,6 @@ export const WalletsModal = ({ trigger: Trigger }: IProps) => {
 
   const { isOpen, onClose, onOpen } = useWalletsModal()
 
-  console.log('userOptions', userOptions)
   return (
     <Fragment>
       <Modal isOpen={isOpen} onClose={onClose}>

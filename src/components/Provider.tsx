@@ -129,8 +129,6 @@ export function Provider(props: IProviderProps) {
     [needPrioritiseFunc]
   )
 
-  console.log('Object.keys(supportedChains)', name, supportedChains)
-
   return (
     <SProviderWrapper
       {...otherProps}

@@ -135,6 +135,26 @@ export class WalletsConnector {
       }
     }
   }
+  public isSignAvailable = (chainId: IChainType) => {
+    if (!this.web3) {
+      return false
+    }
+
+    switch (chainId) {
+      case IChainType.ethereum: {
+        return true
+      }
+
+      default: {
+        const targetProvider = this.getChainMethods(chainId)
+        if (targetProvider && targetProvider.methods.signTransaction) {
+          return !!targetProvider.methods.signTransaction
+        }
+      }
+    }
+
+    return false
+  }
 
   public request = async (chainId: IChainType, type: string, data: any) => {
     const targetProvider = this.getChainMethods(chainId)

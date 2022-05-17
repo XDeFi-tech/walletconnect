@@ -157,8 +157,6 @@ export class ProviderController {
 
     const userOptions: IProviderUserOptions[] = []
 
-    console.log('providerList', providerList, defaultProviderList)
-
     providerList.forEach((id: string) => {
       const provider = this.getProvider(id)
       if (typeof provider !== 'undefined') {
@@ -182,12 +180,6 @@ export class ProviderController {
     const currentProviderChains = this.injectedProvider
       ? this.injectedProvider?.chains
       : undefined
-
-    console.log(
-      'currentProviderChains',
-      currentProviderChains,
-      this.injectedProvider
-    )
 
     if (
       this.injectedChains &&
