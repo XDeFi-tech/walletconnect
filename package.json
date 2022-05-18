@@ -1,7 +1,7 @@
 {
-  "name": "wallets-connector",
-  "version": "1.0.0",
-  "description": "Made with create-react-library",
+  "name": "@xdefi-tech/wallets-connector",
+  "version": "1.1.0",
+  "description": "Cross chain wallets connector with react hooks",
   "author": "garageinc",
   "license": "MIT",
   "repository": "https://github.com/XDeFi-tech/walletconnect",
