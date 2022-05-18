@@ -10,7 +10,7 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 
 export class WalletsConnector {
-  public web3: Web3
+  public web3: Web3 | null
 
   public connector: WalletConnect
   private accounts: IChainWithAccount = {}
@@ -28,35 +28,18 @@ export class WalletsConnector {
 
     this.connector = connector
 
+    this.connector.on(WALLETS_EVENTS.CONNECT, (provider) =>
+      this.fireConfigs(provider)
+    )
+
     this.connect()
   }
 
   private connect = () => {
     try {
-      this.connector
-        .connect()
-        .then((provider: any) => {
-          this.web3 = new Web3(provider)
-
-          this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
-          this.connector.trigger(
-            WALLETS_EVENTS.CURRENT_WEB3_PROVIDER,
-            this.web3
-          )
-          this.connector.trigger(
-            WALLETS_EVENTS.CURRENT_WALLET,
-            this.connector.injectedProvider
-          )
-          this.connector.trigger(
-            WALLETS_EVENTS.CONNECTED_CHAINS,
-            this.connector.injectedChains
-          )
-
-          return provider.enable()
-        })
-        .then(() => {
-          return this.loadAccounts()
-        })
+      this.connector.connect().then((provider: any) => {
+        return provider.enable()
+      })
     } catch (e) {
       console.log('Error', e)
 
@@ -117,14 +100,7 @@ export class WalletsConnector {
 
     this.setAccounts({})
 
-    this.connector.trigger(
-      WALLETS_EVENTS.CURRENT_WALLET,
-      this.connector.injectedProvider
-    )
-    this.connector.trigger(
-      WALLETS_EVENTS.CONNECTED_CHAINS,
-      this.connector.injectedChains
-    )
+    this.web3 = null
   }
 
   public getChainMethods = (chain: IChainType) => {
@@ -193,6 +169,28 @@ export class WalletsConnector {
 
   public getAccounts = (): IChainWithAccount => {
     return this.accounts
+  }
+
+  private fireConfigs = async (provider: any = undefined) => {
+    console.log('fireConfigs', provider)
+    if (provider) {
+      this.web3 = new Web3(provider)
+      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
+    }
+
+    this.connector.trigger(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, this.web3)
+
+    this.connector.trigger(
+      WALLETS_EVENTS.CURRENT_WALLET,
+      this.connector.injectedProvider
+    )
+
+    this.connector.trigger(
+      WALLETS_EVENTS.CONNECTED_CHAINS,
+      this.connector.injectedChains
+    )
+
+    return await this.loadAccounts()
   }
 
   private getAddress = (chainId: IChainType): string => {
