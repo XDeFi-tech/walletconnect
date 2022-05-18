@@ -48,14 +48,13 @@ const SProviderWrapper = styled.div`
   }
 `
 
-const SName = styled.div`
+const STYLES = `
   width: 100%;
-  width: 100%;
+  cursor: pointer;
   margin-top: 14px;
-  font-weight: 500;
+  color: #ffffff;
   font-size: 16px;
   line-height: 24px;
-  color: #ffffff;
   text-align: center;
 
   @media screen and (max-width: 768px) {
@@ -64,36 +63,22 @@ const SName = styled.div`
   }
 `
 
+const SName = styled.div`
+  ${STYLES}
+`
+
 const SLink = styled.a`
-  width: 100%;
-  cursor: pointer;
+  ${STYLES}
+
   margin-top: 4px;
-  color: #ffffff;
   font-size: 12px;
 
   &:hover {
     text-decoration: underline;
   }
-
-  @media screen and (max-width: 768px) {
-    margin-top: 0;
-    margin-left: 16px;
-  }
 `
 
-const SPrioritise = styled.a`
-  width: 100%;
-  cursor: pointer;
-  margin-top: 14px;
-  color: #ffffff;
-  font-size: 16px;
-  line-height: 24px;
-
-  @media screen and (max-width: 768px) {
-    margin-top: 0;
-    margin-left: 16px;
-  }
-`
+const SPrioritise = styled(SName)``
 
 interface IProviderProps {
   provider: IProviderUserOptions
