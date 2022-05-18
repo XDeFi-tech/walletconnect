@@ -3,15 +3,18 @@ import { provider as Provider } from 'web3-core'
 import Web3 from 'web3'
 
 import { IChainType, WALLETS_EVENTS } from '../constants'
-import { IChainWithAccount, IProviderInfo } from '../helpers'
+import { IChainWithAccount } from '../helpers'
 import { WalletsContext } from '../manager'
 
 export const useWalletsConnector = () => {
   const context = useContext(WalletsContext)
 
-  const [wallet, setCurrentWallet] = useState<IProviderInfo | null>(null)
-  const [injectedChains, setInjectedChains] = useState<string[]>([])
-  const [web3provider, setWeb3CurrentProvider] = useState<Web3 | null>(null)
+  const [injectedChains, setInjectedChains] = useState<string[]>(
+    () => context?.connector?.injectedChains || []
+  )
+  const [web3provider, setWeb3CurrentProvider] = useState<Web3 | undefined>(
+    () => context?.web3 || undefined
+  )
   const [provider, setCurrentProvider] = useState<Provider | null>(null)
 
   const setWeb3ProviderHandler = useCallback(
@@ -28,13 +31,6 @@ export const useWalletsConnector = () => {
     [setCurrentProvider]
   )
 
-  const setWalletHandler = useCallback(
-    (provider: IProviderInfo) => {
-      setCurrentWallet(provider)
-    },
-    [setCurrentWallet]
-  )
-
   const setChainsHandler = useCallback(
     (newList: string[]) => {
       setInjectedChains(newList)
@@ -44,7 +40,6 @@ export const useWalletsConnector = () => {
 
   useEffect(() => {
     if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_WALLET, setWalletHandler)
       context.on(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
       context.on(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, setWeb3ProviderHandler)
       context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
@@ -52,7 +47,6 @@ export const useWalletsConnector = () => {
 
     return () => {
       if (context) {
-        context.off(WALLETS_EVENTS.CURRENT_WALLET, setWalletHandler)
         context.off(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
         context.on(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, setWeb3ProviderHandler)
         context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
@@ -61,7 +55,6 @@ export const useWalletsConnector = () => {
   }, [context])
 
   return {
-    wallet,
     injectedChains,
     web3provider,
     provider
@@ -71,7 +64,9 @@ export const useWalletsConnector = () => {
 export const useConnectedAccounts = () => {
   const context = useContext(WalletsContext)
 
-  const [accounts, setAccounts] = useState<IChainWithAccount>({})
+  const [accounts, setAccounts] = useState<IChainWithAccount>(
+    () => context?.getAccounts() || {}
+  )
 
   const setAccountsHandler = useCallback(
     (newList: IChainWithAccount) => {
@@ -144,7 +139,6 @@ export const useSign = () => {
         return
       }
 
-      // hash message
       return await context.signMessage(chainId, hash)
     },
     [context]

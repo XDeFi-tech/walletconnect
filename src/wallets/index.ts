@@ -10,7 +10,7 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 
 export class WalletsConnector {
-  private web3: Web3 | null = null
+  public web3: Web3
 
   public connector: WalletConnect
   private accounts: IChainWithAccount = {}
@@ -191,7 +191,7 @@ export class WalletsConnector {
     this.connector.off(event, callback)
   }
 
-  private getAccounts = (): IChainWithAccount => {
+  public getAccounts = (): IChainWithAccount => {
     return this.accounts
   }
 
