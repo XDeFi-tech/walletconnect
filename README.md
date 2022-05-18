@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-yarn add wallets-connector
+yarn add @xdefi-tech/wallets-connector
 ```
 
 ## Usage
