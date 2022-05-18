@@ -114,6 +114,8 @@ export const Modal = ({
 const CloseSvgStyled = styled(CloseSvg)`
   margin-left: auto;
   cursor: pointer;
+  width: 17px;
+  height: 17px;
 `
 
 const ModalStyled = styled.div`
@@ -141,7 +143,7 @@ const BackdropStyled = styled(motion.div)`
 
 const BodyStyled = styled(motion.div)`
   width: 100%;
-  padding: 24px 50px;
+  padding: 27px 50px;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -154,4 +156,9 @@ const BodyStyled = styled(motion.div)`
   opacity: 1;
   background: #2b2b2b;
   border-radius: 8px;
+
+  @media screen and (max-width: 768px) {
+    padding: 24px;
+    max-width: 340px;
+  }
 `

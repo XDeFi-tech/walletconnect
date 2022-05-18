@@ -266,7 +266,6 @@ export class ProviderController {
       if (this.shouldCacheProvider && this.cachedProvider !== id) {
         this.setCachedProvider(id, cachedChains)
       }
-      this.setInjectedChains(cachedChains)
 
       this.connectToChains()
     } catch (error) {

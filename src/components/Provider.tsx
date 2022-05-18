@@ -24,22 +24,6 @@ const SIcon = styled.div`
   }
 `
 
-const SName = styled.div`
-  width: 100%;
-  margin-top: 14px;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
-  color: #ffffff;
-  text-align: center;
-
-  @media screen and (max-width: 768px) {
-    font-size: 5vw;
-    margin-top: 0;
-    margin-left: 16px;
-  }
-`
-
 const SProviderWrapper = styled.div`
   background: #333333;
   border-radius: 8px;
@@ -60,10 +44,28 @@ const SProviderWrapper = styled.div`
     flex-direction: row;
     width: 100%;
     min-height: 50px;
+    height: auto;
+  }
+`
+
+const SName = styled.div`
+  width: 100%;
+  width: 100%;
+  margin-top: 14px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  text-align: center;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 0;
+    margin-left: 16px;
   }
 `
 
 const SLink = styled.a`
+  width: 100%;
   cursor: pointer;
   margin-top: 4px;
   color: #ffffff;
@@ -75,19 +77,21 @@ const SLink = styled.a`
 
   @media screen and (max-width: 768px) {
     margin-top: 0;
-    margin-left: 4px;
+    margin-left: 16px;
   }
 `
 
 const SPrioritise = styled.a`
+  width: 100%;
   cursor: pointer;
   margin-top: 14px;
   color: #ffffff;
   font-size: 16px;
+  line-height: 24px;
 
   @media screen and (max-width: 768px) {
     margin-top: 0;
-    margin-left: 4px;
+    margin-left: 16px;
   }
 `
 

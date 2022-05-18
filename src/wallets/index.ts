@@ -43,11 +43,19 @@ export class WalletsConnector {
             WALLETS_EVENTS.CURRENT_WEB3_PROVIDER,
             this.web3
           )
+          this.connector.trigger(
+            WALLETS_EVENTS.CURRENT_WALLET,
+            this.connector.injectedProvider
+          )
+          this.connector.trigger(
+            WALLETS_EVENTS.CONNECTED_CHAINS,
+            this.connector.injectedChains
+          )
 
           return provider.enable()
         })
-        .then((ethAccounts: string[]) => {
-          return this.loadAccounts(ethAccounts)
+        .then(() => {
+          return this.loadAccounts()
         })
     } catch (e) {
       console.log('Error', e)
@@ -56,11 +64,12 @@ export class WalletsConnector {
     }
   }
 
-  private loadAccounts = async (ethAccounts: string[]) => {
+  private loadAccounts = async () => {
     if (!this.web3) {
       return
     }
 
+    const ethAccounts = await this.web3.eth.getAccounts()
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
@@ -80,15 +89,6 @@ export class WalletsConnector {
     }
 
     this.setAccounts(map)
-
-    this.connector.trigger(
-      WALLETS_EVENTS.CURRENT_WALLET,
-      this.connector.injectedProvider
-    )
-    this.connector.trigger(
-      WALLETS_EVENTS.CONNECTED_CHAINS,
-      this.connector.injectedChains
-    )
   }
 
   private setAccounts = (map: IChainWithAccount) => {

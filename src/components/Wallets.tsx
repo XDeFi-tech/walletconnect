@@ -44,6 +44,7 @@ const SCard = styled.div<IModalCardStyleProps>`
   @media screen and (max-width: 768px) {
     grid-gap: 16px;
     grid-template-columns: 1fr;
+    margin-top: 16px;
   }
 `
 
@@ -51,8 +52,12 @@ const SDescription = styled.div`
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
-  margin: 24px 0;
+  margin: 24px 0 21px 0;
   color: #c4c4c4;
+
+  @media screen and (max-width: 768px) {
+    margin: 16px 0 0 0;
+  }
 `
 const STitle = styled.div`
   font-weight: 600;
@@ -61,6 +66,11 @@ const STitle = styled.div`
   text-align: center;
   color: #f2f1f1;
   text-align: center;
+  margin-top: 11px;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 18px;
+  }
 `
 
 interface IProps {
