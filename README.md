@@ -1,4 +1,10 @@
-# wallets-connector
+# Cross chain wallets-connector
+
+It can use different wallets with configs for different providers (EVM-chains, bitcoin/litcoin/etc)
+
+just check example of usage XDEFI wallet:
+
+`https://github.com/XDeFi-tech/walletconnect/blob/master/src/providers/injected/index.ts#L146`
 
 ## Install
 
