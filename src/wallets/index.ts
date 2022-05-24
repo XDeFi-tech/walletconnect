@@ -84,15 +84,12 @@ export class WalletsConnector {
       return '0'
     }
 
-    switch (chain) {
-      case IChainType.ethereum: {
-        return this.web3.eth.getBalance(this.accounts[chain])
-      }
-      default: {
-        console.log(`Not supported chain ${chain} for loading balance`)
-        return '0'
-      }
+    if (this.accounts[chain] && chain === IChainType.ethereum) {
+      return this.web3.eth.getBalance(this.accounts[chain] as string)
     }
+
+    console.log(`Not supported chain ${chain} for loading balance`)
+    return '0'
   }
 
   public disconnect = () => {
@@ -128,6 +125,7 @@ export class WalletsConnector {
       }
     }
   }
+
   public isSignAvailable = (chainId: IChainType) => {
     if (!this.web3) {
       return false
