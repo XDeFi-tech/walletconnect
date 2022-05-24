@@ -33,9 +33,7 @@ export interface ISupportedChain {
   }
 }
 
-export interface IChainWithAccount {
-  [chainId: string]: string
-}
+export type IChainWithAccount = { [key in IChainType]?: string }
 
 export interface IChainToAccounts {
   chain: string
