@@ -1,23 +1,32 @@
-# Cross chain wallets-connector
-
-It can use different wallets with configs for different providers (EVM-chains, bitcoin/litcoin/etc)
-
-just check example of usage XDEFI wallet:
-
-https://github.com/XDeFi-tech/walletconnect/blob/master/src/providers/injected/index.ts#L146
+# wallets-connector
 
 ## Install
 
 ```bash
-yarn add @xdefi-tech/wallets-connector
+yarn add wallets-connector
 ```
 
 ## Usage
 
 ```tsx
 const getProviderOptions = (): IProviderOptions => {
-  const infuraId = 'blablaid'
+  const infuraId = 'your_infura_key'
   const providerOptions = {
+    xdefi: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.XDEFI
+    },
+    injected: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.FALLBACK
+    },
+    metamask: {
+      package: true,
+      connector: connectors.injected,
+      display: injected.METAMASK
+    },
     walletconnect: {
       package: WalletConnect,
       options: {
@@ -27,9 +36,12 @@ const getProviderOptions = (): IProviderOptions => {
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
-        appName: 'Coinbase Example App',
+        appName: 'Coinbase App',
         infuraId
       }
+    },
+    torus: {
+      package: Torus
     }
   }
   return providerOptions
@@ -48,7 +60,18 @@ function App() {
 ```tsx
 const context = useContext(WalletsContext)
 
-const { provider, accounts } = useWalletsConnector()
+const [current, setCurrentProvider] = useState<IProviderInfo>()
+const [accounts, setAccounts] = useState<IChainWithAccount>({})
 
-const accounts = useConnectedAccounts()
+useEffect(() => {
+  if (context) {
+    context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
+      setCurrentProvider(provider)
+    })
+
+    context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
+      setAccounts(newList)
+    })
+  }
+}, [context])
 ```
