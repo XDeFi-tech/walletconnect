@@ -18,11 +18,11 @@
     "@types/node": "link:../node_modules/@types/node",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@xdefi/wallets-connector": "link:..",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "link:../node_modules/react-scripts",
-    "typescript": "^4.1.2",
-    "@xdefi/wallets-connector": "link:.."
+    "typescript": "^4.1.2"
   },
   "peerDependencies": {
     "react": "^16.0.0"
@@ -34,6 +34,7 @@
     "@walletconnect/web3-provider": "^1.7.8",
     "@web3modal/ledger-provider": "^1.0.0",
     "@web3modal/trezor-provider": "^1.0.0",
+    "ethereumjs-util": "^7.1.4",
     "styled-components": "^5.3.5"
   },
   "eslintConfig": {
