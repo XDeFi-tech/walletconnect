@@ -1,9 +1,9 @@
-# wallets-connector
+# @xdefi/wallets-connector
 
 ## Install
 
 ```bash
-yarn add wallets-connector
+yarn add @xdefi/wallets-connector
 ```
 
 ## Usage
