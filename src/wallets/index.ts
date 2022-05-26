@@ -8,6 +8,7 @@ import {
 } from '../helpers'
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
+import { isEqual } from 'lodash'
 
 export class WalletsConnector {
   public web3: Web3 | null
@@ -43,6 +44,17 @@ export class WalletsConnector {
 
       if (!provider) {
         setTimeout(() => this.connect(), 1000)
+      } else {
+        const ethereum = window.ethereum
+
+        if (ethereum) {
+          ethereum.on('accountsChanged', () => {
+            this.loadAccounts()
+          })
+          ethereum.on('disconnect', () => {
+            this.disconnect()
+          })
+        }
       }
     } catch (e) {
       console.log('Error', e)
@@ -79,8 +91,10 @@ export class WalletsConnector {
   }
 
   private setAccounts = (map: IChainWithAccount) => {
-    this.accounts = map
-    this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
+    if (!isEqual(this.accounts, map)) {
+      this.accounts = map
+      this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
+    }
   }
 
   public getBalance = async (chain: IChainType = IChainType.ethereum) => {

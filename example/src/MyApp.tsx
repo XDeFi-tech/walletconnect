@@ -5,7 +5,7 @@ import {
   useConnectedAccounts,
   useSign,
   WalletsContext
-} from 'wallets-connector'
+} from '@xdefi/wallets-connector'
 
 import Button from './components/Button'
 import Column from './components/Column'

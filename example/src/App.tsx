@@ -8,7 +8,7 @@ import NetworkManager, {
   IProviderOptions,
   injected,
   connectors
-} from 'wallets-connector'
+} from '@xdefi/wallets-connector'
 
 import MyApp from './MyApp'
 

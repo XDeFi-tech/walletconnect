@@ -8,7 +8,7 @@ import {
   useWalletsConnector,
   WalletsModal,
   useBalance
-} from 'wallets-connector'
+} from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
 
@@ -94,7 +94,7 @@ interface IHeaderProps {
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
-  const { wallet } = useWalletsConnector()
+  const { provider: wallet } = useWalletsConnector()
   const accounts = useConnectedAccounts()
 
   const connected = !!wallet
@@ -111,11 +111,7 @@ const Header = (props: IHeaderProps) => {
       <SAddress connected={connected}>
         {connected ? (
           <Fragment>
-            {wallet && wallet.chains ? (
-              <RenderChains accounts={accounts} />
-            ) : (
-              'Ethereum'
-            )}
+            <RenderChains accounts={accounts} />
           </Fragment>
         ) : (
           <WalletsModal
@@ -133,6 +129,7 @@ const Header = (props: IHeaderProps) => {
 }
 
 const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
+  console.log('accounts', accounts)
   return (
     <Fragment>
       {Object.keys(accounts).map((chain: string) => (
