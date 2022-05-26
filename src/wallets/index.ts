@@ -1,5 +1,3 @@
-import Web3 from 'web3'
-
 import {
   IChainToAccounts,
   IChainWithAccount,
@@ -11,8 +9,6 @@ import { WalletConnect } from '../core'
 import { isEqual } from 'lodash'
 
 export class WalletsConnector {
-  public web3: Web3 | null
-
   public connector: WalletConnect
   private accounts: IChainWithAccount = {}
 
@@ -64,11 +60,13 @@ export class WalletsConnector {
   }
 
   private loadAccounts = async () => {
-    if (!this.web3) {
+    if (!window.ethereum) {
       return
     }
 
-    const ethAccounts = await this.web3.eth.getAccounts()
+    const ethAccounts = await window.ethereum.request({
+      method: 'eth_requestAccounts'
+    })
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
@@ -98,12 +96,15 @@ export class WalletsConnector {
   }
 
   public getBalance = async (chain: IChainType = IChainType.ethereum) => {
-    if (!this.web3) {
+    if (!window.ethereum) {
       return '0'
     }
 
     if (this.accounts[chain] && chain === IChainType.ethereum) {
-      return this.web3.eth.getBalance(this.accounts[chain] as string)
+      return window.ethereum.request({
+        method: 'eth_requestAccounts',
+        params: [this.accounts[chain] as string]
+      })
     }
 
     console.log(`Not supported chain ${chain} for loading balance`)
@@ -114,8 +115,6 @@ export class WalletsConnector {
     this.connector.clearCachedProvider()
 
     this.setAccounts({})
-
-    this.web3 = null
   }
 
   public getChainMethods = (chain: IChainType) => {
@@ -124,7 +123,7 @@ export class WalletsConnector {
   }
 
   public signMessage = async (chainId: IChainType, hash: string) => {
-    if (!this.web3) {
+    if (!window.ethereum) {
       return
     }
 
@@ -132,7 +131,10 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return await this.web3.eth.sign(hash, address)
+        return await window.ethereum.request({
+          method: 'eth_sign',
+          params: [address, hash]
+        })
       }
 
       default: {
@@ -145,10 +147,6 @@ export class WalletsConnector {
   }
 
   public isSignAvailable = (chainId: IChainType) => {
-    if (!this.web3) {
-      return false
-    }
-
     switch (chainId) {
       case IChainType.ethereum: {
         return true
@@ -190,11 +188,8 @@ export class WalletsConnector {
   private fireConfigs = async (provider: any = undefined) => {
     console.log('fireConfigs', provider)
     if (provider) {
-      this.web3 = new Web3(provider)
       this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
     }
-
-    this.connector.trigger(WALLETS_EVENTS.CURRENT_WEB3_PROVIDER, this.web3)
 
     this.connector.trigger(
       WALLETS_EVENTS.CURRENT_WALLET,

@@ -2,8 +2,10 @@ import React, { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
   IChainType,
+  IChainWithAccount,
   useConnectedAccounts,
   useSign,
+  useSignAvailability,
   WalletsContext
 } from '@xdefi/wallets-connector'
 
@@ -99,6 +101,29 @@ const MyApp = () => {
 
   const accounts = useConnectedAccounts()
 
+  return (
+    <SLayout>
+      <Column maxWidth={1000} spanHeight>
+        <Header killSession={resetApp} />
+        <SContent>
+          {Object.keys(accounts).map((chain: string) => {
+            return <Sign key={chain} chain={chain} accounts={accounts} />
+          })}
+        </SContent>
+      </Column>
+    </SLayout>
+  )
+}
+
+const Sign = ({
+  chain,
+  accounts
+}: {
+  chain: string
+  accounts: IChainWithAccount
+}) => {
+  const isAvailable = useSignAvailability(chain as IChainType)
+
   const providerSign = useSign()
 
   const sign = async (chain: IChainType) => {
@@ -113,29 +138,22 @@ const MyApp = () => {
   }
 
   return (
-    <SLayout>
-      <Column maxWidth={1000} spanHeight>
-        <Header killSession={resetApp} />
-        <SContent>
-          {Object.keys(accounts).map((chain: string) => {
-            return (
-              <SBalances key={chain}>
-                <h3>
-                  {chain} with account {accounts[chain]}
-                </h3>
-                <Column center>
-                  <STestButtonContainer>
-                    <STestButton left onClick={() => sign(chain as IChainType)}>
-                      {SIGN}
-                    </STestButton>
-                  </STestButtonContainer>
-                </Column>
-              </SBalances>
-            )
-          })}
-        </SContent>
+    <SBalances>
+      <h3>
+        {chain} with account {accounts[chain]}
+      </h3>
+      <Column center>
+        <STestButtonContainer>
+          <STestButton
+            disabled={!isAvailable}
+            left
+            onClick={() => sign(chain as IChainType)}
+          >
+            {SIGN}
+          </STestButton>
+        </STestButtonContainer>
       </Column>
-    </SLayout>
+    </SBalances>
   )
 }
 

@@ -254,8 +254,9 @@ export class ProviderController {
   ) => {
     try {
       this.trigger(WALLETS_EVENTS.SELECT, id)
-      const providerPackage = this.getProviderOption(id)?.package
-      const providerOptions = this.getProviderOption(id)?.options
+      const options = this.getProviderOption(id)
+      const providerPackage = options?.package
+      const providerOptions = options?.options
       const opts = { network: this.network || undefined, ...providerOptions }
       const provider = await connector(providerPackage, opts, chains)
 
@@ -268,6 +269,8 @@ export class ProviderController {
       }
 
       this.connectToChains()
+
+      this.injectedProvider = getInjectedProvider()
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }
