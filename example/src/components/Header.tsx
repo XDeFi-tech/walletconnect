@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
@@ -7,7 +7,8 @@ import {
   useConnectedAccounts,
   useWalletsConnector,
   WalletsModal,
-  useBalance
+  useBalance,
+  useWalletEvents
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -97,7 +98,19 @@ const Header = (props: IHeaderProps) => {
   const { provider: wallet } = useWalletsConnector()
   const accounts = useConnectedAccounts()
 
-  const connected = !!wallet
+  const [isConnected, setIsConnected] = useState(false)
+
+  const onConnectHandler = useCallback(() => {
+    setIsConnected(true)
+  }, [setIsConnected])
+  const onErrorHandler = useCallback(() => {
+    setIsConnected(false)
+  }, [setIsConnected])
+  const onCloseHandler = useCallback(() => {
+    setIsConnected(false)
+  }, [setIsConnected])
+
+  useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 
   const ethBalance = useBalance(IChainType.ethereum)
 
@@ -108,8 +121,8 @@ const Header = (props: IHeaderProps) => {
       ) : (
         <Banner />
       )}
-      <SAddress connected={connected}>
-        {connected ? (
+      <SAddress connected={isConnected}>
+        {isConnected ? (
           <Fragment>
             <RenderChains accounts={accounts} />
           </Fragment>
@@ -120,7 +133,7 @@ const Header = (props: IHeaderProps) => {
         )}{' '}
       </SAddress>
       <SActiveAccount>
-        <SDisconnect connected={connected} onClick={killSession}>
+        <SDisconnect connected={isConnected} onClick={killSession}>
           {'Disconnect'}
         </SDisconnect>
       </SActiveAccount>
