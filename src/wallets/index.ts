@@ -175,6 +175,12 @@ export class WalletsConnector {
   }
 
   public request = async (chainId: IChainType, method: string, data: any) => {
+    const targetProvider = this.getChainMethods(chainId)
+
+    if (targetProvider && targetProvider.methods.request) {
+      return targetProvider.methods.request(method, data)
+    }
+
     switch (chainId) {
       case IChainType.ethereum: {
         return window.ethereum.request({
@@ -182,12 +188,6 @@ export class WalletsConnector {
           params: data
         })
       }
-    }
-
-    const targetProvider = this.getChainMethods(chainId)
-
-    if (targetProvider && targetProvider.methods.request) {
-      return targetProvider.methods.request(method, data)
     }
 
     throw new Error(`Not supported ${method} for ${chainId}`)
