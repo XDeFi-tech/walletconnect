@@ -429,6 +429,43 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
+    },
+    [IChainType.ethereum]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            if (!window.xfi.ethereum) {
+              resolve([])
+              return
+            }
+
+            window.xfi.ethereum.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.ethereum.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
+        }
+      }
     }
     /*[IChainType.terra]: {
       methods: {

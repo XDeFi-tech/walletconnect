@@ -107,7 +107,8 @@ export class WalletsConnector {
       })
     }
 
-    console.log(`Not supported chain ${chain} for loading balance`)
+    console.warn(`Not supported chain ${chain} for loading balance`)
+
     return '0'
   }
 
@@ -163,6 +164,16 @@ export class WalletsConnector {
     return false
   }
 
+  public isRequestAvailable = (chainId: IChainType) => {
+    const targetProvider = this.getChainMethods(chainId)
+
+    return (
+      targetProvider &&
+      targetProvider.methods &&
+      !!targetProvider.methods.request
+    )
+  }
+
   public request = async (chainId: IChainType, type: string, data: any) => {
     const targetProvider = this.getChainMethods(chainId)
 
@@ -186,7 +197,6 @@ export class WalletsConnector {
   }
 
   private fireConfigs = async (provider: any = undefined) => {
-    console.log('fireConfigs', provider)
     if (provider) {
       this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
     }

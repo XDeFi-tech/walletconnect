@@ -131,6 +131,17 @@ export const useSign = () => {
 
   return sign
 }
+export const useSignAvailability = (chainId: IChainType) => {
+  const context = useContext(WalletsContext)
+
+  return useMemo(() => {
+    if (!context) {
+      return false
+    }
+
+    return context.isSignAvailable(chainId)
+  }, [context, chainId])
+}
 
 export const useWalletRequest = () => {
   const context = useContext(WalletsContext)
@@ -148,7 +159,7 @@ export const useWalletRequest = () => {
   return onRequest
 }
 
-export const useSignAvailability = (chainId: IChainType) => {
+export const useRequestAvailability = (chainId: IChainType) => {
   const context = useContext(WalletsContext)
 
   return useMemo(() => {
@@ -156,7 +167,7 @@ export const useSignAvailability = (chainId: IChainType) => {
       return false
     }
 
-    return context.isSignAvailable(chainId)
+    return context.isRequestAvailable(chainId)
   }, [context, chainId])
 }
 

@@ -188,7 +188,10 @@ export class ProviderController {
     ) {
       return Promise.all(
         this.injectedChains
-          .filter((chain) => !!currentProviderChains[chain])
+          .filter(
+            (chain) =>
+              !!currentProviderChains[chain] && chain !== IChainType.ethereum
+          )
           .map((chain) => {
             const target = currentProviderChains[chain]
 
