@@ -132,7 +132,7 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return await window.ethereum.request({
+        return window.ethereum.request({
           method: 'eth_sign',
           params: [address, hash]
         })
@@ -141,7 +141,7 @@ export class WalletsConnector {
       default: {
         const targetProvider = this.getChainMethods(chainId)
         if (targetProvider && targetProvider.methods.signTransaction) {
-          return await targetProvider.methods.signTransaction(hash)
+          return targetProvider.methods.signTransaction(hash)
         }
       }
     }
@@ -174,14 +174,23 @@ export class WalletsConnector {
     )
   }
 
-  public request = async (chainId: IChainType, type: string, data: any) => {
+  public request = async (chainId: IChainType, method: string, data: any) => {
+    switch (chainId) {
+      case IChainType.ethereum: {
+        return window.ethereum.request({
+          method: method,
+          params: data
+        })
+      }
+    }
+
     const targetProvider = this.getChainMethods(chainId)
 
     if (targetProvider && targetProvider.methods.request) {
-      return await targetProvider.methods.request(type, data)
+      return targetProvider.methods.request(method, data)
     }
 
-    throw new Error(`Not supported ${type} for ${chainId}`)
+    throw new Error(`Not supported ${method} for ${chainId}`)
   }
 
   public on = (event: string, callback: SimpleFunction) => {
