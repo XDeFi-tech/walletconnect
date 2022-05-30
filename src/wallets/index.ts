@@ -107,7 +107,8 @@ export class WalletsConnector {
       })
     }
 
-    console.log(`Not supported chain ${chain} for loading balance`)
+    console.warn(`Not supported chain ${chain} for loading balance`)
+
     return '0'
   }
 
@@ -131,7 +132,7 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return await window.ethereum.request({
+        return window.ethereum.request({
           method: 'eth_sign',
           params: [address, hash]
         })
@@ -140,7 +141,7 @@ export class WalletsConnector {
       default: {
         const targetProvider = this.getChainMethods(chainId)
         if (targetProvider && targetProvider.methods.signTransaction) {
-          return await targetProvider.methods.signTransaction(hash)
+          return targetProvider.methods.signTransaction(hash)
         }
       }
     }
@@ -163,14 +164,33 @@ export class WalletsConnector {
     return false
   }
 
-  public request = async (chainId: IChainType, type: string, data: any) => {
+  public isRequestAvailable = (chainId: IChainType) => {
+    const targetProvider = this.getChainMethods(chainId)
+
+    return (
+      targetProvider &&
+      targetProvider.methods &&
+      !!targetProvider.methods.request
+    )
+  }
+
+  public request = async (chainId: IChainType, method: string, data: any) => {
     const targetProvider = this.getChainMethods(chainId)
 
     if (targetProvider && targetProvider.methods.request) {
-      return await targetProvider.methods.request(type, data)
+      return targetProvider.methods.request(method, data)
     }
 
-    throw new Error(`Not supported ${type} for ${chainId}`)
+    switch (chainId) {
+      case IChainType.ethereum: {
+        return window.ethereum.request({
+          method: method,
+          params: data
+        })
+      }
+    }
+
+    throw new Error(`Not supported ${method} for ${chainId}`)
   }
 
   public on = (event: string, callback: SimpleFunction) => {
@@ -186,7 +206,6 @@ export class WalletsConnector {
   }
 
   private fireConfigs = async (provider: any = undefined) => {
-    console.log('fireConfigs', provider)
     if (provider) {
       this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
     }

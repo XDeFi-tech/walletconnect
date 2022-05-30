@@ -142,7 +142,6 @@ const Header = (props: IHeaderProps) => {
 }
 
 const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
-  console.log('accounts', accounts)
   return (
     <Fragment>
       {Object.keys(accounts).map((chain: string) => (

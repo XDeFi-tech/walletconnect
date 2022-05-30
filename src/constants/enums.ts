@@ -10,4 +10,6 @@ export enum IChainType {
   thorchain = 'thorchain',
   terra = 'terra',
   dogecoin = 'dogecoin',
+  fantom = 'fantom',
+  arbitrum = 'arbitrum'
 }

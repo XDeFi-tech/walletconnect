@@ -35,7 +35,7 @@ export const useWalletsConnector = () => {
     return () => {
       if (context) {
         context.off(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
-        context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
+        context.off(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
       }
     }
   }, [context])
@@ -131,7 +131,6 @@ export const useSign = () => {
 
   return sign
 }
-
 export const useSignAvailability = (chainId: IChainType) => {
   const context = useContext(WalletsContext)
 
@@ -141,6 +140,34 @@ export const useSignAvailability = (chainId: IChainType) => {
     }
 
     return context.isSignAvailable(chainId)
+  }, [context, chainId])
+}
+
+export const useWalletRequest = () => {
+  const context = useContext(WalletsContext)
+  const onRequest = useCallback(
+    async (chainId: IChainType, method: string, params: any) => {
+      if (!context) {
+        return
+      }
+
+      return await context.request(chainId, method, params)
+    },
+    [context]
+  )
+
+  return onRequest
+}
+
+export const useRequestAvailability = (chainId: IChainType) => {
+  const context = useContext(WalletsContext)
+
+  return useMemo(() => {
+    if (!context) {
+      return false
+    }
+
+    return context.isRequestAvailable(chainId)
   }, [context, chainId])
 }
 
