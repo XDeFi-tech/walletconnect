@@ -35,7 +35,7 @@ export const useWalletsConnector = () => {
     return () => {
       if (context) {
         context.off(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
-        context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
+        context.off(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
       }
     }
   }, [context])
