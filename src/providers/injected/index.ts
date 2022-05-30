@@ -164,7 +164,8 @@ export const XDEFI: IProviderInfo = {
   supportedEvmChains: [
     IChainType.avalanche,
     IChainType.binancesmartchain,
-    IChainType.polygon
+    IChainType.polygon,
+    IChainType.fantom
   ],
   chains: {
     [IChainType.bitcoin]: {
@@ -274,6 +275,20 @@ export const XDEFI: IProviderInfo = {
               }
             )
           })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.binance.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
         }
       }
     },
@@ -292,6 +307,20 @@ export const XDEFI: IProviderInfo = {
               }
             )
           })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.litecoin.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
         }
       }
     },
@@ -307,6 +336,20 @@ export const XDEFI: IProviderInfo = {
                 }
 
                 resolve(accounts)
+              }
+            )
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.bitcoincash.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
               }
             )
           })
@@ -330,6 +373,57 @@ export const XDEFI: IProviderInfo = {
                 }
 
                 resolve(accounts)
+              }
+            )
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.dogecoin.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
+              }
+            )
+          })
+        }
+      }
+    },
+    [IChainType.arbitrum]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            if (!window.xfi.arbitrum) {
+              resolve([])
+              return
+            }
+
+            window.xfi.arbitrum.request(
+              { method: 'request_accounts', params: [] },
+              (error: any, accounts: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(accounts)
+              }
+            )
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            window.xfi.arbitrum.request(
+              { method: method, params: data },
+              (error: any, result: any) => {
+                if (error) {
+                  reject(error)
+                }
+
+                resolve(result)
               }
             )
           })

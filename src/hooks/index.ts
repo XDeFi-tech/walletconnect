@@ -132,6 +132,22 @@ export const useSign = () => {
   return sign
 }
 
+export const useWalletRequest = () => {
+  const context = useContext(WalletsContext)
+  const onRequest = useCallback(
+    async (chainId: IChainType, method: string, params: any) => {
+      if (!context) {
+        return
+      }
+
+      return await context.request(chainId, method, params)
+    },
+    [context]
+  )
+
+  return onRequest
+}
+
 export const useSignAvailability = (chainId: IChainType) => {
   const context = useContext(WalletsContext)
 
