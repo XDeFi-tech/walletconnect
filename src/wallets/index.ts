@@ -10,6 +10,7 @@ import { isEqual } from 'lodash'
 
 export class WalletsConnector {
   public connector: WalletConnect
+  public currentProvider: any
   private accounts: IChainWithAccount = {}
 
   constructor(
@@ -207,6 +208,7 @@ export class WalletsConnector {
 
   private fireConfigs = async (provider: any = undefined) => {
     if (provider) {
+      this.currentProvider = provider
       this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
     }
 
