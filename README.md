@@ -57,6 +57,8 @@ function App() {
 }
 ```
 
+# Internal events
+
 ```tsx
 const context = useContext(WalletsContext)
 
@@ -74,4 +76,24 @@ useEffect(() => {
     })
   }
 }, [context])
+```
+
+# Hooks
+```tsx
+  const accounts = useConnectedAccounts();
+
+  const isConnected = useStore((state) => state.connected);
+  const setIsConnected = useStore((state) => state.setConnected);
+
+  const onConnectHandler = useCallback(() => {
+    setIsConnected(true);
+  }, [setIsConnected]);
+  const onErrorHandler = useCallback(() => {
+    setIsConnected(false);
+  }, [setIsConnected]);
+  const onCloseHandler = useCallback(() => {
+    setIsConnected(false);
+  }, [setIsConnected]);
+
+  useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler);
 ```

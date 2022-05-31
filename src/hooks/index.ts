@@ -10,7 +10,9 @@ export const useWalletsConnector = () => {
   const [injectedChains, setInjectedChains] = useState<string[]>(
     () => context?.connector?.injectedChains || []
   )
-  const [provider, setCurrentProvider] = useState<any>(null)
+  const [provider, setCurrentProvider] = useState<any>(
+    () => context?.currentProvider
+  )
 
   const setProviderHandler = useCallback(
     (provider: any) => {
