@@ -472,15 +472,15 @@ export const XDEFI: IProviderInfo = {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
-            const terrawWalletXdefi = window.terraWallets.find(
+            const terraWalletXdefi = window.terraWallets.find(
               (w) => w.identifier === 'xdefi-wallet'
             )
 
-            if (!terrawWalletXdefi) {
+            if (!terraWalletXdefi) {
               reject('No terra connector')
             }
 
-            const connector = terrawWalletXdefi.connector()
+            const connector = terraWalletXdefi.connector()
 
             const { states: stream } = connector
 
@@ -500,15 +500,15 @@ export const XDEFI: IProviderInfo = {
         },
         request: (method: string, data: any) => {
           return new Promise((resolve, reject) => {
-            const terrawWalletXdefi = window.terraWallets.find(
+            const terraWalletXdefi = window.terraWallets.find(
               (w) => w.identifier === 'xdefi-wallet'
             )
 
-            if (!terrawWalletXdefi) {
+            if (!terraWalletXdefi) {
               reject('No terra connector')
             }
 
-            const connector = terrawWalletXdefi.connector()
+            const connector = terraWalletXdefi.connector()
             const subscriber = connector[method](...data)
 
             subscriber.subscribe((r: any) => {

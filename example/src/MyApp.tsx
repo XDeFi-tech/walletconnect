@@ -72,7 +72,7 @@ const MyApp = () => {
       return
     }
 
-    await context.connector.connect()
+    context.connector.connect()
   }
 
   const resetApp = async () => {
