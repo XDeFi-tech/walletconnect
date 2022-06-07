@@ -136,25 +136,23 @@ export class WalletsConnector {
     return chains ? chains[chain] : undefined
   }
 
-  public signMessage = async (chainId: IChainType, hash: string) => {
+  public signMessage = async (chainId: IChainType, data: any) => {
     if (!window.ethereum) {
       return
     }
-
-    const address = this.getAddress(chainId)
 
     switch (chainId) {
       case IChainType.ethereum: {
         return window.ethereum.request({
           method: 'eth_sign',
-          params: [address, hash]
+          params: data
         })
       }
 
       default: {
         const targetProvider = this.getChainMethods(chainId)
         if (targetProvider && targetProvider.methods.signTransaction) {
-          return targetProvider.methods.signTransaction(hash)
+          return targetProvider.methods.signTransaction(data)
         }
       }
     }
@@ -235,11 +233,5 @@ export class WalletsConnector {
     )
 
     return await this.loadAccounts()
-  }
-
-  private getAddress = (chainId: IChainType): string => {
-    const accounts = this.getAccounts()
-
-    return accounts[chainId] as string
   }
 }

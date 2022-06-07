@@ -114,9 +114,13 @@ const Sign = ({
 
     // hash message
     const hash = hashPersonalMessage(message)
-    const result = await providerSign(chain, hash)
+    const account = accounts[chain]
 
-    alert(result)
+    if (account) {
+      const result = await providerSign(chain, [account, hash])
+
+      alert(result)
+    }
   }
 
   return (

@@ -121,12 +121,11 @@ export const useWalletsOptions = () => {
 export const useSign = () => {
   const context = useContext(WalletsContext)
   const sign = useCallback(
-    async (chainId: IChainType, hash: string) => {
+    async (chainId: IChainType, data: any) => {
       if (!context) {
         return
       }
-
-      return await context.signMessage(chainId, hash)
+      return await context.signMessage(chainId, data)
     },
     [context]
   )

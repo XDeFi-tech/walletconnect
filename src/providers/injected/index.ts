@@ -498,7 +498,7 @@ export const XDEFI: IProviderInfo = {
             connector.refetchStates()
           })
         },
-        signTransaction: (data: any) => {
+        request: (method: string, data: any) => {
           return new Promise((resolve, reject) => {
             const terrawWalletXdefi = window.terraWallets.find(
               (w) => w.identifier === 'xdefi-wallet'
@@ -509,8 +509,13 @@ export const XDEFI: IProviderInfo = {
             }
 
             const connector = terrawWalletXdefi.connector()
+            const subscriber = connector[method](...data)
 
-            connector.sign(data)
+            subscriber.subscribe((r: any) => {
+              if (r.payload) {
+                resolve(r.payload)
+              }
+            })
           })
         }
       }
