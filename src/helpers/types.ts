@@ -26,7 +26,7 @@ export interface IProviderDisplay {
 
 export interface ISupportedChain {
   methods: {
-    signTransaction?: (hash: string) => Promise<any>
+    signTransaction?: (data: any) => Promise<any>
     sendTransaction?: (txData: any) => Promise<any>
     getAccounts: () => Promise<any>
     request?: (type: string, data: any) => Promise<any>

@@ -20,7 +20,7 @@ export function encodeSvg(reactElement: any) {
 
 export function checkInjectedProviders(): IInjectedProvidersMap {
   const result: any = {
-    injectedAvailable: !!window.ethereum || !!window.web3
+    injectedAvailable: canInject()
   }
   if (result.injectedAvailable) {
     let fallbackProvider = true
@@ -143,7 +143,7 @@ export function filterMatches<T>(
   return result
 }
 
-export const canInject = () => window.web3 || window.ethereum
+export const canInject = () => !!window.web3 || !!window.ethereum
 
 export function filterProviders(
   param: string,

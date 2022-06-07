@@ -41,6 +41,11 @@ export class WalletConnect {
 
     this.providerController.on(WALLETS_EVENTS.SELECT, this.onProviderSelect)
 
+    this.init()
+  }
+
+  public init() {
+    this.providerController.init()
     this.userOptions = this.providerController.getUserOptions()
   }
 

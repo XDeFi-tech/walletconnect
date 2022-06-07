@@ -31,6 +31,7 @@ declare global {
     celo: any
     updateWeb3Modal: any
     xfi: any
+    terraWallets: any[]
   }
 }
 export const FALLBACK: IProviderInfo = {
@@ -466,25 +467,59 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
-    }
-    /*[IChainType.terra]: {
+    },
+    [IChainType.terra]: {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
-            window.xfi.terra.request(
-              { method: 'connect', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
+            const terraWalletXdefi = window.terraWallets.find(
+              (w) => w.identifier === 'xdefi-wallet'
+            )
 
-                resolve(accounts)
+            if (!terraWalletXdefi) {
+              reject('No terra connector')
+            }
+
+            const connector = terraWalletXdefi.connector()
+
+            const { states: stream } = connector
+
+            stream.subscribe(
+              (x: any) => {
+                if (x.wallets) {
+                  resolve(x.wallets.map((w: any) => w.terraAddress))
+                }
+              },
+              (err: any) => {
+                console.error('something wrong occurred: ' + err)
               }
             )
+
+            connector.refetchStates()
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            const terraWalletXdefi = window.terraWallets.find(
+              (w) => w.identifier === 'xdefi-wallet'
+            )
+
+            if (!terraWalletXdefi) {
+              reject('No terra connector')
+            }
+
+            const connector = terraWalletXdefi.connector()
+            const subscriber = connector[method](...data)
+
+            subscriber.subscribe((r: any) => {
+              if (r.payload) {
+                resolve(r.payload)
+              }
+            })
           })
         }
       }
-    }*/
+    }
   }
 }
 

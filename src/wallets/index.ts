@@ -1,4 +1,5 @@
 import {
+  canInject,
   IChainToAccounts,
   IChainWithAccount,
   IProviderOptions,
@@ -7,6 +8,8 @@ import {
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { isEqual } from 'lodash'
+
+const INIT_RETRY_TIMEOUT = 2000
 
 export class WalletsConnector {
   public connector: WalletConnect
@@ -30,17 +33,26 @@ export class WalletsConnector {
       this.fireConfigs(provider)
     )
 
-    this.connect()
+    this.init()
+  }
+
+  private init() {
+    if (canInject()) {
+      this.connect()
+    } else {
+      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+    }
   }
 
   private connect = async () => {
     try {
+      this.connector.init()
       const provider = this.connector.connect().then((provider: any) => {
         return provider && provider.enable()
       })
 
       if (!provider) {
-        setTimeout(() => this.connect(), 1000)
+        setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
       } else {
         const ethereum = window.ethereum
 
@@ -56,7 +68,7 @@ export class WalletsConnector {
     } catch (e) {
       console.log('Error', e)
 
-      setTimeout(() => this.connect(), 1000)
+      setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
     }
   }
 
@@ -124,25 +136,23 @@ export class WalletsConnector {
     return chains ? chains[chain] : undefined
   }
 
-  public signMessage = async (chainId: IChainType, hash: string) => {
+  public signMessage = async (chainId: IChainType, data: any) => {
     if (!window.ethereum) {
       return
     }
-
-    const address = this.getAddress(chainId)
 
     switch (chainId) {
       case IChainType.ethereum: {
         return window.ethereum.request({
           method: 'eth_sign',
-          params: [address, hash]
+          params: data
         })
       }
 
       default: {
         const targetProvider = this.getChainMethods(chainId)
         if (targetProvider && targetProvider.methods.signTransaction) {
-          return targetProvider.methods.signTransaction(hash)
+          return targetProvider.methods.signTransaction(data)
         }
       }
     }
@@ -223,11 +233,5 @@ export class WalletsConnector {
     )
 
     return await this.loadAccounts()
-  }
-
-  private getAddress = (chainId: IChainType): string => {
-    const accounts = this.getAccounts()
-
-    return accounts[chainId] as string
   }
 }
