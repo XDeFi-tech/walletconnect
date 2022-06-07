@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
   IChainType,
@@ -57,18 +57,8 @@ const STestButton = styled(Button)`
   margin: 12px;
 `
 
-interface IAppState {
-  provider: any
-}
-
-const INITIAL_STATE: IAppState = {
-  provider: null
-}
-
 const MyApp = () => {
   const context = useContext(WalletsContext)
-
-  const [state, setState] = useState<IAppState>(INITIAL_STATE)
 
   useEffect(() => {
     if (context && context.connector.cachedProvider) {
@@ -82,20 +72,12 @@ const MyApp = () => {
       return
     }
 
-    const provider = await context.connector.connect()
-
-    await provider.enable()
-
-    setState({
-      ...state,
-      provider
-    })
+    await context.connector.connect()
   }
 
   const resetApp = async () => {
     if (context) {
       await context.disconnect()
-      setState(INITIAL_STATE)
     }
   }
 

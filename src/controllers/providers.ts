@@ -50,6 +50,10 @@ export class ProviderController {
     this.providerOptions = opts.providerOptions
     this.network = opts.network
 
+    this.init()
+  }
+
+  public init() {
     this.injectedProvider = getInjectedProvider()
 
     // parse custom providers

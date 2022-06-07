@@ -1,4 +1,5 @@
 import {
+  canInject,
   IChainToAccounts,
   IChainWithAccount,
   IProviderOptions,
@@ -7,6 +8,8 @@ import {
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { isEqual } from 'lodash'
+
+const INIT_RETRY_TIMEOUT = 2000
 
 export class WalletsConnector {
   public connector: WalletConnect
@@ -30,17 +33,26 @@ export class WalletsConnector {
       this.fireConfigs(provider)
     )
 
-    this.connect()
+    this.init()
+  }
+
+  private init() {
+    if (canInject()) {
+      this.connect()
+    } else {
+      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+    }
   }
 
   private connect = async () => {
     try {
+      this.connector.init()
       const provider = this.connector.connect().then((provider: any) => {
         return provider && provider.enable()
       })
 
       if (!provider) {
-        setTimeout(() => this.connect(), 1000)
+        setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
       } else {
         const ethereum = window.ethereum
 
@@ -56,7 +68,7 @@ export class WalletsConnector {
     } catch (e) {
       console.log('Error', e)
 
-      setTimeout(() => this.connect(), 1000)
+      setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
     }
   }
 
