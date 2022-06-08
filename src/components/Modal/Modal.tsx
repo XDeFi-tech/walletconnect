@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import React, { useCallback, useEffect, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styled from 'styled-components'
+import ThemeProvider from '../theme'
 
 import { ReactComponent as CloseSvg } from './close.svg'
 
@@ -80,31 +81,33 @@ export const Modal = ({
   return (
     modalElement &&
     createPortal(
-      <AnimatePresence>
-        {isOpen ? (
-          <ModalStyled ref={ref}>
-            <BackdropStyled
-              variants={modalBackdropVariants}
-              initial='hidden'
-              animate='visible'
-              exit='exit'
-              onClick={onClose}
-            />
-            <BodyStyled
-              className={className}
-              variants={modalVariants}
-              initial='hidden'
-              animate='visible'
-              exit='exit'
-            >
-              <CloseSvgStyled onClick={onClose} />
+      <ThemeProvider>
+        <AnimatePresence>
+          {isOpen ? (
+            <ModalStyled ref={ref}>
+              <BackdropStyled
+                variants={modalBackdropVariants}
+                initial='hidden'
+                animate='visible'
+                exit='exit'
+                onClick={onClose}
+              />
+              <BodyStyled
+                className={className}
+                variants={modalVariants}
+                initial='hidden'
+                animate='visible'
+                exit='exit'
+              >
+                <CloseSvgStyled onClick={onClose} />
 
-              {children}
-            </BodyStyled>
-          </ModalStyled>
-        ) : null}
-        )
-      </AnimatePresence>,
+                {children}
+              </BodyStyled>
+            </ModalStyled>
+          ) : null}
+          )
+        </AnimatePresence>
+      </ThemeProvider>,
 
       modalElement
     )
