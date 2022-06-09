@@ -2,6 +2,8 @@
 
 ![UI](./example/wallets-example.jpg)
 
+Please, look at the example application in folder `example`
+
 ## Install
 
 ```bash
