@@ -1,9 +1,8 @@
-import React, { Fragment, useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
   IChainType,
-  IChainWithAccount,
   useConnectedAccounts,
   useWalletsConnector,
   WalletsModal,
@@ -19,7 +18,7 @@ const SHeader = styled.div`
   margin-top: -1px;
   margin-bottom: 1px;
   width: 100%;
-  height: 100px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -51,10 +50,14 @@ interface IHeaderStyle {
   connected: boolean
 }
 
-const SAddress = styled.div<IHeaderStyle>`
+const SAddress = styled.div`
   transition: ${transitions.base};
   font-weight: bold;
-  margin: ${({ connected }) => (connected ? '-2px auto 0.7em' : '0')};
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 16px;
+  margin-left: auto;
 `
 
 const SDisconnect = styled.div<IHeaderStyle>`
@@ -121,35 +124,23 @@ const Header = (props: IHeaderProps) => {
       ) : (
         <Banner />
       )}
-      <SAddress connected={isConnected}>
-        {isConnected ? (
-          <Fragment>
-            <RenderChains accounts={accounts} />
-          </Fragment>
-        ) : (
+      {isConnected ? (
+        <SActiveAccount>
+          <BtnOpen onClick={killSession}>{'Disconnect'}</BtnOpen>
+        </SActiveAccount>
+      ) : (
+        <SAddress>
           <WalletsModal
             trigger={(props: any) => <BtnOpen {...props}>Connect</BtnOpen>}
           />
-        )}{' '}
-      </SAddress>
-      <SActiveAccount>
-        <SDisconnect connected={isConnected} onClick={killSession}>
-          {'Disconnect'}
-        </SDisconnect>
-      </SActiveAccount>
+          <WalletsModal
+            trigger={(props: any) => (
+              <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
+            )}
+          />
+        </SAddress>
+      )}
     </SHeader>
-  )
-}
-
-const RenderChains = ({ accounts }: { accounts: IChainWithAccount }) => {
-  return (
-    <Fragment>
-      {Object.keys(accounts).map((chain: string) => (
-        <div key={chain}>
-          {chain}: {accounts[chain]}
-        </div>
-      ))}
-    </Fragment>
   )
 }
 

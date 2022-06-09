@@ -85,7 +85,7 @@ const MyApp = () => {
 
   return (
     <SLayout>
-      <Column maxWidth={1000} spanHeight>
+      <Column maxWidth={1200} spanHeight>
         <Header killSession={resetApp} />
         <SContent>
           {Object.keys(accounts).map((chain: string) => {
