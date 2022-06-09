@@ -8,7 +8,7 @@ import {
 import { Colors } from './colors'
 
 export const MEDIA_WIDTHS = {
-  upToExtraSmall: 769,
+  upToExtraSmall: 768,
   upToTablet: 1024,
   upToSmall: 1366,
   upToProSmall: 1440,
@@ -37,13 +37,23 @@ function colors(darkMode: boolean): Colors {
   return {
     // base
     white,
-    black
+    black,
+    modal: {
+      bg: '#2b2b2b'
+    },
+    wallet: {
+      descColor: '#c4c4c4',
+      titleColor: '#f2f1f1',
+      bg: '#333333'
+    }
   }
 }
 
 function theme(darkMode: boolean): DefaultTheme {
   return {
     ...colors(darkMode),
+
+    wallets: { grid: '1fr 1fr 1fr' },
 
     //shadows
     mediaWidth: mediaWidthTemplates

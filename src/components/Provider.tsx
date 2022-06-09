@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from 'react'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
+import { DefaultTheme } from 'styled-components/macro'
 
 import { canInject, IProviderUserOptions } from '../helpers'
 
@@ -18,14 +19,14 @@ const SIcon = styled.div`
     height: 28px;
   }
 
-  @media screen and (max-width: 768px) {
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 32px;
     height: 32px;
-  }
+  `};
 `
 
 const SProviderWrapper = styled.div`
-  background: #333333;
+  background: ${({ theme }) => theme.wallet.bg};
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -34,41 +35,37 @@ const SProviderWrapper = styled.div`
   cursor: pointer;
   min-width: 180px;
   height: 104px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding: 12px 24px;
 
-  @media screen and (max-width: 768px) {
-    flex-direction: row;
-    width: 100%;
-    min-height: 50px;
-    height: auto;
-  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  flex-direction: row;
+  width: 100%;
+  min-height: 50px;
+  height: auto;
+  `};
 `
 
-const STYLES = `
+const STYLES = (theme: DefaultTheme) => `
   width: 100%;
   cursor: pointer;
   margin-top: 14px;
-  color: #ffffff;
+  color: ${theme.white};
   font-size: 16px;
   line-height: 24px;
   text-align: center;
 
-  @media screen and (max-width: 768px) {
+  ${theme.mediaWidth.upToExtraSmall`
     margin-top: 0;
     margin-left: 16px;
-  }
+  `};
 `
 
 const SName = styled.div`
-  ${STYLES}
+  ${({ theme }) => STYLES(theme)}
 `
 
 const SLink = styled.a`
-  ${STYLES}
+  ${({ theme }) => STYLES(theme)}
 
   margin-top: 4px;
   font-size: 12px;

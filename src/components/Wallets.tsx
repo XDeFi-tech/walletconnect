@@ -37,15 +37,15 @@ const SCard = styled.div<IModalCardStyleProps>`
   max-height: 100%;
   overflow: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: ${({ theme }) => theme.wallets.grid};
   grid-gap: 8px;
   margin-top: 24px;
 
-  @media screen and (max-width: 768px) {
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     grid-gap: 16px;
     grid-template-columns: 1fr;
     margin-top: 16px;
-  }
+  `};
 `
 
 const SDescription = styled.div`
@@ -53,24 +53,24 @@ const SDescription = styled.div`
   line-height: 16px;
   font-weight: 400;
   margin: 24px 0 21px 0;
-  color: #c4c4c4;
+  color: ${({ theme }) => theme.wallet.descColor};
 
-  @media screen and (max-width: 768px) {
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 16px 0 0 0;
-  }
+  `};
 `
 const STitle = styled.div`
   font-weight: 600;
   font-size: 24px;
   line-height: 29px;
   text-align: center;
-  color: #f2f1f1;
+  color: ${({ theme }) => theme.wallet.titleColor};
   text-align: center;
   margin-top: 11px;
 
-  @media screen and (max-width: 768px) {
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-top: 18px;
-  }
+  `};
 `
 
 interface IProps {

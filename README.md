@@ -1,5 +1,7 @@
 # @xdefi/wallets-connector
 
+![UI](./example/wallets-example.jpg)
+
 ## Install
 
 ```bash
@@ -79,21 +81,22 @@ useEffect(() => {
 ```
 
 # Hooks
+
 ```tsx
-  const accounts = useConnectedAccounts();
+const accounts = useConnectedAccounts()
 
-  const isConnected = useStore((state) => state.connected);
-  const setIsConnected = useStore((state) => state.setConnected);
+const isConnected = useStore((state) => state.connected)
+const setIsConnected = useStore((state) => state.setConnected)
 
-  const onConnectHandler = useCallback(() => {
-    setIsConnected(true);
-  }, [setIsConnected]);
-  const onErrorHandler = useCallback(() => {
-    setIsConnected(false);
-  }, [setIsConnected]);
-  const onCloseHandler = useCallback(() => {
-    setIsConnected(false);
-  }, [setIsConnected]);
+const onConnectHandler = useCallback(() => {
+  setIsConnected(true)
+}, [setIsConnected])
+const onErrorHandler = useCallback(() => {
+  setIsConnected(false)
+}, [setIsConnected])
+const onCloseHandler = useCallback(() => {
+  setIsConnected(false)
+}, [setIsConnected])
 
-  useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler);
+useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 ```

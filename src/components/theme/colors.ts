@@ -5,10 +5,20 @@ export interface Colors {
   // base
   white: Color
   black: Color
+
+  modal: {
+    bg: Color
+  }
+  wallet: {
+    descColor: Color
+    titleColor: Color
+    bg: Color
+  }
 }
 
 declare module 'styled-components/macro' {
   export interface DefaultTheme extends Colors {
+    wallets: { grid: string }
     // media queries
     mediaWidth: {
       upToExtraSmall: ThemedCssFunction<DefaultTheme>

@@ -140,7 +140,7 @@ const BackdropStyled = styled(motion.div)`
   right: 0;
   top: 0;
   left: 0;
-  background: #000000;
+  background: ${({ theme }) => theme.black};
   opacity: 0.8;
 `
 
@@ -157,7 +157,7 @@ const BodyStyled = styled(motion.div)`
   max-width: 840px;
   max-height: 720px;
   opacity: 1;
-  background: #2b2b2b;
+  background: ${({ theme }) => theme.modal.bg};
   border-radius: 8px;
 
   @media screen and (max-width: 768px) {
