@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
   IChainType,
-  useConnectedAccounts,
   useWalletsConnector,
   WalletsModal,
   useBalance,
@@ -46,10 +45,6 @@ const SActiveChain = styled(SActiveAccount)`
   }
 `
 
-interface IHeaderStyle {
-  connected: boolean
-}
-
 const SAddress = styled.div`
   transition: ${transitions.base};
   font-weight: bold;
@@ -58,25 +53,6 @@ const SAddress = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-gap: 16px;
   margin-left: auto;
-`
-
-const SDisconnect = styled.div<IHeaderStyle>`
-  transition: ${transitions.button};
-  font-size: 12px;
-  position: absolute;
-  right: 0;
-  top: 20px;
-  opacity: 0.7;
-  cursor: pointer;
-
-  opacity: ${({ connected }) => (connected ? 1 : 0)};
-  visibility: ${({ connected }) => (connected ? 'visible' : 'hidden')};
-  pointer-events: ${({ connected }) => (connected ? 'auto' : 'none')};
-
-  &:hover {
-    transform: translateY(-1px);
-    opacity: 0.5;
-  }
 `
 
 const BtnOpen = styled.button`
@@ -95,11 +71,25 @@ interface IHeaderProps {
   killSession: () => void
 }
 
+const CUSTOM_THEME = {
+  // base
+  white: '#0969da',
+  black: '#9a6700',
+  modal: {
+    bg: '#ddf4ff'
+  },
+  wallet: {
+    descColor: '#1a7f37',
+    titleColor: '#bc4c00',
+    bg: '#fbefff'
+  },
+  wallets: { grid: '1fr 1fr' }
+}
+
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
   const { provider: wallet } = useWalletsConnector()
-  const accounts = useConnectedAccounts()
 
   const [isConnected, setIsConnected] = useState(false)
 
@@ -134,6 +124,7 @@ const Header = (props: IHeaderProps) => {
             trigger={(props: any) => <BtnOpen {...props}>Connect</BtnOpen>}
           />
           <WalletsModal
+            theme={CUSTOM_THEME}
             trigger={(props: any) => (
               <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
             )}

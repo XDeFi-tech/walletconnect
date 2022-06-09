@@ -1,5 +1,5 @@
 import React, { useCallback, useState, Fragment } from 'react'
-import styled from 'styled-components'
+import styled, { DefaultTheme } from 'styled-components'
 import { useWalletsOptions } from '../hooks'
 import { Modal } from './Modal/Modal'
 
@@ -75,16 +75,17 @@ const STitle = styled.div`
 
 interface IProps {
   trigger: any
+  theme?: DefaultTheme
 }
 
-export const WalletsModal = ({ trigger: Trigger }: IProps) => {
+export const WalletsModal = ({ trigger: Trigger, theme }: IProps) => {
   const { providers: userOptions } = useWalletsOptions()
 
   const { isOpen, onClose, onOpen } = useWalletsModal()
 
   return (
     <Fragment>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} theme={theme}>
         <STitle>Connect wallet</STitle>
 
         <SCard>

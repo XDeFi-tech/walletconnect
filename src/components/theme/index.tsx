@@ -36,8 +36,8 @@ const black = '#000000'
 function colors(darkMode: boolean): Colors {
   return {
     // base
-    white,
-    black,
+    white: darkMode ? black : white,
+    black: darkMode ? white : black,
     modal: {
       bg: '#2b2b2b'
     },
@@ -60,8 +60,19 @@ function theme(darkMode: boolean): DefaultTheme {
   }
 }
 
-export default function ThemeProvider({ children }: { children: any }) {
-  const themeObject = useMemo(() => theme(false), [])
+export default function ThemeProvider({
+  children,
+  theme: providedTheme
+}: {
+  children: any
+  theme?: DefaultTheme
+}) {
+  const themeObject = useMemo(() => {
+    return {
+      ...theme(false),
+      ...providedTheme
+    }
+  }, [providedTheme])
 
   return (
     <StyledComponentsThemeProvider theme={themeObject}>

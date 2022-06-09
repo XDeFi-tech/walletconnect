@@ -18,9 +18,9 @@ export interface Colors {
 
 declare module 'styled-components/macro' {
   export interface DefaultTheme extends Colors {
-    wallets: { grid: string }
+    wallets?: { grid: string }
     // media queries
-    mediaWidth: {
+    mediaWidth?: {
       upToExtraSmall: ThemedCssFunction<DefaultTheme>
       upToTablet: ThemedCssFunction<DefaultTheme>
       upToSmall: ThemedCssFunction<DefaultTheme>
