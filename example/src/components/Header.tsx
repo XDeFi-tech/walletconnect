@@ -6,7 +6,8 @@ import {
   useWalletsConnector,
   WalletsModal,
   useBalance,
-  useWalletEvents
+  useWalletEvents,
+  defaultMediaWidthTemplates
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -71,7 +72,7 @@ interface IHeaderProps {
   killSession: () => void
 }
 
-const CUSTOM_THEME: any = {
+const CUSTOM_THEME_BUILDER = (isDark: boolean) => ({
   // base
   white: '#0969da',
   black: '#9a6700',
@@ -83,8 +84,9 @@ const CUSTOM_THEME: any = {
     titleColor: '#bc4c00',
     bg: '#fbefff'
   },
-  wallets: { grid: '1fr 1fr' }
-}
+  wallets: { grid: '1fr 1fr' },
+  mediaWidth: defaultMediaWidthTemplates
+})
 
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
@@ -124,7 +126,8 @@ const Header = (props: IHeaderProps) => {
             trigger={(props: any) => <BtnOpen {...props}>Connect</BtnOpen>}
           />
           <WalletsModal
-            theme={CUSTOM_THEME}
+            themeBuilder={CUSTOM_THEME_BUILDER}
+            isDark={true}
             trigger={(props: any) => (
               <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
             )}

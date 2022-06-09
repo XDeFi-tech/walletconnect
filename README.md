@@ -107,10 +107,10 @@ useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 
 ```tsx
 
-const CUSTOM_THEME = {
+const CUSTOM_THEME_BUILDER = (isDark:boolean) => ({
   // base
-  white: '#0969da',
-  black: '#9a6700',
+  white: isDark ? '#0969da' : '#9a6700',
+  black: isDark ? '#9a6700' : '#0969da',
   modal: {
     bg: '#ddf4ff'
   },
@@ -119,13 +119,15 @@ const CUSTOM_THEME = {
     titleColor: '#bc4c00',
     bg: '#fbefff'
   },
-  wallets: { grid: '1fr 1fr' }
-}
+  wallets: { grid: '1fr 1fr' },
+  matchMedia: defaultMediaWidthTemplates
+})
 
 ...
 
 <WalletsModal
-  theme={CUSTOM_THEME}
+  themeBuilder={CUSTOM_THEME_BUILDER}
+  isDark={true} // true/false
   trigger={(props: any) => (
     <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
   )}

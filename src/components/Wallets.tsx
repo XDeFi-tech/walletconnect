@@ -1,9 +1,10 @@
-import React, { useCallback, useState, Fragment } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled, { DefaultTheme } from 'styled-components'
 import { useWalletsOptions } from '../hooks'
 import { Modal } from './Modal/Modal'
 
 import { Provider } from './Provider'
+import ThemeProvider from './theme'
 
 interface IModalCardStyleProps {
   maxWidth?: number
@@ -75,17 +76,22 @@ const STitle = styled.div`
 
 interface IProps {
   trigger: any
-  theme?: DefaultTheme
+  isDark?: boolean
+  themeBuilder?: (isDark: boolean) => DefaultTheme
 }
 
-export const WalletsModal = ({ trigger: Trigger, theme }: IProps) => {
+export const WalletsModal = ({
+  trigger: Trigger,
+  themeBuilder,
+  isDark
+}: IProps) => {
   const { providers: userOptions } = useWalletsOptions()
 
   const { isOpen, onClose, onOpen } = useWalletsModal()
 
   return (
-    <Fragment>
-      <Modal isOpen={isOpen} onClose={onClose} theme={theme}>
+    <ThemeProvider themeBuilder={themeBuilder} isDark={isDark}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <STitle>Connect wallet</STitle>
 
         <SCard>
@@ -103,6 +109,6 @@ export const WalletsModal = ({ trigger: Trigger, theme }: IProps) => {
         </SDescription>
       </Modal>
       <Trigger onClick={onOpen} />
-    </Fragment>
+    </ThemeProvider>
   )
 }

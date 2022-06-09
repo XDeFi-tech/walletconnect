@@ -19,7 +19,7 @@ export const MEDIA_WIDTHS = {
   upToExtraLarge: 2560
 }
 
-const mediaWidthTemplates: {
+export const defaultMediaWidthTemplates: {
   [width in keyof typeof MEDIA_WIDTHS]: typeof css
 } = Object.keys(MEDIA_WIDTHS).reduce((accumulator, size) => {
   ;(accumulator as any)[size] = (a: any, b: any, c: any) => css`
@@ -56,23 +56,29 @@ function theme(darkMode: boolean): DefaultTheme {
     wallets: { grid: '1fr 1fr 1fr' },
 
     //shadows
-    mediaWidth: mediaWidthTemplates
+    mediaWidth: defaultMediaWidthTemplates
   }
 }
 
 export default function ThemeProvider({
   children,
-  theme: providedTheme
+  isDark = false,
+  themeBuilder
 }: {
   children: any
-  theme?: DefaultTheme
+  isDark?: boolean
+  themeBuilder?: (isDark: boolean) => DefaultTheme
 }) {
   const themeObject = useMemo(() => {
-    return {
-      ...theme(false),
-      ...providedTheme
+    if (!themeBuilder) {
+      return theme(isDark)
     }
-  }, [providedTheme])
+
+    return {
+      ...theme(isDark),
+      ...themeBuilder(isDark)
+    }
+  }, [themeBuilder, isDark])
 
   return (
     <StyledComponentsThemeProvider theme={themeObject}>

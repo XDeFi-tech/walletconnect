@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { useCallback, useEffect, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import styled, { DefaultTheme } from 'styled-components'
-import ThemeProvider from '../theme'
+import styled from 'styled-components'
 
 import { ReactComponent as CloseSvg } from './close.svg'
 
@@ -12,7 +11,6 @@ interface ModalProps {
   onOpen?: () => void
   onClose?: () => void
   className?: string
-  theme?: DefaultTheme
 }
 
 export const modalVariants = {
@@ -58,8 +56,7 @@ export const Modal = ({
   isOpen = false,
   children,
   onClose,
-  className,
-  theme
+  className
 }: ModalProps) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const handleEscape = useCallback(
@@ -83,33 +80,31 @@ export const Modal = ({
   return (
     modalElement &&
     createPortal(
-      <ThemeProvider theme={theme}>
-        <AnimatePresence>
-          {isOpen ? (
-            <ModalStyled ref={ref}>
-              <BackdropStyled
-                variants={modalBackdropVariants}
-                initial='hidden'
-                animate='visible'
-                exit='exit'
-                onClick={onClose}
-              />
-              <BodyStyled
-                className={className}
-                variants={modalVariants}
-                initial='hidden'
-                animate='visible'
-                exit='exit'
-              >
-                <CloseSvgStyled onClick={onClose} />
+      <AnimatePresence>
+        {isOpen ? (
+          <ModalStyled ref={ref}>
+            <BackdropStyled
+              variants={modalBackdropVariants}
+              initial='hidden'
+              animate='visible'
+              exit='exit'
+              onClick={onClose}
+            />
+            <BodyStyled
+              className={className}
+              variants={modalVariants}
+              initial='hidden'
+              animate='visible'
+              exit='exit'
+            >
+              <CloseSvgStyled onClick={onClose} />
 
-                {children}
-              </BodyStyled>
-            </ModalStyled>
-          ) : null}
-          )
-        </AnimatePresence>
-      </ThemeProvider>,
+              {children}
+            </BodyStyled>
+          </ModalStyled>
+        ) : null}
+        )
+      </AnimatePresence>,
 
       modalElement
     )
