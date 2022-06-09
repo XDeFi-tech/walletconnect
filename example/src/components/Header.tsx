@@ -71,7 +71,7 @@ interface IHeaderProps {
   killSession: () => void
 }
 
-const CUSTOM_THEME = {
+const CUSTOM_THEME: any = {
   // base
   white: '#0969da',
   black: '#9a6700',

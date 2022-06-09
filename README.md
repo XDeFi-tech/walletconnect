@@ -100,3 +100,32 @@ const onCloseHandler = useCallback(() => {
 
 useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 ```
+
+# Custom Theme
+
+```tsx
+
+const CUSTOM_THEME = {
+  // base
+  white: '#0969da',
+  black: '#9a6700',
+  modal: {
+    bg: '#ddf4ff'
+  },
+  wallet: {
+    descColor: '#1a7f37',
+    titleColor: '#bc4c00',
+    bg: '#fbefff'
+  },
+  wallets: { grid: '1fr 1fr' }
+}
+
+...
+
+<WalletsModal
+  theme={CUSTOM_THEME}
+  trigger={(props: any) => (
+    <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
+  )}
+/>
+```
