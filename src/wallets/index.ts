@@ -48,9 +48,14 @@ export class WalletsConnector {
     try {
       this.connector.init()
 
-      const provider = await this.connector.connect().then((provider: any) => {
-        return provider && provider.enable()
-      })
+      const provider = await this.connector
+        .connect()
+        .then((provider: any) => {
+          return provider && provider.enable()
+        })
+        .catch((e) => {
+          console.warn('Error', e)
+        })
 
       if (!provider) {
         setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
