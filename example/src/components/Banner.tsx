@@ -25,7 +25,7 @@ const SBanner = styled.div`
 const Banner = () => (
   <SBannerWrapper>
     <SBanner />
-    <span>{`Wallets Connector`}</span>
+    <span>Cross-chain Wallets Connector</span>
   </SBannerWrapper>
 )
 
