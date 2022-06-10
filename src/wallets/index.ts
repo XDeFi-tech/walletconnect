@@ -89,10 +89,13 @@ export class WalletsConnector {
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts
-      ? accounts.reduce((acc: any, item: IChainToAccounts) => {
-          acc[item.chain] = item.account
-          return acc
-        }, {})
+      ? accounts.reduce(
+          (acc: Record<string, string>, item: IChainToAccounts) => {
+            acc[item.chain] = item.account
+            return acc
+          },
+          {}
+        )
       : {}
 
     map[IChainType.ethereum] = ethAccounts[0]
