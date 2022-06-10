@@ -9,7 +9,7 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { isEqual } from 'lodash'
 
-const INIT_RETRY_TIMEOUT = 2000
+const INIT_RETRY_TIMEOUT = 300
 
 export class WalletsConnector {
   public connector: WalletConnect
@@ -47,7 +47,8 @@ export class WalletsConnector {
   private connect = async () => {
     try {
       this.connector.init()
-      const provider = this.connector.connect().then((provider: any) => {
+
+      const provider = await this.connector.connect().then((provider: any) => {
         return provider && provider.enable()
       })
 
@@ -82,10 +83,12 @@ export class WalletsConnector {
     })
     const accounts = await this.connector.loadAccounts()
 
-    const map = accounts.reduce((acc: any, item: IChainToAccounts) => {
-      acc[item.chain] = item.account
-      return acc
-    }, {})
+    const map = accounts
+      ? accounts.reduce((acc: any, item: IChainToAccounts) => {
+          acc[item.chain] = item.account
+          return acc
+        }, {})
+      : {}
 
     map[IChainType.ethereum] = ethAccounts[0]
 
@@ -106,23 +109,6 @@ export class WalletsConnector {
       this.accounts = map
       this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
     }
-  }
-
-  public getBalance = async (chain: IChainType = IChainType.ethereum) => {
-    if (!window.ethereum) {
-      return '0'
-    }
-
-    if (this.accounts[chain] && chain === IChainType.ethereum) {
-      return window.ethereum.request({
-        method: 'eth_requestAccounts',
-        params: [this.accounts[chain] as string]
-      })
-    }
-
-    console.warn(`Not supported chain ${chain} for loading balance`)
-
-    return '0'
   }
 
   public disconnect = () => {

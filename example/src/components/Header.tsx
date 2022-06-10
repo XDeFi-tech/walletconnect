@@ -2,10 +2,8 @@ import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
-  IChainType,
   useWalletsConnector,
   WalletsModal,
-  useBalance,
   useWalletEvents,
   defaultMediaWidthTemplates
 } from '@xdefi/wallets-connector'
@@ -107,15 +105,9 @@ const Header = (props: IHeaderProps) => {
 
   useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 
-  const ethBalance = useBalance(IChainType.ethereum)
-
   return (
     <SHeader>
-      {wallet ? (
-        <SActiveChain>Connected {ethBalance.toString()} ETH</SActiveChain>
-      ) : (
-        <Banner />
-      )}
+      {wallet ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       {isConnected ? (
         <SActiveAccount>
           <BtnOpen onClick={killSession}>{'Disconnect'}</BtnOpen>

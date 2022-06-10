@@ -266,7 +266,6 @@ export class ProviderController {
       const providerOptions = options?.options
       const opts = { network: this.network || undefined, ...providerOptions }
       const provider = await connector(providerPackage, opts, chains)
-
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
       this.trigger(WALLETS_EVENTS.CONNECT, provider)
