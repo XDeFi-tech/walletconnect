@@ -3,7 +3,7 @@ export enum IChainType {
   avalanche = 'avalanche',
   binance = 'binance',
   binancesmartchain = 'binancesmartchain',
-  polygon = 'polygon',
+  polygon = 'matic',
   bitcoin = 'bitcoin',
   litecoin = 'litecoin',
   bitcoincash = 'bitcoincash',

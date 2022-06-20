@@ -1,5 +1,6 @@
 import {
   canInject,
+  ChainData,
   getChainData,
   IChainToAccounts,
   IChainWithAccount,
@@ -30,7 +31,7 @@ export default function getLibrary(
   return library
 }
 
-export type IWalletConnectorConfigs = Network & {}
+export type IWalletConnectorConfigs = Network & ChainData
 
 export class WalletsConnector {
   public library: Web3Provider
@@ -108,9 +109,17 @@ export class WalletsConnector {
   }
 
   private setActiveChain = (chainId: string) => {
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, {
+    const c: IWalletConnectorConfigs = {
+      name: 'unknown',
       ...getChainData(parseInt(chainId, 16))
-    })
+    }
+    this.setConfigs(c)
+  }
+
+  private setConfigs = (c: IWalletConnectorConfigs) => {
+    this.configs = c
+    this.connector.trigger(WALLETS_EVENTS.CONFIGS, c)
+    this.loadAccounts()
   }
 
   private loadAccounts = async () => {
@@ -133,7 +142,8 @@ export class WalletsConnector {
         )
       : {}
 
-    map[this.configs?.chainId || IChainType.ethereum] = ethAccounts[0]
+    console.log('this.configs', this.configs)
+    map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
@@ -246,19 +256,6 @@ export class WalletsConnector {
   }
 
   private fireConfigs = async (provider: any = undefined) => {
-    if (provider) {
-      this.currentProvider = provider
-
-      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
-
-      this.library = getLibrary(provider, (n: Network) => {
-        this.connector.trigger(WALLETS_EVENTS.CONFIGS, {
-          ...n,
-          ...getChainData(n.chainId)
-        })
-      })
-    }
-
     this.connector.trigger(
       WALLETS_EVENTS.CURRENT_WALLET,
       this.connector.injectedProvider
@@ -269,6 +266,17 @@ export class WalletsConnector {
       this.connector.injectedChains
     )
 
-    return await this.loadAccounts()
+    if (provider) {
+      this.currentProvider = provider
+
+      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
+
+      this.library = getLibrary(provider, (n: Network) => {
+        this.setConfigs({
+          ...n,
+          ...getChainData(n.chainId)
+        })
+      })
+    }
   }
 }
