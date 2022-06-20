@@ -261,7 +261,6 @@ export class ProviderController {
   ) => {
     try {
       this.trigger(WALLETS_EVENTS.SELECT, id)
-
       const options = this.getProviderOption(id)
       const providerPackage = options?.package
       const providerOptions = options?.options

@@ -140,8 +140,6 @@ export class WalletsConnector {
         )
       : {}
 
-    map[c?.network || IChainType.ethereum] = ethAccounts[0]
-
     this.configs = {
       ...(c || this.configs),
       activeAddress: ethAccounts[0]
@@ -151,9 +149,12 @@ export class WalletsConnector {
       this.connector.injectedProvider?.supportedEvmChains
 
     if (evmChainsAvailable) {
+      map[IChainType.ethereum] = ethAccounts[0]
       evmChainsAvailable.forEach((chain) => {
         map[chain] = ethAccounts[0]
       })
+    } else {
+      map[c?.network || IChainType.ethereum] = ethAccounts[0]
     }
 
     this.setAccounts(map)
