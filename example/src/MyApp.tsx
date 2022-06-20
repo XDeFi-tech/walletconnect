@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import {
   IChainType,
@@ -59,14 +59,6 @@ const STestButton = styled(Button)`
 
 const MyApp = () => {
   const context = useContext(WalletsContext)
-
-  const onConnect = async () => {
-    if (!context) {
-      return
-    }
-
-    context.connector.connect()
-  }
 
   const resetApp = async () => {
     if (context) {
