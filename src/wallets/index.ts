@@ -39,6 +39,7 @@ export class WalletsConnector {
 
   public connector: WalletConnect
   public currentProvider: any
+
   private accounts: IChainWithAccount = {}
 
   constructor(
@@ -142,7 +143,6 @@ export class WalletsConnector {
         )
       : {}
 
-    console.log('this.configs', this.configs)
     map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
 
     const evmChainsAvailable =

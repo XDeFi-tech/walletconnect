@@ -119,7 +119,8 @@ const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
     name: darkMode ? '#9a6700' : '#333333',
     descColor: darkMode ? '#c4c4c4' : '#979797',
     titleColor: darkMode ? '#f2f1f1' : '#333333',
-    bg: darkMode ? '#333333' : '#F2F1F1'
+    bg: darkMode ? '#333333' : '#F2F1F1',
+    activeBg: darkMode ? 'lightslategrey' : 'darkseagreen'
   }
 })
 

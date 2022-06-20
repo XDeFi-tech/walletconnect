@@ -12,6 +12,7 @@ export interface Colors {
     descColor: Color
     titleColor: Color
     bg: Color
+    activeBg: Color
     name: Color
   }
 }

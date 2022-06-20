@@ -46,7 +46,8 @@ function colors(darkMode: boolean): Colors {
       name: darkMode ? white : '#333333',
       descColor: darkMode ? '#c4c4c4' : '#979797',
       titleColor: darkMode ? '#f2f1f1' : '#333333',
-      bg: darkMode ? '#333333' : '#F2F1F1'
+      bg: darkMode ? '#333333' : '#F2F1F1',
+      activeBg: darkMode ? 'lightslategrey' : 'darkseagreen'
     }
   }
 }

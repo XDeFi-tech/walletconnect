@@ -5,6 +5,34 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount } from '../helpers'
 import { WalletsContext } from '../manager'
 
+export const useConnectorActiveId = () => {
+  const context = useContext(WalletsContext)
+  const [pid, setPid] = useState<string>(
+    () => context?.connector?.cachedProvider || ''
+  )
+
+  const setConfigs = useCallback(
+    (c: string = '') => {
+      setPid(c)
+    },
+    [setPid]
+  )
+
+  useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.SELECT, setConfigs)
+    }
+
+    return () => {
+      if (context) {
+        context.off(WALLETS_EVENTS.SELECT, setConfigs)
+      }
+    }
+  }, [context, setConfigs])
+
+  return pid
+}
+
 export const useConnectionConfigs = () => {
   const context = useContext(WalletsContext)
 
@@ -29,7 +57,7 @@ export const useConnectionConfigs = () => {
         context.off(WALLETS_EVENTS.CONFIGS, setConfigs)
       }
     }
-  }, [context])
+  }, [context, setConfigs])
 
   return configs
 }
@@ -70,7 +98,7 @@ export const useWalletsConnector = () => {
         context.off(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
       }
     }
-  }, [context])
+  }, [context, setChainsHandler, setCurrentProvider])
 
   return {
     injectedChains,
@@ -102,7 +130,7 @@ export const useConnectedAccounts = () => {
         context.off(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
       }
     }
-  }, [context])
+  }, [context, setAccounts])
 
   return accounts
 }

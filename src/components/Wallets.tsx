@@ -97,7 +97,11 @@ export const WalletsModal = ({
         <SCard>
           {userOptions.map((provider: any) =>
             !!provider ? (
-              <Provider key={provider.name} provider={provider} />
+              <Provider
+                key={provider.name}
+                provider={provider}
+                onSelect={onClose}
+              />
             ) : null
           )}
         </SCard>
