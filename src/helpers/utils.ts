@@ -188,6 +188,14 @@ export function getChainId(network: string): number {
   return match.chainId
 }
 
+export function getChainData(chainId: number): ChainData {
+  const chain: ChainData = CHAIN_DATA_LIST[chainId]
+  if (!chain) {
+    throw new Error(`No chainId found match ${chainId}`)
+  }
+  return chain
+}
+
 export function findMatchingRequiredOptions(
   requiredOptions: RequiredOption[],
   providedOptions: { [key: string]: any }

@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
 import {
-  useWalletsConnector,
   WalletsModal,
-  useWalletEvents
+  useWalletEvents,
+  useConnectedAccounts,
+  useConnectionConfigs
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -87,7 +88,10 @@ const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
-  const { provider: wallet } = useWalletsConnector()
+  const accounts = useConnectedAccounts()
+  const configs = useConnectionConfigs()
+
+  console.log('accounts', accounts, configs)
 
   const [isConnected, setIsConnected] = useState(false)
 

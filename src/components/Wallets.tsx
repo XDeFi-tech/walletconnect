@@ -83,7 +83,7 @@ interface IProps {
 export const WalletsModal = ({
   trigger: Trigger,
   themeBuilder,
-  isDark
+  isDark = true
 }: IProps) => {
   const { providers: userOptions } = useWalletsOptions()
 

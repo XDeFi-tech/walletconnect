@@ -1,8 +1,38 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import { IWalletConnectorConfigs } from 'src'
 
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount } from '../helpers'
 import { WalletsContext } from '../manager'
+
+export const useConnectionConfigs = () => {
+  const context = useContext(WalletsContext)
+
+  const [configs, setConfigsState] = useState<IWalletConnectorConfigs>(
+    () => context?.configs || ({} as IWalletConnectorConfigs)
+  )
+
+  const setConfigs = useCallback(
+    (c: IWalletConnectorConfigs) => {
+      setConfigsState(c)
+    },
+    [setConfigsState]
+  )
+
+  useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.CONFIGS, setConfigs)
+    }
+
+    return () => {
+      if (context) {
+        context.off(WALLETS_EVENTS.CONFIGS, setConfigs)
+      }
+    }
+  }, [context])
+
+  return configs
+}
 
 export const useWalletsConnector = () => {
   const context = useContext(WalletsContext)
