@@ -60,13 +60,6 @@ const STestButton = styled(Button)`
 const MyApp = () => {
   const context = useContext(WalletsContext)
 
-  useEffect(() => {
-    if (context && context.connector.cachedProvider) {
-      onConnect()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context])
-
   const onConnect = async () => {
     if (!context) {
       return
