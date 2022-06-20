@@ -1,6 +1,7 @@
 # @xdefi/wallets-connector
 
-![UI](./example/wallets-example.jpg)
+![UI](./example/wallets-example-dark.jpg)
+![UI](./example/wallets-example-light.png)
 
 Please, look at the example application in folder `example`
 

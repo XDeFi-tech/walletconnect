@@ -105,7 +105,7 @@ const Header = (props: IHeaderProps) => {
 
   return (
     <SHeader>
-      {wallet ? <SActiveChain>Connected</SActiveChain> : <Banner />}
+      {isConnected ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       {isConnected ? (
         <SActiveAccount>
           <BtnOpen onClick={killSession}>Disconnect</BtnOpen>
