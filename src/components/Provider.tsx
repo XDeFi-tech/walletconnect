@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useMemo } from 'react'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 import { DefaultTheme } from 'styled-components/macro'
@@ -25,7 +25,8 @@ const SIcon = styled.div`
   `};
 `
 
-const SProviderWrapper = styled.div`
+const SProviderWrapper = styled.div<{ available: boolean }>`
+  opacity: ${({ available }) => (available ? 1 : 0.4)};
   background: ${({ theme }) => theme.wallet.bg};
   border-radius: 8px;
   display: flex;
@@ -116,12 +117,18 @@ export function Provider(props: IProviderProps) {
   )
   const available = !disabledByWallet && !needPrioritise
 
+  const connectToProvider = useCallback(() => {
+    if (available && context) {
+      context.disconnect()
+      context.connector.connectTo(id, supportedChains)
+    }
+  }, [available, context, context?.connector, id, supportedChains])
+
   return (
     <SProviderWrapper
       {...otherProps}
-      onClick={() =>
-        available && context && context.connector.connectTo(id, supportedChains)
-      }
+      onClick={connectToProvider}
+      available={available}
     >
       <SIcon>
         <El />
