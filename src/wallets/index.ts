@@ -31,7 +31,8 @@ export default function getLibrary(
   return library
 }
 
-export type IWalletConnectorConfigs = Network & ChainData
+export type IWalletConnectorConfigs = Network &
+  ChainData & { activeAddress?: string }
 
 export class WalletsConnector {
   public library: Web3Provider
@@ -114,16 +115,12 @@ export class WalletsConnector {
       name: 'unknown',
       ...getChainData(parseInt(chainId, 16))
     }
-    this.setConfigs(c)
+    this.loadAccounts(c)
   }
 
-  private setConfigs = (c: IWalletConnectorConfigs) => {
-    this.configs = c
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, c)
-    this.loadAccounts()
-  }
-
-  private loadAccounts = async () => {
+  private loadAccounts = async (
+    c: IWalletConnectorConfigs | undefined = undefined
+  ) => {
     if (!window.ethereum) {
       return
     }
@@ -143,7 +140,12 @@ export class WalletsConnector {
         )
       : {}
 
-    map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
+    map[c?.network || IChainType.ethereum] = ethAccounts[0]
+
+    this.configs = {
+      ...(c || this.configs),
+      activeAddress: ethAccounts[0]
+    }
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
@@ -155,6 +157,7 @@ export class WalletsConnector {
     }
 
     this.setAccounts(map)
+    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
   }
 
   private setAccounts = (map: IChainWithAccount) => {
@@ -272,7 +275,7 @@ export class WalletsConnector {
       this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
 
       this.library = getLibrary(provider, (n: Network) => {
-        this.setConfigs({
+        this.loadAccounts({
           ...n,
           ...getChainData(n.chainId)
         })

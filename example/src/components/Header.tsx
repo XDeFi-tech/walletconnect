@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types'
 import {
   WalletsModal,
   useWalletEvents,
-  useWalletsConnector
+  useConnectionConfigs
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -89,9 +89,9 @@ const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
 
-  const { provider } = useWalletsConnector()
+  const configs = useConnectionConfigs()
 
-  console.log('provider', provider)
+  console.log('configs', configs)
 
   const [isConnected, setIsConnected] = useState(false)
 
