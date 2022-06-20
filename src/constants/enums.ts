@@ -1,5 +1,5 @@
 export enum IChainType {
-  ethereum = 'ethereum',
+  ethereum = 'mainnet',
   avalanche = 'avalanche',
   binance = 'binance',
   binancesmartchain = 'binancesmartchain',
