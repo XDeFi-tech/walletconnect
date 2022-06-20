@@ -1,9 +1,9 @@
 export enum IChainType {
-  ethereum = 'mainnet',
+  ethereum = 'ethereum',
   avalanche = 'avalanche',
   binance = 'binance',
   binancesmartchain = 'binancesmartchain',
-  polygon = 'matic',
+  polygon = 'polygon',
   bitcoin = 'bitcoin',
   litecoin = 'litecoin',
   bitcoincash = 'bitcoincash',

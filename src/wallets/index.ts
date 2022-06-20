@@ -1,6 +1,7 @@
 import {
   canInject,
   ChainData,
+  convertToCommonChain,
   getChainData,
   IChainToAccounts,
   IChainWithAccount,
@@ -140,10 +141,13 @@ export class WalletsConnector {
         )
       : {}
 
+    const targetConfigs = c || this.configs
     this.configs = {
-      ...(c || this.configs),
-      activeAddress: ethAccounts[0]
+      ...targetConfigs,
+      activeAddress: ethAccounts[0],
+      network: convertToCommonChain(targetConfigs?.network)
     }
+    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
@@ -154,11 +158,10 @@ export class WalletsConnector {
         map[chain] = ethAccounts[0]
       })
     } else {
-      map[c?.network || IChainType.ethereum] = ethAccounts[0]
+      map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
     }
 
     this.setAccounts(map)
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
   }
 
   private setAccounts = (map: IChainWithAccount) => {

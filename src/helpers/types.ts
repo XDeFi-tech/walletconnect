@@ -116,17 +116,6 @@ export interface IConnectorsMap {
   [id: string]: Connector
 }
 
-export enum SupportedChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  MATIC = 137,
-  MATIC_TESTNET = 80001,
-  LOCAL_TESTNET = 31337,
-  BSC = 56,
-  FANTOM = 250,
-  AVALANCHE = 0xa86a
-}
-
 export const CHAIN_DATA_LIST: ChainDataList = {
   1: {
     chainId: 1,
