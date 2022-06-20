@@ -5,7 +5,7 @@ import {
   IProviderOptions,
   SimpleFunction
 } from '../helpers'
-import { IChainType, WALLETS_EVENTS } from '../constants'
+import { IChainType, WALLETS, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { isEqual } from 'lodash'
 
@@ -40,6 +40,12 @@ export class WalletsConnector {
     if (canInject()) {
       this.connect()
     } else {
+      this.retry()
+    }
+  }
+
+  private retry() {
+    if (this.connector.cachedProvider === WALLETS.xdefi) {
       setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     }
   }
@@ -58,7 +64,7 @@ export class WalletsConnector {
         })
 
       if (!provider) {
-        setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
+        this.retry()
       } else {
         const ethereum = window.ethereum
 
@@ -74,7 +80,7 @@ export class WalletsConnector {
     } catch (e) {
       console.log('Error', e)
 
-      setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
+      this.retry()
     }
   }
 

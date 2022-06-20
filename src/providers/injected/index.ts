@@ -1,5 +1,5 @@
 import { IProviderInfo } from '../../helpers'
-import { IChainType } from '../../constants'
+import { IChainType, WALLETS } from '../../constants'
 import { ReactComponent as Web3DefaultLogo } from '../logos/web3-default.svg'
 import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
 import { ReactComponent as SafeLogo } from '../logos/safe.svg'
@@ -43,7 +43,7 @@ export const FALLBACK: IProviderInfo = {
 }
 
 export const METAMASK: IProviderInfo = {
-  id: 'metamask',
+  id: WALLETS.metamask,
   name: 'MetaMask',
   logo: MetaMaskLogo,
   type: 'injected',
@@ -145,7 +145,7 @@ export const RWALLET: IProviderInfo = {
 }
 
 export const XDEFI: IProviderInfo = {
-  id: 'xdefi',
+  id: WALLETS.xdefi,
   name: 'XDEFI',
   logo: XDEFILogo,
   type: 'injected',
