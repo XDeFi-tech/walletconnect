@@ -91,8 +91,6 @@ const Header = (props: IHeaderProps) => {
   const accounts = useConnectedAccounts()
   const configs = useConnectionConfigs()
 
-  console.log('accounts', accounts, configs)
-
   const [isConnected, setIsConnected] = useState(false)
 
   const onConnectHandler = useCallback(() => {

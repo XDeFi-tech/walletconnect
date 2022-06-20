@@ -130,7 +130,6 @@ export function Provider(props: IProviderProps) {
     }
   }, [available, context, context?.connector, id, supportedChains])
 
-  console.log('El', El)
   return (
     <SProviderWrapper
       {...otherProps}
