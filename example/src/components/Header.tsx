@@ -4,8 +4,7 @@ import * as PropTypes from 'prop-types'
 import {
   useWalletsConnector,
   WalletsModal,
-  useWalletEvents,
-  defaultMediaWidthTemplates
+  useWalletEvents
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -49,7 +48,7 @@ const SAddress = styled.div`
   font-weight: bold;
   margin: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 16px;
   margin-left: auto;
 `
@@ -70,20 +69,19 @@ interface IHeaderProps {
   killSession: () => void
 }
 
-const CUSTOM_THEME_BUILDER = (isDark: boolean) => ({
-  // base
-  white: '#0969da',
-  black: '#9a6700',
+const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
+  white: darkMode ? '#0969da' : '#9a6700',
+  black: darkMode ? '#9a6700' : '#0969da',
   modal: {
-    bg: '#ddf4ff'
+    bg: darkMode ? '#2b2b2b' : '#E5E5E5',
+    layoutBg: darkMode ? '#000000' : '#000000'
   },
   wallet: {
-    descColor: '#1a7f37',
-    titleColor: '#bc4c00',
-    bg: '#fbefff'
-  },
-  wallets: { grid: '1fr 1fr' },
-  mediaWidth: defaultMediaWidthTemplates
+    name: darkMode ? '#9a6700' : '#333333',
+    descColor: darkMode ? '#c4c4c4' : '#979797',
+    titleColor: darkMode ? '#f2f1f1' : '#333333',
+    bg: darkMode ? '#333333' : '#F2F1F1'
+  }
 })
 
 const Header = (props: IHeaderProps) => {
@@ -110,13 +108,24 @@ const Header = (props: IHeaderProps) => {
       {wallet ? <SActiveChain>Connected</SActiveChain> : <Banner />}
       {isConnected ? (
         <SActiveAccount>
-          <BtnOpen onClick={killSession}>{'Disconnect'}</BtnOpen>
+          <BtnOpen onClick={killSession}>Disconnect</BtnOpen>
         </SActiveAccount>
       ) : (
         <SAddress>
           <WalletsModal
-            trigger={(props: any) => <BtnOpen {...props}>Connect</BtnOpen>}
+            isDark={true}
+            trigger={(props: any) => (
+              <BtnOpen {...props}>Connect Dark Modal</BtnOpen>
+            )}
           />
+
+          <WalletsModal
+            isDark={false}
+            trigger={(props: any) => (
+              <BtnOpen {...props}>Connect Light Modal</BtnOpen>
+            )}
+          />
+
           <WalletsModal
             themeBuilder={CUSTOM_THEME_BUILDER}
             isDark={true}

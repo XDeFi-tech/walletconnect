@@ -107,20 +107,19 @@ useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 
 ```tsx
 
-const CUSTOM_THEME_BUILDER = (isDark:boolean) => ({
-  // base
-  white: isDark ? '#0969da' : '#9a6700',
-  black: isDark ? '#9a6700' : '#0969da',
+const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
+  white: darkMode ? '#0969da' : '#9a6700',
+  black: darkMode ? '#9a6700' : '#0969da',
   modal: {
-    bg: '#ddf4ff'
+    bg: darkMode ? '#2b2b2b' : '#E5E5E5',
+    layoutBg: darkMode ? '#000000' : '#000000'
   },
   wallet: {
-    descColor: '#1a7f37',
-    titleColor: '#bc4c00',
-    bg: '#fbefff'
-  },
-  wallets: { grid: '1fr 1fr' },
-  matchMedia: defaultMediaWidthTemplates
+    name: darkMode ? '#9a6700' : '#333333',
+    descColor: darkMode ? '#c4c4c4' : '#979797',
+    titleColor: darkMode ? '#f2f1f1' : '#333333',
+    bg: darkMode ? '#333333' : '#F2F1F1'
+  }
 })
 
 ...

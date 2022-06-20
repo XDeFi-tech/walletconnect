@@ -2,17 +2,17 @@ import { ThemedCssFunction } from 'styled-components/macro'
 
 export type Color = string
 export interface Colors {
-  // base
   white: Color
   black: Color
-
   modal: {
     bg: Color
+    layoutBg: Color
   }
   wallet: {
     descColor: Color
     titleColor: Color
     bg: Color
+    name: Color
   }
 }
 

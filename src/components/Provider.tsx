@@ -17,6 +17,7 @@ const SIcon = styled.div`
   & svg {
     width: 28px;
     height: 28px;
+    fill: ${({ theme }) => theme.black};
   }
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
@@ -50,7 +51,7 @@ const STYLES = (theme: DefaultTheme) => `
   width: 100%;
   cursor: pointer;
   margin-top: 14px;
-  color: ${theme.white};
+  color: ${theme.wallet.name};
   font-size: 16px;
   line-height: 24px;
   text-align: center;
