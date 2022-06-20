@@ -80,7 +80,7 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
 export interface IProviderUserOptions {
   id: string
   name: string
-  logo: string
+  logo: any
   description: string
   onClick: (chains?: string[]) => Promise<void>
   chains?: {

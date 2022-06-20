@@ -23,7 +23,10 @@ const getProviderOptions = (): IProviderOptions => {
     injected: {
       package: true,
       connector: connectors.injected,
-      display: injected.FALLBACK
+      display: {
+        ...injected.FALLBACK,
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
+      }
     },
     metamask: {
       package: true,

@@ -20,6 +20,11 @@ const SIcon = styled.div`
     fill: ${({ theme }) => theme.black};
   }
 
+  & img {
+    width: 28px;
+    height: 28px;
+  }
+
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 32px;
     height: 32px;
@@ -125,15 +130,14 @@ export function Provider(props: IProviderProps) {
     }
   }, [available, context, context?.connector, id, supportedChains])
 
+  console.log('El', El)
   return (
     <SProviderWrapper
       {...otherProps}
       onClick={connectToProvider}
       available={available}
     >
-      <SIcon>
-        <El />
-      </SIcon>
+      <SIcon>{typeof El !== 'string' ? <El /> : <img src={El} />}</SIcon>
       {available ? <SName>{name}</SName> : null}
 
       {needPrioritise && <SPrioritise>Prioritise {name} wallet</SPrioritise>}
