@@ -22,6 +22,10 @@ export const NetworkManager = ({
 
   useEffect(() => {
     setC(new WalletsConnector(options, network, cacheEnabled))
+
+    return () => {
+      c && c.dispose()
+    }
   }, [options, network, cacheEnabled])
 
   return (

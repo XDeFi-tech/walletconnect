@@ -3,13 +3,7 @@ import ReactDOMServer from 'react-dom/server'
 
 import { providers, injected } from '../providers'
 
-import {
-  IProviderInfo,
-  IInjectedProvidersMap,
-  ChainData,
-  RequiredOption,
-  CHAIN_DATA_LIST
-} from './types'
+import { IProviderInfo, IInjectedProvidersMap, RequiredOption } from './types'
 
 export function encodeSvg(reactElement: any) {
   return (
@@ -173,19 +167,6 @@ export function filterProviderChecks(checks: string[]): string {
     return checks[0]
   }
   return providers.FALLBACK.check
-}
-
-export function getChainId(network: string): number {
-  const chains: ChainData[] = Object.values(CHAIN_DATA_LIST)
-  const match = filterMatches<ChainData>(
-    chains,
-    (x) => x.network === network,
-    undefined
-  )
-  if (!match) {
-    throw new Error(`No chainId found match ${network}`)
-  }
-  return match.chainId
 }
 
 export function findMatchingRequiredOptions(

@@ -7,14 +7,14 @@ import {
 } from '../helpers'
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
-import { isEqual } from 'lodash'
 
 const INIT_RETRY_TIMEOUT = 300
 
 export class WalletsConnector {
   public connector: WalletConnect
   public currentProvider: any
-  private accounts: IChainWithAccount = {}
+  private accounts: IChainWithAccount | null = null
+  private timeoutId: ReturnType<typeof setTimeout>
 
   constructor(
     providerOptions: IProviderOptions,
@@ -40,7 +40,15 @@ export class WalletsConnector {
     if (canInject()) {
       this.connect()
     } else {
-      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+      this.timeoutId = setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+    }
+  }
+
+  public dispose = () => {
+    clearTimeout(this.timeoutId)
+    if (window.ethereum) {
+      window.ethereum.removeListener('accountsChanged', this.loadAccounts)
+      window.ethereum.removeListener('disconnect', this.disconnect)
     }
   }
 
@@ -58,28 +66,24 @@ export class WalletsConnector {
         })
 
       if (!provider) {
-        setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
+        this.timeoutId = setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
       } else {
         const ethereum = window.ethereum
 
         if (ethereum) {
-          ethereum.on('accountsChanged', () => {
-            this.loadAccounts()
-          })
-          ethereum.on('disconnect', () => {
-            this.disconnect()
-          })
+          ethereum.on('accountsChanged', this.loadAccounts)
+          ethereum.on('disconnect', this.disconnect)
         }
       }
     } catch (e) {
       console.log('Error', e)
 
-      setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
+      this.timeoutId = setTimeout(() => this.connect(), INIT_RETRY_TIMEOUT)
     }
   }
 
   private loadAccounts = async () => {
-    if (!window.ethereum) {
+    if (!canInject()) {
       return
     }
 
@@ -98,31 +102,29 @@ export class WalletsConnector {
         )
       : {}
 
-    map[IChainType.ethereum] = ethAccounts[0]
+    map[IChainType.ethereum] = ethAccounts
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
 
     if (evmChainsAvailable) {
       evmChainsAvailable.forEach((chain) => {
-        map[chain] = ethAccounts[0]
+        map[chain] = ethAccounts
       })
     }
 
     this.setAccounts(map)
   }
 
-  private setAccounts = (map: IChainWithAccount) => {
-    if (!isEqual(this.accounts, map)) {
-      this.accounts = map
-      this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
-    }
+  private setAccounts = (map: IChainWithAccount | null) => {
+    this.accounts = map
+    this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
   public disconnect = () => {
     this.connector.clearCachedProvider()
 
-    this.setAccounts({})
+    this.setAccounts(null)
   }
 
   public getChainMethods = (chain: IChainType) => {
@@ -131,7 +133,7 @@ export class WalletsConnector {
   }
 
   public signMessage = async (chainId: IChainType, data: any) => {
-    if (!window.ethereum) {
+    if (!canInject()) {
       return
     }
 
@@ -206,7 +208,7 @@ export class WalletsConnector {
     this.connector.off(event, callback)
   }
 
-  public getAccounts = (): IChainWithAccount => {
+  public getAccounts = (): IChainWithAccount | null => {
     return this.accounts
   }
 

@@ -20,7 +20,7 @@ const ConnectToAuthereum = (
     try {
       const authereum = new Authereum({
         ...opts,
-        networkName: opts.networkName || opts.network,
+        networkName: opts.networkName || opts.network
       })
       const provider = authereum.getProvider()
       provider.authereum = authereum

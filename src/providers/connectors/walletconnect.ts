@@ -1,4 +1,4 @@
-import { IAbstractConnectorOptions, getChainId } from '../../helpers'
+import { IAbstractConnectorOptions, getChainId } from '../../helpers/chains'
 
 export interface IWalletConnectConnectorOptions
   extends IAbstractConnectorOptions {
@@ -37,7 +37,7 @@ const ConnectToWalletConnect = (
       infuraId,
       rpc,
       chainId,
-      qrcodeModalOptions,
+      qrcodeModalOptions
     })
     try {
       await provider.enable()

@@ -1,4 +1,4 @@
-import { IAbstractConnectorOptions, getChainId } from '../../helpers'
+import { IAbstractConnectorOptions, getChainId } from '../../helpers/chains'
 
 export interface IMewConnectConnectorOptions extends IAbstractConnectorOptions {
   infuraId?: string
