@@ -119,7 +119,7 @@ export class WalletsConnector {
     if (ethereum) {
       ethereum.removeListener('accountsChanged')
       ethereum.removeListener('disconnect')
-      ethereum.removeListener('disconnect')
+      ethereum.removeListener('chainChanged')
     }
   }
 
