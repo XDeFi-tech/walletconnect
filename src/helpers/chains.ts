@@ -1,3 +1,5 @@
+import { IChainType } from '../constants/enums'
+
 export type ChainData = {
   chainId: number
   chain: string
@@ -396,4 +398,31 @@ function filterMatches<T>(
   }
 
   return result
+}
+
+export function convertToCommonChain(network?: string): string {
+  switch (network) {
+    case 'mainnet': {
+      return IChainType.ethereum
+    }
+    case 'avalanche-fuji-mainnet': {
+      return IChainType.avalanche
+    }
+    case 'matic': {
+      return IChainType.polygon
+    }
+    case 'binance': {
+      return IChainType.binancesmartchain
+    }
+  }
+
+  return network || ''
+}
+
+export function getChainData(chainId: number): ChainData {
+  const chain: ChainData = CHAIN_DATA_LIST[chainId]
+  if (!chain) {
+    throw new Error(`No chainId found match ${chainId}`)
+  }
+  return chain
 }
