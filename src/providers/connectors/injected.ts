@@ -5,10 +5,10 @@ const ConnectToInjected = async () => {
     provider = window.ethereum
   } else if (window.web3) {
     provider = window.web3.currentProvider
-  } else if (window.celo) {
-    provider = window.celo
   } else if (window.xfi && window.xfi.ethereum) {
     provider = window.xfi.ethereum
+  } else if (window.celo) {
+    provider = window.celo
   } else {
     throw Error('No Web3 Provider found')
   }

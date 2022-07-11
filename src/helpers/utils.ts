@@ -1,5 +1,6 @@
 import * as env from 'detect-browser'
 import ReactDOMServer from 'react-dom/server'
+import { IChainType } from 'src'
 
 import { providers, injected } from '../providers'
 
@@ -186,6 +187,33 @@ export function getChainId(network: string): number {
     throw new Error(`No chainId found match ${network}`)
   }
   return match.chainId
+}
+
+export function convertToCommonChain(network?: string): string {
+  switch (network) {
+    case 'mainnet': {
+      return IChainType.ethereum
+    }
+    case 'avalanche-fuji-mainnet': {
+      return IChainType.avalanche
+    }
+    case 'matic': {
+      return IChainType.polygon
+    }
+    case 'binance': {
+      return IChainType.binancesmartchain
+    }
+  }
+
+  return network || ''
+}
+
+export function getChainData(chainId: number): ChainData {
+  const chain: ChainData = CHAIN_DATA_LIST[chainId]
+  if (!chain) {
+    throw new Error(`No chainId found match ${chainId}`)
+  }
+  return chain
 }
 
 export function findMatchingRequiredOptions(

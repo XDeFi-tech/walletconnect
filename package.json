@@ -1,6 +1,6 @@
 {
   "name": "@xdefi/wallets-connector",
-  "version": "1.1.9",
+  "version": "1.1.18",
   "description": "Cross chain wallets connector with react hooks",
   "author": "garageinc",
   "license": "MIT",
@@ -67,6 +67,7 @@
     "dist"
   ],
   "dependencies": {
+    "@ethersproject/providers": "^5.6.8",
     "lodash": "^4.17.21"
   }
 }

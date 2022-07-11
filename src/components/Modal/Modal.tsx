@@ -116,6 +116,7 @@ const CloseSvgStyled = styled(CloseSvg)`
   cursor: pointer;
   width: 17px;
   height: 17px;
+  fill: ${({ theme }) => theme.black};
 `
 
 const ModalStyled = styled.div`
@@ -137,7 +138,7 @@ const BackdropStyled = styled(motion.div)`
   right: 0;
   top: 0;
   left: 0;
-  background: ${({ theme }) => theme.black};
+  background: ${({ theme }) => theme.modal.layoutBg};
   opacity: 0.8;
 `
 
