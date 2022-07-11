@@ -137,8 +137,10 @@ export class WalletsConnector {
     if (!canInject()) {
       return
     }
+    this.setAccounts(null)
+    const ethereum = this.getEthereumProvider()
 
-    const ethAccounts = await this.getEthereumProvider().request({
+    const ethAccounts = await ethereum.request({
       method: 'eth_requestAccounts'
     })
     const accounts = await this.connector.loadAccounts()
@@ -153,13 +155,7 @@ export class WalletsConnector {
         )
       : {}
 
-    const targetConfigs = c || this.configs
-    this.configs = {
-      ...targetConfigs,
-      activeAddress: ethAccounts[0],
-      network: convertToCommonChain(targetConfigs?.network)
-    }
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
+    this.setConfigs(c || this.configs, ethAccounts)
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
@@ -175,6 +171,18 @@ export class WalletsConnector {
 
     console.log('map', map)
     this.setAccounts(map)
+  }
+
+  private setConfigs = (
+    targetConfigs: IWalletConnectorConfigs,
+    ethAccounts: string[]
+  ) => {
+    this.configs = {
+      ...targetConfigs,
+      activeAddress: ethAccounts[0],
+      network: convertToCommonChain(targetConfigs?.network)
+    }
+    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
   }
 
   private setAccounts = (map: IChainWithAccount | null) => {
