@@ -72,7 +72,7 @@ const MyApp = () => {
   const configs = useConnectionConfigs()
 
   console.log('configs', configs)
-
+  console.log('accounts', accounts)
   return (
     <SLayout>
       <Column maxWidth={1200} spanHeight>

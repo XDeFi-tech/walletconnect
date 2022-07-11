@@ -49,12 +49,12 @@ export const useConnectionConfigs = () => {
 
   useEffect(() => {
     if (context) {
-      context.on(WALLETS_EVENTS.CONFIGS, setConfigs)
+      context.on(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
     }
 
     return () => {
       if (context) {
-        context.off(WALLETS_EVENTS.CONFIGS, setConfigs)
+        context.off(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
       }
     }
   }, [context, setConfigs])

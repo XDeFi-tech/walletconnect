@@ -182,7 +182,7 @@ export class WalletsConnector {
       activeAddress: ethAccounts[0],
       network: convertToCommonChain(targetConfigs?.network)
     }
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
+    this.connector.trigger(WALLETS_EVENTS.CONNECTION_INFO, this.configs)
   }
 
   private setAccounts = (map: IChainWithAccount | null) => {
