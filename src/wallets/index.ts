@@ -93,9 +93,7 @@ export class WalletsConnector {
           console.warn('Error', e)
         })
 
-      if (!provider) {
-        this.retry()
-      } else {
+      if (provider) {
         const ethereum = this.getEthereumProvider()
 
         if (ethereum) {
@@ -112,8 +110,6 @@ export class WalletsConnector {
       }
     } catch (e) {
       console.log('Error', e)
-
-      this.retry()
     }
   }
 
@@ -142,7 +138,7 @@ export class WalletsConnector {
       return
     }
 
-    const ethAccounts = await window.ethereum.request({
+    const ethAccounts = await this.getEthereumProvider().request({
       method: 'eth_requestAccounts'
     })
     const accounts = await this.connector.loadAccounts()
@@ -255,7 +251,7 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return window.ethereum.request({
+        return this.getEthereumProvider().request({
           method: method,
           params: data
         })

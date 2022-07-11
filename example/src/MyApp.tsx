@@ -115,10 +115,11 @@ const Sign = ({
     }
   }
 
+  const list = accounts[chain] || ([] as string[])
   return (
     <SBalances>
       <h3>
-        {chain} with account {accounts[chain]}
+        {chain} with accounts {list ? list.join(', ') : '<not set>'}
       </h3>
       <Column center>
         <STestButtonContainer>
