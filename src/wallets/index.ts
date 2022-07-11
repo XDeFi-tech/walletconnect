@@ -42,6 +42,7 @@ export class WalletsConnector {
   public currentProvider: any
 
   private accounts: IChainWithAccount | null = null
+  private timeoutId: ReturnType<typeof setTimeout>
 
   constructor(
     providerOptions: IProviderOptions,
@@ -73,7 +74,7 @@ export class WalletsConnector {
 
   private retry() {
     if (this.connector.cachedProvider === WALLETS.xdefi) {
-      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+      this.timeoutId = setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     }
   }
 
@@ -96,17 +97,24 @@ export class WalletsConnector {
         const ethereum = window.ethereum
 
         if (ethereum) {
-          ethereum.on('accountsChanged', () => this.loadAccounts())
-          ethereum.on('disconnect', this.disconnect.bind(this))
-          ethereum.on('chainChanged', (chainId: string) => {
-            this.setActiveChain(chainId)
-          })
+          ethereum.on('accountsChanged', () => this.loadAccounts)
+          ethereum.on('disconnect', this.disconnect)
+          ethereum.on('chainChanged', this.setActiveChain)
         }
       }
     } catch (e) {
       console.log('Error', e)
 
       this.retry()
+    }
+  }
+
+  public dispose = () => {
+    clearTimeout(this.timeoutId)
+    if (window.ethereum) {
+      window.ethereum.removeListener('accountsChanged', this.loadAccounts)
+      window.ethereum.removeListener('disconnect', this.disconnect)
+      window.ethereum.removeListener('disconnect', this.setActiveChain)
     }
   }
 
@@ -121,7 +129,7 @@ export class WalletsConnector {
   private loadAccounts = async (
     c: IWalletConnectorConfigs | undefined = undefined
   ) => {
-    if (!window.ethereum) {
+    if (!canInject()) {
       return
     }
 
