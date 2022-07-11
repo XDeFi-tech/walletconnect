@@ -109,8 +109,8 @@ export const useWalletsConnector = () => {
 export const useConnectedAccounts = () => {
   const context = useContext(WalletsContext)
 
-  const [accounts, setAccounts] = useState<IChainWithAccount>(
-    () => context?.getAccounts() || {}
+  const [accounts, setAccounts] = useState<IChainWithAccount | null>(
+    () => context?.getAccounts() || null
   )
 
   const setAccountsHandler = useCallback(
