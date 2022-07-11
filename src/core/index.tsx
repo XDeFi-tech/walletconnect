@@ -32,6 +32,9 @@ export class WalletConnect {
       network: options.network
     })
 
+    this.providerController.on(WALLETS_EVENTS.CLOSE, () =>
+      this.trigger(WALLETS_EVENTS.CLOSE)
+    )
     this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
       this.onConnect(provider)
     )
@@ -147,20 +150,21 @@ export class WalletConnect {
   }
 
   public clearCachedProvider(): void {
-    this.providerController.clearCachedProvider()
+    if (this.providerController.clearCachedProvider())
+      this.trigger(WALLETS_EVENTS.CLOSE)
   }
 
   // --------------- PRIVATE METHODS --------------- //
 
   private onError = async (error: any) => {
-    this.eventController.trigger(WALLETS_EVENTS.ERROR, error)
+    this.trigger(WALLETS_EVENTS.ERROR, error)
   }
 
   private onProviderSelect = (providerId: string) => {
-    this.eventController.trigger(WALLETS_EVENTS.SELECT, providerId)
+    this.trigger(WALLETS_EVENTS.SELECT, providerId)
   }
 
   private onConnect = async (provider: any) => {
-    this.eventController.trigger(WALLETS_EVENTS.CONNECT, provider)
+    this.trigger(WALLETS_EVENTS.CONNECT, provider)
   }
 }

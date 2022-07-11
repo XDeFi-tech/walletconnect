@@ -436,6 +436,10 @@ export const XDEFI: IProviderInfo = {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
+            if (!window.terraWallets) {
+              reject('No terra connector')
+            }
+
             const terraWalletXdefi = window.terraWallets.find(
               (w) => w.identifier === 'xdefi-wallet'
             )

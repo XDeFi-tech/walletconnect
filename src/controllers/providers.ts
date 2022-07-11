@@ -226,14 +226,17 @@ export class ProviderController {
       : ({} as IProviderOption)
   }
 
-  public clearCachedProvider() {
+  public clearCachedProvider(): boolean {
     if (this.cachedProvider) {
       this.cachedProvider = ''
       removeLocal(CACHED_PROVIDER_KEY)
       removeLocal(CACHED_PROVIDER_CHAINS_KEY)
 
       this.trigger(WALLETS_EVENTS.CLOSE)
+      return true
     }
+
+    return false
   }
 
   public setCachedProvider(id: string, chains: string[]) {
