@@ -16,12 +16,10 @@ export const NetworkManager = ({
   network?: string
   cacheEnabled?: boolean
 }) => {
-  const [c, setC] = useState<WalletsConnector>(
-    () => new WalletsConnector(options, network, cacheEnabled)
-  )
+  const [c, setWalletsConnector] = useState<WalletsConnector | null>(null)
 
   useEffect(() => {
-    setC(new WalletsConnector(options, network, cacheEnabled))
+    setWalletsConnector(new WalletsConnector(options, network, cacheEnabled))
 
     return () => {
       c && c.dispose()

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import {
   IChainType,
@@ -59,21 +59,6 @@ const STestButton = styled(Button)`
 
 const MyApp = () => {
   const context = useContext(WalletsContext)
-
-  useEffect(() => {
-    if (context && context.connector.cachedProvider) {
-      onConnect()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [context])
-
-  const onConnect = async () => {
-    if (!context) {
-      return
-    }
-
-    context.connector.connect()
-  }
 
   const resetApp = async () => {
     if (context) {

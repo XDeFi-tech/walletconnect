@@ -13,3 +13,8 @@ export enum IChainType {
   fantom = 'fantom',
   arbitrum = 'arbitrum'
 }
+
+export enum WALLETS {
+  metamask = 'metamask',
+  xdefi = 'xdefi'
+}

@@ -1,4 +1,5 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useConnectorActiveId } from 'src'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 import { DefaultTheme } from 'styled-components/macro'
@@ -17,6 +18,12 @@ const SIcon = styled.div`
   & svg {
     width: 28px;
     height: 28px;
+    fill: ${({ theme }) => theme.black};
+  }
+
+  & img {
+    width: 28px;
+    height: 28px;
   }
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
@@ -25,8 +32,11 @@ const SIcon = styled.div`
   `};
 `
 
-const SProviderWrapper = styled.div`
+const SProviderWrapper = styled.div<{ available: boolean; active: boolean }>`
+  opacity: ${({ available }) => (available ? 1 : 0.4)};
   background: ${({ theme }) => theme.wallet.bg};
+  background: ${({ theme, active }) =>
+    active ? theme.wallet.activeBg : theme.wallet.bg};
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -49,7 +59,7 @@ const STYLES = (theme: DefaultTheme) => `
   width: 100%;
   cursor: pointer;
   margin-top: 14px;
-  color: ${theme.white};
+  color: ${theme.wallet.name};
   font-size: 16px;
   line-height: 24px;
   text-align: center;
@@ -79,10 +89,10 @@ const SPrioritise = styled(SName)``
 
 interface IProviderProps {
   provider: IProviderUserOptions
+  onSelect: () => void
 }
 
-export function Provider(props: IProviderProps) {
-  const { provider } = props
+export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
   const {
     name,
     logo: El,
@@ -92,7 +102,8 @@ export function Provider(props: IProviderProps) {
     disabledByWalletFunc,
     needPrioritiseFunc
   } = provider
-  const { ...otherProps } = props
+
+  const pid = useConnectorActiveId()
 
   const context = useContext(WalletsContext)
 
@@ -114,19 +125,32 @@ export function Provider(props: IProviderProps) {
     () => needPrioritiseFunc && needPrioritiseFunc(),
     [needPrioritiseFunc]
   )
-  const available = !disabledByWallet && !needPrioritise
+  const isActive = pid === id
+  const isAvailable = !disabledByWallet && !needPrioritise
+
+  const connectToProvider = useCallback(async () => {
+    if (isAvailable && context) {
+      context.disconnect()
+      await context.connector.connectTo(id, supportedChains)
+      onSelect()
+    }
+  }, [isAvailable, context, context?.connector, id, supportedChains, onSelect])
+
+  useEffect(() => {
+    if (isActive && !isAvailable && context) {
+      context?.disconnect()
+    }
+  }, [context, isActive, isAvailable])
 
   return (
     <SProviderWrapper
-      {...otherProps}
-      onClick={() =>
-        available && context && context.connector.connectTo(id, supportedChains)
-      }
+      {...rest}
+      onClick={connectToProvider}
+      available={isAvailable}
+      active={isActive}
     >
-      <SIcon>
-        <El />
-      </SIcon>
-      {available ? <SName>{name}</SName> : null}
+      <SIcon>{typeof El !== 'string' ? <El /> : <img src={El} />}</SIcon>
+      {isAvailable ? <SName>{name}</SName> : null}
 
       {needPrioritise && <SPrioritise>Prioritise {name} wallet</SPrioritise>}
       {disabledByWallet && (

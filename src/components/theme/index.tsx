@@ -39,12 +39,15 @@ function colors(darkMode: boolean): Colors {
     white: darkMode ? black : white,
     black: darkMode ? white : black,
     modal: {
-      bg: '#2b2b2b'
+      bg: darkMode ? '#2b2b2b' : '#E5E5E5',
+      layoutBg: darkMode ? black : black
     },
     wallet: {
-      descColor: '#c4c4c4',
-      titleColor: '#f2f1f1',
-      bg: '#333333'
+      name: darkMode ? white : '#333333',
+      descColor: darkMode ? '#c4c4c4' : '#979797',
+      titleColor: darkMode ? '#f2f1f1' : '#333333',
+      bg: darkMode ? '#333333' : '#F2F1F1',
+      activeBg: darkMode ? 'lightslategrey' : 'darkseagreen'
     }
   }
 }
