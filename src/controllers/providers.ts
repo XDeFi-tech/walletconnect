@@ -18,11 +18,11 @@ import {
   IProviderInfo,
   filterMatches,
   IProviderUserOptions,
-  getInjectedProvider,
   findMatchingRequiredOptions,
   IProviderOption,
   IChainToAccounts,
-  canInject
+  canInject,
+  findAvailableEthereumProvider
 } from '../helpers'
 import { IChainType } from '../constants'
 
@@ -36,7 +36,6 @@ export class ProviderController {
 
   private eventController: EventController = new EventController()
   public injectedChains: string[] = []
-  public injectedProvider: IProviderInfo | null = null
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
   private network = ''
@@ -54,8 +53,6 @@ export class ProviderController {
   }
 
   public init() {
-    this.injectedProvider = getInjectedProvider()
-
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
@@ -66,7 +63,6 @@ export class ProviderController {
         ) {
           this.providers.push({
             ...list.providers.FALLBACK,
-            id,
             ...options.display,
             connector: options.connector
           })
@@ -202,7 +198,7 @@ export class ProviderController {
             return target.methods.getAccounts().then((accounts: string[]) => {
               return {
                 chain: chain,
-                account: accounts[0]
+                accounts: accounts
               }
             })
           })
@@ -231,12 +227,13 @@ export class ProviderController {
   }
 
   public clearCachedProvider() {
-    this.cachedProvider = ''
-    this.injectedProvider = null
-    removeLocal(CACHED_PROVIDER_KEY)
-    removeLocal(CACHED_PROVIDER_CHAINS_KEY)
+    if (this.cachedProvider) {
+      this.cachedProvider = ''
+      removeLocal(CACHED_PROVIDER_KEY)
+      removeLocal(CACHED_PROVIDER_CHAINS_KEY)
 
-    this.trigger(WALLETS_EVENTS.CLOSE)
+      this.trigger(WALLETS_EVENTS.CLOSE)
+    }
   }
 
   public setCachedProvider(id: string, chains: string[]) {
@@ -250,12 +247,25 @@ export class ProviderController {
     setLocal(CACHED_PROVIDER_CHAINS_KEY, chains)
   }
 
+  get injectedProvider() {
+    return this.getProviderOption(this.cachedProvider).display || null
+  }
+
+  public getEthereumProvider = () => {
+    const options = this.injectedProvider
+
+    return options && options?.getEthereumProvider
+      ? options?.getEthereumProvider()
+      : findAvailableEthereumProvider()
+  }
+
   public connectTo = async (
     id: string,
     connector: (
       providerPackage: any,
       opts: any,
-      chains?: string[]
+      chains?: string[],
+      getProvider?: () => any
     ) => Promise<any>,
     chains?: string[]
   ) => {
@@ -264,8 +274,15 @@ export class ProviderController {
       const options = this.getProviderOption(id)
       const providerPackage = options?.package
       const providerOptions = options?.options
+      const display = options?.display
       const opts = { network: this.network || undefined, ...providerOptions }
-      const provider = await connector(providerPackage, opts, chains)
+
+      const provider = await connector(
+        providerPackage,
+        opts,
+        chains,
+        display?.getEthereumProvider
+      )
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
       this.trigger(WALLETS_EVENTS.CONNECT, provider)
@@ -275,8 +292,6 @@ export class ProviderController {
       }
 
       this.connectToChains()
-
-      this.injectedProvider = getInjectedProvider()
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }

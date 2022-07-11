@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
-import { IWalletConnectorConfigs } from 'src'
+import { IWalletConnectorConfigs } from './../wallets'
 
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount } from '../helpers'

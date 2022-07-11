@@ -39,6 +39,7 @@ const ConnectToWalletConnect = (
       chainId,
       qrcodeModalOptions
     })
+
     try {
       await provider.enable()
       resolve(provider)

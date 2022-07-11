@@ -193,3 +193,17 @@ export function isLocalStorageAvailable() {
     return false
   }
 }
+
+export const findAvailableEthereumProvider = () => {
+  if (typeof window.ethereum !== 'undefined') {
+    return window.ethereum
+  } else if (window.web3) {
+    return window.web3.currentProvider
+  } else if (window.xfi && window.xfi.ethereum) {
+    return window.xfi.ethereum
+  } else if (window.celo) {
+    return window.celo
+  }
+
+  return undefined
+}

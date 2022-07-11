@@ -1,16 +1,19 @@
-const ConnectToInjected = async () => {
-  let provider = null
+import { findAvailableEthereumProvider } from 'src'
 
-  if (typeof window.ethereum !== 'undefined') {
-    provider = window.ethereum
-  } else if (window.web3) {
-    provider = window.web3.currentProvider
-  } else if (window.xfi && window.xfi.ethereum) {
-    provider = window.xfi.ethereum
-  } else if (window.celo) {
-    provider = window.celo
-  } else {
-    throw Error('No Web3 Provider found')
+const ConnectToInjected = async (
+  providerPackage: any,
+  opts: any,
+  chains?: string[],
+  getProvider?: () => any
+) => {
+  let provider = getProvider ? getProvider() : undefined
+
+  if (!provider) {
+    provider = findAvailableEthereumProvider()
+
+    if (!provider) {
+      throw Error('No Web3 Provider found')
+    }
   }
 
   if (provider) {

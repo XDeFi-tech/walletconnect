@@ -18,6 +18,7 @@ export interface IProviderDisplay {
   name: string
   logo: any
   description?: string
+  getEthereumProvider?: () => any
 }
 
 export interface ISupportedChain {
@@ -33,7 +34,7 @@ export type IChainWithAccount = { [key in IChainType]?: string }
 
 export interface IChainToAccounts {
   chain: string
-  account: string
+  accounts: string[]
 }
 
 export interface IProviderInfo extends IProviderDisplay {
@@ -46,6 +47,7 @@ export interface IProviderInfo extends IProviderDisplay {
   }
   supportedEvmChains?: IChainType[]
   installationLink?: string
+  getEthereumProvider?: () => any
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
 }
@@ -60,7 +62,7 @@ export interface IProviderOption {
   package: any
   options?: any
   connector?: Connector
-  display?: Partial<IProviderDisplay>
+  display?: IProviderInfo
 }
 
 export interface IProviderOptions {

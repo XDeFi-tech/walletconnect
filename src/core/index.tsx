@@ -61,6 +61,9 @@ export class WalletConnect {
     return this.providerController.injectedChains
   }
 
+  public getEthereumProvider = () =>
+    this.providerController.getEthereumProvider()
+
   public loadAccounts(): Promise<any> {
     return this.providerController.connectToChains()
   }
@@ -84,7 +87,6 @@ export class WalletConnect {
       this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
       this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
       this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
-
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(
@@ -146,7 +148,6 @@ export class WalletConnect {
 
   public clearCachedProvider(): void {
     this.providerController.clearCachedProvider()
-    this.trigger(WALLETS_EVENTS.CLOSE)
   }
 
   // --------------- PRIVATE METHODS --------------- //

@@ -78,6 +78,8 @@ export class WalletsConnector {
     }
   }
 
+  private getEthereumProvider = () => this.connector.getEthereumProvider()
+
   private connect = async () => {
     try {
       this.connector.init()
@@ -94,12 +96,18 @@ export class WalletsConnector {
       if (!provider) {
         this.retry()
       } else {
-        const ethereum = window.ethereum
+        const ethereum = this.getEthereumProvider()
 
         if (ethereum) {
-          ethereum.on('accountsChanged', () => this.loadAccounts)
-          ethereum.on('disconnect', this.disconnect)
-          ethereum.on('chainChanged', this.setActiveChain)
+          ethereum.on('accountsChanged', () => {
+            this.loadAccounts()
+          })
+          ethereum.on('disconnect', () => {
+            this.disconnect()
+          })
+          ethereum.on('chainChanged', (chainId: string) =>
+            this.setActiveChain(chainId)
+          )
         }
       }
     } catch (e) {
@@ -111,10 +119,11 @@ export class WalletsConnector {
 
   public dispose = () => {
     clearTimeout(this.timeoutId)
-    if (window.ethereum) {
-      window.ethereum.removeListener('accountsChanged', this.loadAccounts)
-      window.ethereum.removeListener('disconnect', this.disconnect)
-      window.ethereum.removeListener('disconnect', this.setActiveChain)
+    const ethereum = this.getEthereumProvider()
+    if (ethereum) {
+      ethereum.removeListener('accountsChanged')
+      ethereum.removeListener('disconnect')
+      ethereum.removeListener('disconnect')
     }
   }
 
@@ -140,8 +149,8 @@ export class WalletsConnector {
 
     const map = accounts
       ? accounts.reduce(
-          (acc: Record<string, string>, item: IChainToAccounts) => {
-            acc[item.chain] = item.account
+          (acc: Record<string, string[]>, item: IChainToAccounts) => {
+            acc[item.chain] = item.accounts
             return acc
           },
           {}
@@ -160,14 +169,15 @@ export class WalletsConnector {
       this.connector.injectedProvider?.supportedEvmChains
 
     if (evmChainsAvailable) {
-      map[IChainType.ethereum] = ethAccounts[0]
+      map[IChainType.ethereum] = ethAccounts
       evmChainsAvailable.forEach((chain) => {
         map[chain] = ethAccounts
       })
     } else {
-      map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
+      map[this.configs?.network || IChainType.ethereum] = ethAccounts
     }
 
+    console.log('map', map)
     this.setAccounts(map)
   }
 
@@ -194,7 +204,7 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return window.ethereum.request({
+        return this.getEthereumProvider().request({
           method: 'eth_sign',
           params: data
         })

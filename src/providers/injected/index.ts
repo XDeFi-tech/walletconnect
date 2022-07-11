@@ -151,15 +151,10 @@ export const XDEFI: IProviderInfo = {
   type: 'injected',
   check: '__XDEFI',
   installationLink: 'https://metamask.io',
+  getEthereumProvider: () => {
+    return window.xfi.ethereum
+  },
   needPrioritiseFunc: () => {
-    if (window.xfi && window.xfi.info) {
-      const {
-        lastConfigChanges: { ethereumProvider }
-      } = window.xfi.info
-      const { inject, pretendMetamask } = ethereumProvider
-      return inject && !pretendMetamask
-    }
-
     return false
   },
   supportedEvmChains: [
