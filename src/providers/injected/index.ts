@@ -50,12 +50,9 @@ export const METAMASK: IProviderInfo = {
   check: 'isMetaMask',
   installationLink: 'https://metamask.io',
   disabledByWalletFunc: () => {
-    if (window.xfi && window.xfi.info) {
-      const {
-        lastConfigChanges: { ethereumProvider }
-      } = window.xfi.info
-      const { inject, pretendMetamask } = ethereumProvider
-      if (inject && pretendMetamask) {
+    if (window.xfi && window.xfi.ethereum) {
+      const { isXDEFI } = window.xfi.ethereum
+      if (!isXDEFI) {
         return 'XDEFI'
       }
     }
@@ -151,15 +148,18 @@ export const XDEFI: IProviderInfo = {
   type: 'injected',
   check: '__XDEFI',
   installationLink: 'https://metamask.io',
+  getEthereumProvider: () => {
+    return window.xfi.ethereum
+  },
   needPrioritiseFunc: () => {
-    if (window.xfi && window.xfi.info) {
+    /* if (window.xfi && window.xfi.info) {
       const {
         lastConfigChanges: { ethereumProvider }
       } = window.xfi.info
       const { inject, pretendMetamask } = ethereumProvider
       return inject && !pretendMetamask
     }
-
+    */
     return false
   },
   supportedEvmChains: [
@@ -436,6 +436,10 @@ export const XDEFI: IProviderInfo = {
       methods: {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
+            if (!window.terraWallets) {
+              reject('No terra connector')
+            }
+
             const terraWalletXdefi = window.terraWallets.find(
               (w) => w.identifier === 'xdefi-wallet'
             )

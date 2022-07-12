@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
-import { IWalletConnectorConfigs } from 'src'
+import { IWalletConnectorConfigs } from './../wallets'
 
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount } from '../helpers'
@@ -49,12 +49,12 @@ export const useConnectionConfigs = () => {
 
   useEffect(() => {
     if (context) {
-      context.on(WALLETS_EVENTS.CONFIGS, setConfigs)
+      context.on(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
     }
 
     return () => {
       if (context) {
-        context.off(WALLETS_EVENTS.CONFIGS, setConfigs)
+        context.off(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
       }
     }
   }, [context, setConfigs])
@@ -109,8 +109,8 @@ export const useWalletsConnector = () => {
 export const useConnectedAccounts = () => {
   const context = useContext(WalletsContext)
 
-  const [accounts, setAccounts] = useState<IChainWithAccount>(
-    () => context?.getAccounts() || {}
+  const [accounts, setAccounts] = useState<IChainWithAccount | null>(
+    () => context?.getAccounts() || null
   )
 
   const setAccountsHandler = useCallback(

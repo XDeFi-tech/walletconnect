@@ -10,7 +10,6 @@ import {
 } from '../helpers'
 import { IChainType, WALLETS, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
-import { isEqual } from 'lodash'
 import { Web3Provider, Network } from '@ethersproject/providers'
 
 const INIT_RETRY_TIMEOUT = 300
@@ -42,7 +41,8 @@ export class WalletsConnector {
   public connector: WalletConnect
   public currentProvider: any
 
-  private accounts: IChainWithAccount = {}
+  private accounts: IChainWithAccount | null = null
+  private timeoutId: ReturnType<typeof setTimeout>
 
   constructor(
     providerOptions: IProviderOptions,
@@ -74,9 +74,11 @@ export class WalletsConnector {
 
   private retry() {
     if (this.connector.cachedProvider === WALLETS.xdefi) {
-      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+      this.timeoutId = setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     }
   }
+
+  private getEthereumProvider = () => this.connector.getEthereumProvider()
 
   private connect = async () => {
     try {
@@ -91,23 +93,33 @@ export class WalletsConnector {
           console.warn('Error', e)
         })
 
-      if (!provider) {
-        this.retry()
-      } else {
-        const ethereum = window.ethereum
+      if (provider) {
+        const ethereum = this.getEthereumProvider()
 
         if (ethereum) {
-          ethereum.on('accountsChanged', () => this.loadAccounts())
-          ethereum.on('disconnect', this.disconnect.bind(this))
-          ethereum.on('chainChanged', (chainId: string) => {
-            this.setActiveChain(chainId)
+          ethereum.on('accountsChanged', () => {
+            this.loadAccounts()
           })
+          ethereum.on('disconnect', () => {
+            this.disconnect()
+          })
+          ethereum.on('chainChanged', (chainId: string) =>
+            this.setActiveChain(chainId)
+          )
         }
       }
     } catch (e) {
       console.log('Error', e)
+    }
+  }
 
-      this.retry()
+  public dispose = () => {
+    clearTimeout(this.timeoutId)
+    const ethereum = this.getEthereumProvider()
+    if (ethereum) {
+      ethereum.removeListener('accountsChanged')
+      ethereum.removeListener('disconnect')
+      ethereum.removeListener('chainChanged')
     }
   }
 
@@ -122,59 +134,66 @@ export class WalletsConnector {
   private loadAccounts = async (
     c: IWalletConnectorConfigs | undefined = undefined
   ) => {
-    if (!window.ethereum) {
+    if (!canInject()) {
       return
     }
+    this.setAccounts(null)
+    const ethereum = this.getEthereumProvider()
 
-    const ethAccounts = await window.ethereum.request({
+    const ethAccounts = await ethereum.request({
       method: 'eth_requestAccounts'
     })
     const accounts = await this.connector.loadAccounts()
 
     const map = accounts
       ? accounts.reduce(
-          (acc: Record<string, string>, item: IChainToAccounts) => {
-            acc[item.chain] = item.account
+          (acc: Record<string, string[]>, item: IChainToAccounts) => {
+            acc[item.chain] = item.accounts
             return acc
           },
           {}
         )
       : {}
 
-    const targetConfigs = c || this.configs
-    this.configs = {
-      ...targetConfigs,
-      activeAddress: ethAccounts[0],
-      network: convertToCommonChain(targetConfigs?.network)
-    }
-    this.connector.trigger(WALLETS_EVENTS.CONFIGS, this.configs)
+    this.setConfigs(c || this.configs, ethAccounts)
 
     const evmChainsAvailable =
       this.connector.injectedProvider?.supportedEvmChains
 
     if (evmChainsAvailable) {
-      map[IChainType.ethereum] = ethAccounts[0]
+      map[IChainType.ethereum] = ethAccounts
       evmChainsAvailable.forEach((chain) => {
-        map[chain] = ethAccounts[0]
+        map[chain] = ethAccounts
       })
     } else {
-      map[this.configs?.network || IChainType.ethereum] = ethAccounts[0]
+      map[this.configs?.network || IChainType.ethereum] = ethAccounts
     }
 
+    console.log('map', map)
     this.setAccounts(map)
   }
 
-  private setAccounts = (map: IChainWithAccount) => {
-    if (!isEqual(this.accounts, map)) {
-      this.accounts = map
-      this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
+  private setConfigs = (
+    targetConfigs: IWalletConnectorConfigs,
+    ethAccounts: string[]
+  ) => {
+    this.configs = {
+      ...targetConfigs,
+      activeAddress: ethAccounts[0],
+      network: convertToCommonChain(targetConfigs?.network)
     }
+    this.connector.trigger(WALLETS_EVENTS.CONNECTION_INFO, this.configs)
+  }
+
+  private setAccounts = (map: IChainWithAccount | null) => {
+    this.accounts = map
+    this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
   public disconnect = () => {
     this.connector.clearCachedProvider()
 
-    this.setAccounts({})
+    this.setAccounts(null)
   }
 
   public getChainMethods = (chain: IChainType) => {
@@ -183,13 +202,13 @@ export class WalletsConnector {
   }
 
   public signMessage = async (chainId: IChainType, data: any) => {
-    if (!window.ethereum) {
+    if (!canInject()) {
       return
     }
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return window.ethereum.request({
+        return this.getEthereumProvider().request({
           method: 'eth_sign',
           params: data
         })
@@ -240,7 +259,7 @@ export class WalletsConnector {
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return window.ethereum.request({
+        return this.getEthereumProvider().request({
           method: method,
           params: data
         })
@@ -258,7 +277,7 @@ export class WalletsConnector {
     this.connector.off(event, callback)
   }
 
-  public getAccounts = (): IChainWithAccount => {
+  public getAccounts = (): IChainWithAccount | null => {
     return this.accounts
   }
 

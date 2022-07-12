@@ -1,16 +1,9 @@
 import * as env from 'detect-browser'
 import ReactDOMServer from 'react-dom/server'
-import { IChainType } from 'src'
 
 import { providers, injected } from '../providers'
 
-import {
-  IProviderInfo,
-  IInjectedProvidersMap,
-  ChainData,
-  RequiredOption,
-  CHAIN_DATA_LIST
-} from './types'
+import { IProviderInfo, IInjectedProvidersMap, RequiredOption } from './types'
 
 export function encodeSvg(reactElement: any) {
   return (
@@ -144,7 +137,7 @@ export function filterMatches<T>(
   return result
 }
 
-export const canInject = () => !!window.web3 || !!window.ethereum
+export const canInject = () => findAvailableEthereumProvider()
 
 export function filterProviders(
   param: string,
@@ -176,46 +169,6 @@ export function filterProviderChecks(checks: string[]): string {
   return providers.FALLBACK.check
 }
 
-export function getChainId(network: string): number {
-  const chains: ChainData[] = Object.values(CHAIN_DATA_LIST)
-  const match = filterMatches<ChainData>(
-    chains,
-    (x) => x.network === network,
-    undefined
-  )
-  if (!match) {
-    throw new Error(`No chainId found match ${network}`)
-  }
-  return match.chainId
-}
-
-export function convertToCommonChain(network?: string): string {
-  switch (network) {
-    case 'mainnet': {
-      return IChainType.ethereum
-    }
-    case 'avalanche-fuji-mainnet': {
-      return IChainType.avalanche
-    }
-    case 'matic': {
-      return IChainType.polygon
-    }
-    case 'binance': {
-      return IChainType.binancesmartchain
-    }
-  }
-
-  return network || ''
-}
-
-export function getChainData(chainId: number): ChainData {
-  const chain: ChainData = CHAIN_DATA_LIST[chainId]
-  if (!chain) {
-    throw new Error(`No chainId found match ${chainId}`)
-  }
-  return chain
-}
-
 export function findMatchingRequiredOptions(
   requiredOptions: RequiredOption[],
   providedOptions: { [key: string]: any }
@@ -239,4 +192,18 @@ export function isLocalStorageAvailable() {
   } catch (e) {
     return false
   }
+}
+
+export const findAvailableEthereumProvider = () => {
+  if (typeof window.ethereum !== 'undefined') {
+    return window.ethereum
+  } else if (window.web3) {
+    return window.web3.currentProvider
+  } else if (window.xfi && window.xfi.ethereum) {
+    return window.xfi.ethereum
+  } else if (window.celo) {
+    return window.celo
+  }
+
+  return undefined
 }

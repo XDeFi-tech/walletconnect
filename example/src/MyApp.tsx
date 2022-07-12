@@ -4,6 +4,7 @@ import {
   IChainType,
   IChainWithAccount,
   useConnectedAccounts,
+  useConnectionConfigs,
   useSign,
   useSignAvailability,
   WalletsContext
@@ -68,15 +69,21 @@ const MyApp = () => {
 
   const accounts = useConnectedAccounts()
 
+  const configs = useConnectionConfigs()
+
+  console.log('configs', configs)
+  console.log('accounts', accounts)
   return (
     <SLayout>
       <Column maxWidth={1200} spanHeight>
         <Header killSession={resetApp} />
-        <SContent>
-          {Object.keys(accounts).map((chain: string) => {
-            return <Sign key={chain} chain={chain} accounts={accounts} />
-          })}
-        </SContent>
+        {accounts && (
+          <SContent>
+            {Object.keys(accounts).map((chain: string) => {
+              return <Sign key={chain} chain={chain} accounts={accounts} />
+            })}
+          </SContent>
+        )}
       </Column>
     </SLayout>
   )
@@ -108,10 +115,11 @@ const Sign = ({
     }
   }
 
+  const list = accounts[chain] || ([] as string[])
   return (
     <SBalances>
       <h3>
-        {chain} with account {accounts[chain]}
+        {chain} with accounts {list ? list.join(', ') : '<not set>'}
       </h3>
       <Column center>
         <STestButtonContainer>

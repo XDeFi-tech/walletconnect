@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo } from 'react'
-import { useConnectorActiveId } from 'src'
+import { useConnectorActiveId } from './../hooks'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 import { DefaultTheme } from 'styled-components/macro'
