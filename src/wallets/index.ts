@@ -144,7 +144,6 @@ export class WalletsConnector {
       method: 'eth_requestAccounts'
     })
     const accounts = await this.connector.loadAccounts()
-    debugger
 
     const map = accounts
       ? accounts.reduce(
