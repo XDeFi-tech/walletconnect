@@ -67,7 +67,7 @@ export class WalletConnect {
   public getEthereumProvider = () =>
     this.providerController.getEthereumProvider()
 
-  public loadAccounts(): Promise<any> {
+  public loadAccounts() {
     return this.providerController.connectToChains()
   }
 

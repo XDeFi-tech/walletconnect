@@ -20,7 +20,6 @@ import {
   IProviderUserOptions,
   findMatchingRequiredOptions,
   IProviderOption,
-  IChainToAccounts,
   canInject,
   findAvailableEthereumProvider
 } from '../helpers'
@@ -176,7 +175,7 @@ export class ProviderController {
     return userOptions
   }
 
-  public connectToChains = async (): Promise<IChainToAccounts[]> => {
+  public connectToChains = async () => {
     const currentProviderChains = this.injectedProvider
       ? this.injectedProvider?.chains
       : undefined
@@ -186,7 +185,7 @@ export class ProviderController {
       this.injectedChains.length > 0 &&
       currentProviderChains
     ) {
-      return Promise.all(
+      return Promise.allSettled(
         this.injectedChains
           .filter(
             (chain) =>
