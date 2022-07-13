@@ -2,7 +2,7 @@
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
-  CACHED_PROVIDER_KEY,
+  CACHED_PROVIDERS_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
   WALLETS_EVENTS
 } from '../constants'
@@ -29,22 +29,24 @@ import { EventController } from './events'
 import { METAMASK, XDEFI } from 'src/providers/injected'
 
 export class ProviderController {
-  public cachedProvider = ''
-  public shouldCacheProvider = false
+  public cachedProviders: string[] = []
+  public shouldCacheProviders = false
   public disableInjectedProvider = false
 
   private eventController: EventController = new EventController()
-  public injectedChains: string[] = []
+  public injectedChains: {
+    [providerId: string]: string[]
+  } = {}
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
   private network = ''
 
   constructor(opts: IProviderControllerOptions) {
-    this.cachedProvider = getLocal(CACHED_PROVIDER_KEY) || ''
+    this.cachedProviders = getLocal(CACHED_PROVIDERS_KEY) || []
     this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
 
     this.disableInjectedProvider = opts.disableInjectedProvider
-    this.shouldCacheProvider = opts.cacheProvider
+    this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
     this.network = opts.network
 
@@ -73,7 +75,7 @@ export class ProviderController {
       ...Object.keys(list.connectors).map((id: string) => {
         let providerInfo: IProviderInfo
         if (id === INJECTED_PROVIDER_ID) {
-          providerInfo = this.injectedProvider || list.providers.FALLBACK
+          providerInfo = this.injectedProvider(id) || list.providers.FALLBACK
         } else {
           providerInfo = getProviderInfoById(id)
         }
@@ -175,18 +177,19 @@ export class ProviderController {
     return userOptions
   }
 
-  public connectToChains = async () => {
+  public connectToChains = async (providerId: string) => {
     const currentProviderChains = this.injectedProvider
-      ? this.injectedProvider?.chains
+      ? this.injectedProvider(providerId)?.chains
       : undefined
 
     if (
       this.injectedChains &&
-      this.injectedChains.length > 0 &&
+      this.injectedChains[providerId] &&
+      this.injectedChains[providerId].length > 0 &&
       currentProviderChains
     ) {
       return Promise.allSettled(
-        this.injectedChains
+        this.injectedChains[providerId]
           .filter(
             (chain) =>
               !!currentProviderChains[chain] && chain !== IChainType.ethereum
@@ -203,8 +206,8 @@ export class ProviderController {
           })
       )
     } else {
-      if (this.injectedProvider) {
-        this.setInjectedChains([IChainType.ethereum])
+      if (this.injectedProvider[providerId]) {
+        this.setInjectedChains(providerId, [IChainType.ethereum])
       }
     }
 
@@ -225,13 +228,21 @@ export class ProviderController {
       : ({} as IProviderOption)
   }
 
-  public clearCachedProvider(): boolean {
-    if (this.cachedProvider) {
-      this.cachedProvider = ''
-      removeLocal(CACHED_PROVIDER_KEY)
-      removeLocal(CACHED_PROVIDER_CHAINS_KEY)
+  public clearCachedProvider(providerId?: string): boolean {
+    if (this.cachedProviders) {
+      const list = providerId
+        ? this.cachedProviders.filter((x) => x !== providerId)
+        : this.cachedProviders
 
-      this.trigger(WALLETS_EVENTS.CLOSE)
+      list.forEach((p) => {
+        this.cachedProviders = this.cachedProviders.filter((x) => x !== p)
+        delete this.injectedChains[p]
+      })
+
+      setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
+      setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
+
+      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
       return true
     }
 
@@ -239,22 +250,24 @@ export class ProviderController {
   }
 
   public setCachedProvider(id: string, chains: string[]) {
-    this.cachedProvider = id
-    setLocal(CACHED_PROVIDER_KEY, id)
-    this.setInjectedChains(chains)
+    const unique = new Set([...this.cachedProviders, id])
+    this.cachedProviders = Array.from(unique)
+
+    setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
+    this.setInjectedChains(id, chains)
   }
 
-  public setInjectedChains(chains: string[]) {
-    this.injectedChains = chains
-    setLocal(CACHED_PROVIDER_CHAINS_KEY, chains)
+  public setInjectedChains(providerId: string, chains: string[]) {
+    this.injectedChains[providerId] = chains
+    setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
   }
 
-  get injectedProvider() {
-    return this.getProviderOption(this.cachedProvider).display || null
+  public injectedProvider(providerId: string) {
+    return this.getProviderOption(providerId).display || null
   }
 
-  public getEthereumProvider = () => {
-    const options = this.injectedProvider
+  public getEthereumProvider = (providerId: string) => {
+    const options = this.injectedProvider(providerId)
 
     return options && options?.getEthereumProvider
       ? options?.getEthereumProvider()
@@ -289,21 +302,33 @@ export class ProviderController {
 
       this.trigger(WALLETS_EVENTS.CONNECT, provider)
 
-      if (this.shouldCacheProvider && this.cachedProvider !== id) {
+      if (
+        this.shouldCacheProviders &&
+        !this.cachedProviders.some((i) => i === id)
+      ) {
         this.setCachedProvider(id, cachedChains)
       }
 
-      this.connectToChains()
+      this.connectToChains(id)
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }
   }
 
   public async connectToCachedProvider() {
-    const provider = this.getProvider(this.cachedProvider)
-    if (provider) {
-      await this.connectTo(provider.id, provider.connector, this.injectedChains)
-    }
+    return Promise.allSettled(
+      this.cachedProviders.map((pid: string) => {
+        const provider = this.getProvider(pid)
+        if (provider) {
+          return this.connectTo(
+            provider.id,
+            provider.connector,
+            this.injectedChains[provider.id]
+          )
+        }
+        return null
+      })
+    )
   }
 
   public on(event: string, callback: (result: any) => void): () => void {

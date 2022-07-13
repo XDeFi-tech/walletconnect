@@ -5,17 +5,17 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { IChainWithAccount } from '../helpers'
 import { WalletsContext } from '../manager'
 
-export const useConnectorActiveId = () => {
+export const useConnectorActiveIds = () => {
   const context = useContext(WalletsContext)
-  const [pid, setPid] = useState<string>(
-    () => context?.connector?.cachedProvider || ''
+  const [pids, setPids] = useState<string[]>(
+    () => context?.connector?.cachedProviders || []
   )
 
   const setConfigs = useCallback(
-    (c: string = '') => {
-      setPid(c)
+    (c: string[] = []) => {
+      setPids(c)
     },
-    [setPid]
+    [setPids]
   )
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const useConnectorActiveId = () => {
     }
   }, [context, setConfigs])
 
-  return pid
+  return pids
 }
 
 export const useConnectionConfigs = () => {
@@ -166,9 +166,12 @@ export const useWalletsOptions = () => {
     return context ? context.connector.getUserOptions() : []
   }, [context])
 
-  const onDisconnect = useCallback(() => {
-    return context?.disconnect()
-  }, [context])
+  const onDisconnect = useCallback(
+    (providerId?: string) => {
+      return context?.disconnect(providerId)
+    },
+    [context]
+  )
 
   return {
     providers,

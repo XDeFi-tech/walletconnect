@@ -4,7 +4,7 @@ export type ICoreOptions = IProviderControllerOptions
 
 export interface IProviderControllerOptions {
   disableInjectedProvider: boolean
-  cacheProvider: boolean
+  cacheProviders: boolean
   providerOptions: IProviderOptions
   network: string
 }
@@ -31,6 +31,8 @@ export interface ISupportedChain {
 }
 
 export type IChainWithAccount = { [key in IChainType]: string[] }
+
+export type IProviderWithAccounts = { [key: string]: IChainWithAccount }
 
 export interface IChainToAccounts {
   chain: string

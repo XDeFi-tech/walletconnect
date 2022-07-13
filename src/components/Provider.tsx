@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { useConnectorActiveId } from './../hooks'
+import { useConnectorActiveIds } from './../hooks'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 import { DefaultTheme } from 'styled-components/macro'
@@ -117,7 +117,7 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     needPrioritiseFunc
   } = provider
 
-  const pid = useConnectorActiveId()
+  const pids = useConnectorActiveIds()
 
   const context = useContext(WalletsContext)
 
@@ -141,7 +141,10 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
   )
 
   const [loading, setLoading] = useState(false)
-  const isActive = pid === id
+  const isActive = useMemo(() => {
+    return pids.some((i) => i === id)
+  }, [pids, id])
+
   const isAvailable = !disabledByWallet && !needPrioritise
 
   const connectToProvider = useCallback(async () => {
