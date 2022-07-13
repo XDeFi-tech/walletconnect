@@ -6,6 +6,7 @@ import {
   IChainToAccounts,
   IChainWithAccount,
   IProviderOptions,
+  IProviderWithAccounts,
   SimpleFunction
 } from '../helpers'
 import { IChainType, WALLETS, WALLETS_EVENTS } from '../constants'
@@ -35,26 +36,29 @@ export type IWalletConnectorConfigs = Network &
   ChainData & { activeAddress?: string }
 
 export class WalletsConnector {
+  public isSingleProviderEnabled: boolean
   public library: Web3Provider
   public configs: IWalletConnectorConfigs
 
   public connector: WalletConnect
-  public currentProvider: any
+  public currentProviders: any[]
 
-  private accounts: IChainWithAccount | null = null
+  private accounts: IProviderWithAccounts | null = null
   private timeoutId: ReturnType<typeof setTimeout>
 
   constructor(
     providerOptions: IProviderOptions,
     network = 'mainnet',
-    cacheProvider = true
+    cacheProviders = true,
+    isSingleProviderEnabled = true
   ) {
     const connector = new WalletConnect({
       network,
-      cacheProvider,
+      cacheProviders,
       providerOptions
     })
 
+    this.isSingleProviderEnabled = isSingleProviderEnabled
     this.connector = connector
 
     this.connector.on(WALLETS_EVENTS.CONNECT, (provider) =>
@@ -195,8 +199,8 @@ export class WalletsConnector {
     this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
-  public disconnect = () => {
-    this.connector.clearCachedProvider()
+  public disconnect = (providerId?: string) => {
+    this.connector.clearCachedProvider(providerId)
 
     this.setAccounts(null)
   }
