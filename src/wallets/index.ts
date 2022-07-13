@@ -147,8 +147,14 @@ export class WalletsConnector {
 
     const map = accounts
       ? accounts.reduce(
-          (acc: Record<string, string[]>, item: IChainToAccounts) => {
-            acc[item.chain] = item.accounts
+          (
+            acc: Record<string, string[]>,
+            item: PromiseFulfilledResult<IChainToAccounts>
+          ) => {
+            if (item.value) {
+              const { chain, accounts } = item.value
+              acc[chain] = accounts
+            }
             return acc
           },
           {}
@@ -169,8 +175,7 @@ export class WalletsConnector {
       map[this.configs?.network || IChainType.ethereum] = ethAccounts
     }
 
-    console.log('map', map)
-    this.setAccounts(map)
+    this.setAccounts(map as IChainWithAccount)
   }
 
   private setConfigs = (

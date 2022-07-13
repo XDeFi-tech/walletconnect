@@ -1,10 +1,23 @@
-import React, { useCallback, useContext, useEffect, useMemo } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { useConnectorActiveId } from './../hooks'
 import { WalletsContext } from 'src/manager'
 import styled from 'styled-components'
 import { DefaultTheme } from 'styled-components/macro'
 
 import { canInject, IProviderUserOptions } from '../helpers'
+import { CircleSpinner } from './Spinner'
+
+const CircleSpinnerStyled = styled(CircleSpinner)`
+  position: absolute;
+  right: 12px;
+  top: 12px;
+`
 
 const SIcon = styled.div`
   width: 28px;
@@ -46,6 +59,7 @@ const SProviderWrapper = styled.div<{ available: boolean; active: boolean }>`
   min-width: 180px;
   height: 104px;
   padding: 12px 24px;
+  position: relative;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   flex-direction: row;
@@ -125,16 +139,28 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     () => needPrioritiseFunc && needPrioritiseFunc(),
     [needPrioritiseFunc]
   )
+
+  const [loading, setLoading] = useState(false)
   const isActive = pid === id
   const isAvailable = !disabledByWallet && !needPrioritise
 
   const connectToProvider = useCallback(async () => {
     if (isAvailable && context) {
+      setLoading(true)
       context.disconnect()
       await context.connector.connectTo(id, supportedChains)
+      setLoading(false)
       onSelect()
     }
-  }, [isAvailable, context, context?.connector, id, supportedChains, onSelect])
+  }, [
+    isAvailable,
+    context,
+    context?.connector,
+    id,
+    supportedChains,
+    onSelect,
+    setLoading
+  ])
 
   useEffect(() => {
     if (isActive && !isAvailable && context) {
@@ -158,6 +184,8 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
       )}
 
       {needInstall ? <SLink>Please, install {name}</SLink> : null}
+
+      {loading && <CircleSpinnerStyled />}
     </SProviderWrapper>
   )
 }
