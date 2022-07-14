@@ -37,10 +37,10 @@ export default function getLibrary(
 export class WalletsConnector {
   public isSingleProviderEnabled: boolean
   public library: Web3Provider
-  public configs: IProviderConfigs
+  public configs: IProviderConfigs = {}
 
   public connector: WalletConnect
-  public currentProviders: IWeb3Providers
+  public currentProviders: IWeb3Providers = {}
 
   private accounts: IProviderWithAccounts = {}
 
