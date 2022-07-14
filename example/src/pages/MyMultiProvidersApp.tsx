@@ -1,13 +1,20 @@
-import React, { useContext } from 'react'
+import React, { Fragment, useContext } from 'react'
 import {
-  IChainWithAccount,
-  useConnectedSingleAccounts,
-  useConnectorSingleConfigs,
+  IProviderWithAccounts,
+  useConnectedMultiAccounts,
+  useConnectorMultiConfigs,
   WalletsContext
 } from '@xdefi/wallets-connector'
 import Column from 'src/components/Column'
 import Header from 'src/components/Header'
 import { SLayoutMulti, SContent, SBalances } from './styleds'
+import styled from 'styled-components'
+
+const Block = styled.div`
+  display: block;
+  border-bottom: 2px solid black;
+  padding: 16px;
+`
 
 const MyMultiProvidersApp = () => {
   const context = useContext(WalletsContext)
@@ -18,21 +25,19 @@ const MyMultiProvidersApp = () => {
     }
   }
 
-  const accounts = useConnectedSingleAccounts()
+  const providers = useConnectedMultiAccounts()
 
-  const configs = useConnectorSingleConfigs()
+  const configs = useConnectorMultiConfigs()
 
   console.log('configs', configs)
-  console.log('accounts', accounts)
+  console.log('accounts', providers)
   return (
     <SLayoutMulti>
       <Column maxWidth={1200} spanHeight>
         <Header killSession={resetApp} />
-        {accounts && (
+        {providers && (
           <SContent>
-            {Object.keys(accounts).map((chain: string) => {
-              return <Accounts key={chain} chain={chain} accounts={accounts} />
-            })}
+            <Accounts providers={providers} />
           </SContent>
         )}
       </Column>
@@ -42,18 +47,38 @@ const MyMultiProvidersApp = () => {
 
 const Accounts = ({
   chain,
-  accounts
+  providers
 }: {
   chain: string
-  accounts: IChainWithAccount
+  providers: IProviderWithAccounts
 }) => {
-  const list = accounts[chain] || ([] as string[])
+  const keys = Object.keys(providers)
+
   return (
-    <SBalances>
-      <h3>
-        {chain} with accounts {list ? list.join(', ') : '<not set>'}
-      </h3>
-    </SBalances>
+    <>
+      {keys.map((key) => {
+        const chains = providers[key]
+        if (!chains) {
+          return null
+        }
+        return (
+          <Block key={key}>
+            <div>Provider: {key}</div>
+
+            {Object.keys(chains).map((chain: string) => {
+              const list = chains[chain]
+              return (
+                <SBalances>
+                  <h3>
+                    {chain} with accounts {list ? list.join(', ') : '<not set>'}
+                  </h3>
+                </SBalances>
+              )
+            })}
+          </Block>
+        )
+      })}
+    </>
   )
 }
 
