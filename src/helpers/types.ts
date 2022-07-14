@@ -1,4 +1,6 @@
+import { Network } from '@ethersproject/providers'
 import { IChainType } from 'src/constants'
+import { ChainData } from '.'
 
 export type ICoreOptions = IProviderControllerOptions
 
@@ -32,11 +34,20 @@ export interface ISupportedChain {
 
 export type IChainWithAccount = { [key in IChainType]: string[] }
 
-export type IProviderWithAccounts = { [key: string]: IChainWithAccount }
+export type IProviderWithAccounts = {
+  [providerId: string]: IChainWithAccount | null
+}
 
 export interface IChainToAccounts {
   chain: string
   accounts: string[]
+}
+
+export type IWalletConnectorConfigs = Network &
+  ChainData & { activeAddress?: string }
+
+export interface IProviderConfigs {
+  [providerId: string]: IWalletConnectorConfigs
 }
 
 export interface IProviderInfo extends IProviderDisplay {
@@ -69,6 +80,14 @@ export interface IProviderOption {
 
 export interface IProviderOptions {
   [id: string]: IProviderOption
+}
+
+export interface IProviderWithChains {
+  [key: string]: string[]
+}
+
+export interface IWeb3Providers {
+  [key: string]: any
 }
 
 export interface IProviderDisplayWithConnector extends IProviderDisplay {

@@ -12,7 +12,6 @@ import {
   IProviderDisplayWithConnector,
   getLocal,
   setLocal,
-  removeLocal,
   getProviderInfoById,
   getProviderDescription,
   IProviderInfo,
@@ -42,7 +41,7 @@ export class ProviderController {
   private network = ''
 
   constructor(opts: IProviderControllerOptions) {
-    this.cachedProviders = getLocal(CACHED_PROVIDERS_KEY) || []
+    this.updateCachedProviders(getLocal(CACHED_PROVIDERS_KEY) || [])
     this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
 
     this.disableInjectedProvider = opts.disableInjectedProvider
@@ -234,10 +233,12 @@ export class ProviderController {
         ? this.cachedProviders.filter((x) => x !== providerId)
         : this.cachedProviders
 
+      let available = [...this.cachedProviders]
       list.forEach((p) => {
-        this.cachedProviders = this.cachedProviders.filter((x) => x !== p)
+        available = available.filter((x) => x !== p)
         delete this.injectedChains[p]
       })
+      this.updateCachedProviders(available)
 
       setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
       setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
@@ -249,9 +250,14 @@ export class ProviderController {
     return false
   }
 
+  private updateCachedProviders(providers: string[]) {
+    this.cachedProviders = providers
+    this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
+  }
+
   public setCachedProvider(id: string, chains: string[]) {
     const unique = new Set([...this.cachedProviders, id])
-    this.cachedProviders = Array.from(unique)
+    this.updateCachedProviders(Array.from(unique))
 
     setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
     this.setInjectedChains(id, chains)
@@ -300,7 +306,10 @@ export class ProviderController {
       )
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
-      this.trigger(WALLETS_EVENTS.CONNECT, provider)
+      this.trigger(WALLETS_EVENTS.CONNECT, {
+        provider,
+        id
+      })
 
       if (
         this.shouldCacheProviders &&
@@ -315,7 +324,7 @@ export class ProviderController {
     }
   }
 
-  public async connectToCachedProvider() {
+  public async connectToCachedProviders() {
     return Promise.allSettled(
       this.cachedProviders.map((pid: string) => {
         const provider = this.getProvider(pid)

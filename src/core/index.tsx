@@ -8,7 +8,7 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
-  cacheProvider: false,
+  cacheProviders: false,
   disableInjectedProvider: false,
   providerOptions: {},
   network: ''
@@ -35,6 +35,11 @@ export class WalletConnect {
     this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
       this.trigger(WALLETS_EVENTS.CLOSE, providerId)
     )
+    this.providerController.on(
+      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
+      (providers: string[]) =>
+        this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
+    )
     this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
       this.onConnect(provider)
     )
@@ -52,23 +57,23 @@ export class WalletConnect {
     this.userOptions = this.providerController.getUserOptions()
   }
 
-  get injectedProvider(): IProviderInfo | null {
-    return this.providerController.injectedProvider
+  injectedProvider(providerId: string): IProviderInfo | null {
+    return this.providerController.injectedProvider(providerId)
   }
 
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
   }
 
-  get injectedChains(): string[] {
-    return this.providerController.injectedChains
+  injectedChains(providerId: string): string[] {
+    return this.providerController.injectedChains[providerId]
   }
 
-  public getEthereumProvider = () =>
-    this.providerController.getEthereumProvider()
+  public getEthereumProvider = (providerId: string) =>
+    this.providerController.getEthereumProvider(providerId)
 
-  public loadAccounts() {
-    return this.providerController.connectToChains()
+  public loadAccounts(providerId: string) {
+    return this.providerController.connectToChains(providerId)
   }
 
   // --------------- PUBLIC METHODS --------------- //
@@ -109,7 +114,7 @@ export class WalletConnect {
 
   public async toggle(): Promise<void> {
     if (this.cachedProviders && this.cachedProviders.length > 0) {
-      await this.providerController.connectToCachedProvider()
+      await this.providerController.connectToCachedProviders()
       return
     }
     if (
