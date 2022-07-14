@@ -232,51 +232,15 @@ export class WalletsConnector {
     return chains ? chains[chain] : undefined
   }
 
-  public signMessage = async (
-    providerId: string,
-    chainId: IChainType,
-    data: any
-  ) => {
-    if (!canInject()) {
-      return
-    }
-
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return this.getEthereumProvider(providerId).request({
-          method: 'eth_sign',
-          params: data
-        })
-      }
-
-      default: {
-        const targetProvider = this.getChainMethods(providerId, chainId)
-        if (targetProvider && targetProvider.methods.signTransaction) {
-          return targetProvider.methods.signTransaction(data)
-        }
-      }
-    }
-  }
-
-  public isSignAvailable = (providerId: string, chainId: IChainType) => {
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return true
-      }
-
-      default: {
-        const targetProvider = this.getChainMethods(providerId, chainId)
-        if (targetProvider && targetProvider.methods.signTransaction) {
-          return !!targetProvider.methods.signTransaction
-        }
-      }
-    }
-
-    return false
-  }
-
-  public isRequestAvailable = (providerId: string, chainId: IChainType) => {
-    const targetProvider = this.getChainMethods(providerId, chainId)
+  public isRequestAvailable = ({
+    providerId,
+    chainId
+  }: {
+    providerId?: string
+    chainId: IChainType
+  }) => {
+    const targetId = this.validateSingleProvider()
+    const targetProvider = this.getChainMethods(targetId, chainId)
 
     return (
       targetProvider &&
@@ -285,23 +249,41 @@ export class WalletsConnector {
     )
   }
 
-  public request = async (
-    providerId: string,
-    chainId: IChainType,
-    method: string,
-    data: any
-  ) => {
-    const targetProvider = this.getChainMethods(providerId, chainId)
+  private validateSingleProvider = (providerId?: string): string => {
+    if (!this.isSingleProviderEnabled) {
+      if (!providerId)
+        throw new Error(
+          'Multi providers were enabled, but target provider id was not provided'
+        )
+      return providerId
+    } else {
+      return this.providers[0]
+    }
+  }
+
+  public request = async ({
+    providerId,
+    chainId,
+    method,
+    params
+  }: {
+    providerId?: string
+    chainId: IChainType
+    method: string
+    params: any
+  }) => {
+    const targetId = this.validateSingleProvider()
+    const targetProvider = this.getChainMethods(targetId, chainId)
 
     if (targetProvider && targetProvider.methods.request) {
-      return targetProvider.methods.request(method, data)
+      return targetProvider.methods.request(method, params)
     }
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return this.getEthereumProvider(providerId).request({
+        return this.getEthereumProvider(targetId).request({
           method: method,
-          params: data
+          params: params
         })
       }
     }
