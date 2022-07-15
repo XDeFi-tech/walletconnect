@@ -262,7 +262,13 @@ export class WalletsConnector {
         )
       return providerId
     } else {
-      return this.providers[0]
+      const target = this.providers[0]
+
+      if (!target) {
+        throw new Error('Not found provider for request')
+      }
+
+      return target
     }
   }
 
