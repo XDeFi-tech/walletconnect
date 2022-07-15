@@ -24,7 +24,7 @@ const MySingleProviderApp = () => {
 
   const chains = Object.keys(accounts || {})
 
-  console.log('--- DATA ---: ', configs, accounts)
+  console.log('<--- DATA --->: ', configs, accounts)
 
   return (
     <SLayoutSingle>

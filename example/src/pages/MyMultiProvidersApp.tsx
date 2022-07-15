@@ -25,8 +25,8 @@ const MyMultiProvidersApp = () => {
 
   const configs = useConnectorMultiConfigs()
 
-  console.log('configs', configs)
-  console.log('accounts', providers)
+  console.log('<--- DATA --->: ', configs, providers)
+
   return (
     <SLayoutMulti>
       <Column maxWidth={1200} spanHeight>
