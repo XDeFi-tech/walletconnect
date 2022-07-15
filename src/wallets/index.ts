@@ -35,7 +35,6 @@ export default function getLibrary(
 }
 
 export class WalletsConnector {
-  public isSingleProviderEnabled: boolean
   public library: Web3Provider
   public configs: IProviderConfigs = {}
 
@@ -53,10 +52,10 @@ export class WalletsConnector {
     const connector = new WalletConnect({
       network,
       cacheProviders,
-      providerOptions
+      providerOptions,
+      isSingleProviderEnabled
     })
 
-    this.isSingleProviderEnabled = isSingleProviderEnabled
     this.connector = connector
 
     this.connector.on(WALLETS_EVENTS.CONNECT, (data: any) => {
@@ -80,6 +79,8 @@ export class WalletsConnector {
       }
     })
 
+    this.connector.init()
+
     this.init()
   }
 
@@ -98,6 +99,7 @@ export class WalletsConnector {
   private retry() {
     this.connector.cachedProviders.forEach((providerId) => {
       if (providerId === WALLETS.xdefi)
+        // GarageInc | 15.07.2022: XDEFI injects async by timeout
         setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     })
   }
@@ -107,8 +109,6 @@ export class WalletsConnector {
 
   private connect = async () => {
     try {
-      this.connector.init()
-
       await this.connector
         .connect()
         .then((provider: any) => {
@@ -158,6 +158,7 @@ export class WalletsConnector {
     const ethAccounts = await ethereum.request({
       method: 'eth_requestAccounts'
     })
+
     const accounts = await this.connector.loadAccounts(providerId)
 
     const map = accounts
@@ -250,7 +251,7 @@ export class WalletsConnector {
   }
 
   private validateSingleProvider = (providerId?: string): string => {
-    if (!this.isSingleProviderEnabled) {
+    if (!this.connector.isSingleProviderEnabled) {
       if (!providerId)
         throw new Error(
           'Multi providers were enabled, but target provider id was not provided'

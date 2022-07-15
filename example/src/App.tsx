@@ -19,13 +19,13 @@ const Nav = styled.div`
   width: 100%;
 `
 
-const LinkStyled = styled(Link)<{ active?: boolean }>`
+const LinkStyled = styled(Link)<{ current?: boolean }>`
   padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: ${({ active }) => (active ? 1 : 0.4)};
-  background: ${({ active }) => (active ? 'green' : 'initial')};
+  opacity: ${({ current }) => (current ? 1 : 0.4)};
+  background: ${({ current }) => (current ? 'green' : 'initial')};
   color: black;
 `
 
@@ -40,10 +40,13 @@ const Navigation = () => {
 
   return (
     <Nav>
-      <LinkStyled active={location.pathname === PATHS.multi} to={PATHS.multi}>
+      <LinkStyled current={location.pathname === PATHS.multi} to={PATHS.multi}>
         Multi Wallets Connection
       </LinkStyled>
-      <LinkStyled active={location.pathname === PATHS.single} to={PATHS.single}>
+      <LinkStyled
+        current={location.pathname === PATHS.single}
+        to={PATHS.single}
+      >
         Single Wallet Connection
       </LinkStyled>
     </Nav>

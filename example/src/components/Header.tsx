@@ -1,11 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
-import {
-  WalletsModal,
-  useWalletEvents,
-  useConnectorSingleProvider
-} from '@xdefi/wallets-connector'
+import { WalletsModal, useWalletEvents } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
 

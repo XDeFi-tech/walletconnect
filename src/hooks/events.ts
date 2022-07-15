@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
 
 import { WALLETS_EVENTS } from '../constants'
 import {
+  IChainWithAccount,
   IProviderConfigs,
   IProviderWithAccounts,
   IProviderWithChains,
@@ -12,16 +13,20 @@ import { WalletsContext } from '../manager'
 
 export const useConnectorActiveIds = () => {
   const context = useContext(WalletsContext)
-  const [pids, setPids] = useState<string[]>(
-    () => context?.connector?.cachedProviders || []
-  )
+  const [pids, setPids] = useState<string[]>(() => context?.providers || [])
 
   const setConfigs = useCallback(
     (c: string[] = []) => {
       setPids(c)
     },
-    [setPids]
+    [setPids, context]
   )
+
+  useEffect(() => {
+    if (context) {
+      setConfigs(context?.providers)
+    }
+  }, [context, setConfigs])
 
   useEffect(() => {
     if (context) {
@@ -47,10 +52,18 @@ export const useConnectorMultiConfigs = () => {
 
   const setConfigs = useCallback(
     (c: IProviderConfigs) => {
-      setConfigsState(c)
+      setConfigsState({
+        ...c
+      })
     },
     [setConfigsState]
   )
+
+  useEffect(() => {
+    if (context) {
+      setConfigs(context?.configs)
+    }
+  }, [context, setConfigs])
 
   useEffect(() => {
     if (context) {
@@ -70,7 +83,7 @@ export const useConnectorMultiConfigs = () => {
 export const useConnectorSingleConfigs = (): IWalletConnectorConfigs => {
   const configs = useConnectorMultiConfigs()
   const activePids = useConnectorActiveIds()
-  return configs[activePids[0]] || {}
+  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
 }
 
 export const useConnectorMultiProviders = () => {
@@ -93,6 +106,12 @@ export const useConnectorMultiProviders = () => {
 
   useEffect(() => {
     if (context) {
+      setProviderHandler(context?.getCurrentProviders())
+    }
+  }, [context, setProviderHandler])
+
+  useEffect(() => {
+    if (context) {
       context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
     }
 
@@ -111,7 +130,7 @@ export const useConnectorMultiProviders = () => {
 export const useConnectorSingleProvider = () => {
   const configs = useConnectorMultiProviders()
   const activePids = useConnectorActiveIds()
-  return configs[activePids[0]]
+  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
 }
 
 export const useConnectorMultiChains = () => {
@@ -134,6 +153,12 @@ export const useConnectorMultiChains = () => {
 
   useEffect(() => {
     if (context) {
+      setChainsHandler(context?.getInjectedChains())
+    }
+  }, [context, setChainsHandler])
+
+  useEffect(() => {
+    if (context) {
       context.on(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
     }
 
@@ -152,7 +177,7 @@ export const useConnectorMultiChains = () => {
 export const useConnectorSingleChains = () => {
   const configs = useConnectorMultiChains()
   const activePids = useConnectorActiveIds()
-  return configs[activePids[0]]
+  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
 }
 
 export const useConnectedMultiAccounts = () => {
@@ -164,10 +189,18 @@ export const useConnectedMultiAccounts = () => {
 
   const setAccountsHandler = useCallback(
     (newList: IProviderWithAccounts) => {
-      setAccounts(newList)
+      setAccounts({
+        ...newList
+      })
     },
     [setAccounts]
   )
+
+  useEffect(() => {
+    if (context) {
+      setAccountsHandler(context?.getAccounts() || {})
+    }
+  }, [context, setAccountsHandler])
 
   useEffect(() => {
     if (context) {
@@ -209,9 +242,12 @@ export const useWalletEvents = (
 }
 
 export const useConnectedSingleAccounts = () => {
-  const configs = useConnectedMultiAccounts()
+  const accounts = useConnectedMultiAccounts()
   const activePids = useConnectorActiveIds()
-  return configs[activePids[0]]
+  return useMemo(
+    () => accounts[activePids[0]] || ({} as IChainWithAccount),
+    [accounts, activePids]
+  )
 }
 
 export const useWalletsOptions = () => {

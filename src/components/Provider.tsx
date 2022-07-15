@@ -150,7 +150,7 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
   const connectToProvider = useCallback(async () => {
     if (isAvailable && context) {
       setLoading(true)
-      if (context.isSingleProviderEnabled) {
+      if (context?.connector?.isSingleProviderEnabled) {
         context.disconnect()
       }
       await context.connector.connectTo(id, supportedChains)

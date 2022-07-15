@@ -29,20 +29,31 @@ export class WalletConnect {
       disableInjectedProvider: options.disableInjectedProvider,
       cacheProviders: options.cacheProviders,
       providerOptions: options.providerOptions,
-      network: options.network
+      network: options.network,
+      isSingleProviderEnabled: options.isSingleProviderEnabled
     })
 
     this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
       this.trigger(WALLETS_EVENTS.CLOSE, providerId)
     )
+
+    this.providerController.on(
+      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
+      (providers: string[]) => {
+        this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
+      }
+    )
+
     this.providerController.on(
       WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
       (providers: string[]) =>
         this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
     )
+
     this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
       this.onConnect(provider)
     )
+
     this.providerController.on(WALLETS_EVENTS.ERROR, (error) =>
       this.onError(error)
     )
@@ -63,6 +74,10 @@ export class WalletConnect {
 
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
+  }
+
+  get isSingleProviderEnabled() {
+    return this.providerController.isSingleProviderEnabled
   }
 
   injectedChains(providerId: string): string[] {

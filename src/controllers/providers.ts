@@ -2,9 +2,10 @@
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
-  CACHED_PROVIDERS_KEY,
+  CACHED_PROVIDER_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
-  WALLETS_EVENTS
+  WALLETS_EVENTS,
+  CACHED_MULTI_PROVIDERS_KEY
 } from '../constants'
 import {
   IProviderControllerOptions,
@@ -31,6 +32,7 @@ export class ProviderController {
   public cachedProviders: string[] = []
   public shouldCacheProviders = false
   public disableInjectedProvider = false
+  public isSingleProviderEnabled: Boolean | undefined
 
   private eventController: EventController = new EventController()
   public injectedChains: {
@@ -41,18 +43,17 @@ export class ProviderController {
   private network = ''
 
   constructor(opts: IProviderControllerOptions) {
-    this.updateCachedProviders(getLocal(CACHED_PROVIDERS_KEY) || [])
-    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
-
     this.disableInjectedProvider = opts.disableInjectedProvider
     this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
     this.network = opts.network
-
-    this.init()
+    this.isSingleProviderEnabled = opts.isSingleProviderEnabled
   }
 
   public init() {
+    this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
+    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
+
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
@@ -240,7 +241,7 @@ export class ProviderController {
       })
       this.updateCachedProviders(available)
 
-      setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
+      setLocal(this.cachedProvidersKey, this.cachedProviders)
       setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
 
       this.trigger(WALLETS_EVENTS.CLOSE, providerId)
@@ -259,8 +260,14 @@ export class ProviderController {
     const unique = new Set([...this.cachedProviders, id])
     this.updateCachedProviders(Array.from(unique))
 
-    setLocal(CACHED_PROVIDERS_KEY, this.cachedProviders)
+    setLocal(this.cachedProvidersKey, this.cachedProviders)
     this.setInjectedChains(id, chains)
+  }
+
+  get cachedProvidersKey() {
+    return this.isSingleProviderEnabled
+      ? CACHED_PROVIDER_KEY
+      : CACHED_MULTI_PROVIDERS_KEY
   }
 
   public setInjectedChains(providerId: string, chains: string[]) {
@@ -304,6 +311,7 @@ export class ProviderController {
         chains,
         display?.getEthereumProvider
       )
+
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
       this.trigger(WALLETS_EVENTS.CONNECT, {
