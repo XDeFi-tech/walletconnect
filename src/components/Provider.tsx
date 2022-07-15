@@ -151,9 +151,17 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     if (isAvailable && context) {
       setLoading(true)
       if (context?.connector?.isSingleProviderEnabled) {
-        context.disconnect()
+        if (!isActive) {
+          context.disconnect()
+          await context.connector.connectTo(id, supportedChains)
+        }
+      } else {
+        if (!isActive) {
+          await context.connector.connectTo(id, supportedChains)
+        } else {
+          context.disconnect(id)
+        }
       }
-      await context.connector.connectTo(id, supportedChains)
       setLoading(false)
       onSelect()
     }
@@ -164,7 +172,8 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     id,
     supportedChains,
     onSelect,
-    setLoading
+    setLoading,
+    isActive
   ])
 
   useEffect(() => {

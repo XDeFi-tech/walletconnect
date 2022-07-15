@@ -27,7 +27,7 @@ export const SContent = styled(Wrapper)`
 
 export const SBlock = styled.div`
   display: block;
-  border-bottom: 2px solid black;
+  border-top: 2px solid black;
   padding: 16px;
   width: 100%;
 `

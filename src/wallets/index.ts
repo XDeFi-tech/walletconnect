@@ -212,7 +212,11 @@ export class WalletsConnector {
   }
 
   private setAccounts = (providerId: string, map: IChainWithAccount | null) => {
-    this.accounts[providerId] = map
+    if (map) {
+      this.accounts[providerId] = map
+    } else {
+      delete this.accounts[providerId]
+    }
     this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
