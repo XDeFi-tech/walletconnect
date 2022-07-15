@@ -230,18 +230,18 @@ export class ProviderController {
 
   public clearCachedProvider(providerId?: string): boolean {
     if (this.cachedProviders) {
-      const list = providerId
-        ? this.cachedProviders.filter((x) => x !== providerId)
+      const listClear = providerId
+        ? this.cachedProviders.filter((x) => x === providerId)
         : this.cachedProviders
 
-      let available = [...this.cachedProviders]
-      list.forEach((p) => {
-        available = available.filter((x) => x !== p)
+      listClear.forEach((p) => {
         delete this.injectedChains[p]
       })
+
+      const available = Object.keys(this.injectedChains)
+
       this.updateCachedProviders(available)
 
-      setLocal(this.cachedProvidersKey, this.cachedProviders)
       setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
 
       this.trigger(WALLETS_EVENTS.CLOSE, providerId)
@@ -253,6 +253,8 @@ export class ProviderController {
 
   private updateCachedProviders(providers: string[]) {
     this.cachedProviders = providers
+    setLocal(this.cachedProvidersKey, this.cachedProviders)
+
     this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
   }
 
@@ -260,7 +262,6 @@ export class ProviderController {
     const unique = new Set([...this.cachedProviders, id])
     this.updateCachedProviders(Array.from(unique))
 
-    setLocal(this.cachedProvidersKey, this.cachedProviders)
     this.setInjectedChains(id, chains)
   }
 
