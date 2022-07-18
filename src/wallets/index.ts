@@ -11,11 +11,11 @@ import {
   IWeb3Providers,
   SimpleFunction
 } from '../helpers'
-import { IChainType, WALLETS, WALLETS_EVENTS } from '../constants'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { Web3Provider, Network } from '@ethersproject/providers'
 
-const INIT_RETRY_TIMEOUT = 300
+const INIT_RETRY_TIMEOUT = 500
 
 export default function getLibrary(
   provider: any,
@@ -61,7 +61,6 @@ export class WalletsConnector {
     this.connector.on(WALLETS_EVENTS.CONNECT, (data: any) => {
       const { provider, id: providerId } = data
       this.fireConfigs(providerId, provider)
-
       if (providerId) {
         const ethereum = this.getEthereumProvider(providerId)
 
@@ -85,23 +84,19 @@ export class WalletsConnector {
   }
 
   private init() {
-    if (canInject()) {
+    const hasProviders = this.providers.every((providerId) => {
+      // GarageInc | 15.07.2022: XDEFI injects async by timeout
+      return !!this.connector.getEthereumProvider(providerId)
+    })
+    if (canInject() && hasProviders) {
       this.connect()
     } else {
-      this.retry()
+      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     }
   }
 
   get providers() {
     return this.connector.cachedProviders
-  }
-
-  private retry() {
-    this.connector.cachedProviders.forEach((providerId) => {
-      if (providerId === WALLETS.xdefi)
-        // GarageInc | 15.07.2022: XDEFI injects async by timeout
-        setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
-    })
   }
 
   private getEthereumProvider = (providerId: string) =>
@@ -111,7 +106,7 @@ export class WalletsConnector {
     try {
       await this.connector
         .connect()
-        .then((provider: any) => {
+        .then(({ provider }: any) => {
           return provider && provider.enable()
         })
         .catch((e) => {
@@ -152,6 +147,7 @@ export class WalletsConnector {
     if (!canInject()) {
       return
     }
+
     this.setAccounts(providerId, null)
     const ethereum = this.getEthereumProvider(providerId)
 

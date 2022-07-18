@@ -147,9 +147,9 @@ export const XDEFI: IProviderInfo = {
   logo: XDEFILogo,
   type: 'injected',
   check: '__XDEFI',
-  installationLink: 'https://metamask.io',
+  installationLink: 'https://xdefi.io',
   getEthereumProvider: () => {
-    return window.xfi.ethereum
+    return window.xfi ? window.xfi.ethereum : undefined
   },
   needPrioritiseFunc: () => {
     /* if (window.xfi && window.xfi.info) {
