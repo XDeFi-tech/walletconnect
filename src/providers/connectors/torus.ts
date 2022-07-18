@@ -136,7 +136,7 @@ const ConnectToTorus = async (Torus: any, opts: ITorusConnectorOptions) => {
       // defaults
       const buttonPosition = 'bottom-left'
       const apiKey = 'torus-default'
-      const modalZIndex = 99999
+      const modalZIndex = 9999999
       let network: NetworkParams = { host: 'mainnet' }
       let defaultVerifier = undefined
 
@@ -149,12 +149,12 @@ const ConnectToTorus = async (Torus: any, opts: ITorusConnectorOptions) => {
       const torus = new Torus({
         buttonPosition: opts.config?.buttonPosition || buttonPosition,
         apiKey: opts.config?.apiKey || apiKey,
-        modalZIndex: opts.config?.modalZIndex || modalZIndex,
+        modalZIndex: opts.config?.modalZIndex || modalZIndex
       })
       await torus.init({
         showTorusButton: false,
         ...opts.config,
-        network,
+        network
       })
 
       if (opts.loginParams) {

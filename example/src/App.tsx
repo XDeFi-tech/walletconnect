@@ -59,9 +59,9 @@ function App() {
         <Navigation />
 
         <Routes>
-          <Route path='/multi' element={<MultiProvidersPage />} />
-          <Route path='/single' element={<SingleProviderPage />} />
-          <Route path='*' element={<Navigate to='/single' />} />
+          <Route path={PATHS.multi} element={<MultiProvidersPage />} />
+          <Route path={PATHS.single} element={<SingleProviderPage />} />
+          <Route path='*' element={<Navigate to={PATHS.single} />} />
         </Routes>
       </div>
     </Router>
