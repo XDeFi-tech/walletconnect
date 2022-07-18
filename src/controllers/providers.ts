@@ -5,7 +5,8 @@ import {
   CACHED_PROVIDER_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
   WALLETS_EVENTS,
-  CACHED_MULTI_PROVIDERS_KEY
+  CACHED_MULTI_PROVIDERS_KEY,
+  CACHED_PROVIDERS_CHAINS_KEY
 } from '../constants'
 import {
   IProviderControllerOptions,
@@ -52,7 +53,7 @@ export class ProviderController {
 
   public init() {
     this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
-    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
+    this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
 
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
@@ -181,7 +182,6 @@ export class ProviderController {
     const currentProviderChains = this.injectedProvider
       ? this.injectedProvider(providerId)?.chains
       : undefined
-
     if (
       this.injectedChains &&
       this.injectedChains[providerId] &&
@@ -242,7 +242,7 @@ export class ProviderController {
 
       this.updateCachedProviders(available)
 
-      setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
+      setLocal(this.cachedProviderChainsKey, this.injectedChains)
 
       this.trigger(WALLETS_EVENTS.CLOSE, providerId)
       return true
@@ -252,7 +252,10 @@ export class ProviderController {
   }
 
   private updateCachedProviders(providers: string[]) {
-    this.cachedProviders = providers
+    this.cachedProviders =
+      this.isSingleProviderEnabled && providers.length > 0
+        ? providers.slice(0, 1)
+        : providers
     setLocal(this.cachedProvidersKey, this.cachedProviders)
 
     this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
@@ -271,9 +274,15 @@ export class ProviderController {
       : CACHED_MULTI_PROVIDERS_KEY
   }
 
+  get cachedProviderChainsKey() {
+    return this.isSingleProviderEnabled
+      ? CACHED_PROVIDER_CHAINS_KEY
+      : CACHED_PROVIDERS_CHAINS_KEY
+  }
+
   public setInjectedChains(providerId: string, chains: string[]) {
     this.injectedChains[providerId] = chains
-    setLocal(CACHED_PROVIDER_CHAINS_KEY, this.injectedChains)
+    setLocal(this.cachedProviderChainsKey, this.injectedChains)
   }
 
   public injectedProvider(providerId: string) {
@@ -320,10 +329,7 @@ export class ProviderController {
         id
       })
 
-      if (
-        this.shouldCacheProviders &&
-        !this.cachedProviders.some((i) => i === id)
-      ) {
+      if (this.shouldCacheProviders) {
         this.setCachedProvider(id, cachedChains)
       }
 
