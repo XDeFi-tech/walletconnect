@@ -55,6 +55,8 @@ export class ProviderController {
     this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
     this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
 
+    this.providers = []
+
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
@@ -66,37 +68,37 @@ export class ProviderController {
           this.providers.push({
             ...list.providers.FALLBACK,
             ...options.display,
-            connector: options.connector
+            connector: options.connector,
+            id
           })
         }
       }
     })
 
     this.providers.push(
-      ...Object.keys(list.connectors).map((id: string) => {
-        let providerInfo: IProviderInfo
-        if (id === INJECTED_PROVIDER_ID) {
-          providerInfo = this.injectedProvider(id) || list.providers.FALLBACK
-        } else {
-          providerInfo = getProviderInfoById(id)
-        }
-        // parse custom display options
-        if (this.providerOptions[id]) {
-          const options = this.providerOptions[id]
-          if (typeof options.display !== 'undefined') {
+      ...Object.keys(list.connectors)
+        .filter((id: string) => !!this.providerOptions[id])
+        .map((id: string) => {
+          let providerInfo: IProviderInfo
+          if (id === INJECTED_PROVIDER_ID) {
+            providerInfo = this.injectedProvider(id) || list.providers.FALLBACK
+          } else {
+            providerInfo = getProviderInfoById(id)
+          }
+          // parse custom display options
+          if (this.providerOptions[id]) {
             providerInfo = {
               ...providerInfo,
               ...this.providerOptions[id].display
             }
           }
-        }
-        return {
-          ...providerInfo,
-          // @ts-ignore
-          connector: list.connectors[id],
-          package: providerInfo.package
-        }
-      })
+          return {
+            ...providerInfo,
+            // @ts-ignore
+            connector: list.connectors[id],
+            package: providerInfo.package
+          }
+        })
     )
   }
 
@@ -290,7 +292,9 @@ export class ProviderController {
   }
 
   public getEthereumProvider = (providerId: string) => {
-    const options = this.injectedProvider(providerId)
+    const options =
+      this.injectedProvider(providerId) ||
+      list.providers[providerId.toUpperCase()]
 
     return options && options?.getEthereumProvider
       ? options?.getEthereumProvider()

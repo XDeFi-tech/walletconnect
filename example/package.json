@@ -18,6 +18,7 @@
     "@types/node": "link:../node_modules/@types/node",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@web3auth/web3auth": "^1.1.1",
     "@xdefi/wallets-connector": "link:..",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
