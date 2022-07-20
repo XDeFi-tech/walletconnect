@@ -8,7 +8,7 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
-  cacheProvider: false,
+  cacheProviders: false,
   disableInjectedProvider: false,
   providerOptions: {},
   network: ''
@@ -27,17 +27,33 @@ export class WalletConnect {
 
     this.providerController = new ProviderController({
       disableInjectedProvider: options.disableInjectedProvider,
-      cacheProvider: options.cacheProvider,
+      cacheProviders: options.cacheProviders,
       providerOptions: options.providerOptions,
-      network: options.network
+      network: options.network,
+      isSingleProviderEnabled: options.isSingleProviderEnabled
     })
 
-    this.providerController.on(WALLETS_EVENTS.CLOSE, () =>
-      this.trigger(WALLETS_EVENTS.CLOSE)
+    this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
+      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
     )
+
+    this.providerController.on(
+      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
+      (providers: string[]) => {
+        this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
+      }
+    )
+
+    this.providerController.on(
+      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
+      (providers: string[]) =>
+        this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
+    )
+
     this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
       this.onConnect(provider)
     )
+
     this.providerController.on(WALLETS_EVENTS.ERROR, (error) =>
       this.onError(error)
     )
@@ -52,23 +68,27 @@ export class WalletConnect {
     this.userOptions = this.providerController.getUserOptions()
   }
 
-  get injectedProvider(): IProviderInfo | null {
-    return this.providerController.injectedProvider
+  injectedProvider(providerId: string): IProviderInfo | null {
+    return this.providerController.injectedProvider(providerId)
   }
 
-  get cachedProvider(): string {
-    return this.providerController.cachedProvider
+  get cachedProviders(): string[] {
+    return this.providerController.cachedProviders
   }
 
-  get injectedChains(): string[] {
-    return this.providerController.injectedChains
+  get isSingleProviderEnabled() {
+    return this.providerController.isSingleProviderEnabled
   }
 
-  public getEthereumProvider = () =>
-    this.providerController.getEthereumProvider()
+  injectedChains(providerId: string): string[] {
+    return this.providerController.injectedChains[providerId]
+  }
 
-  public loadAccounts() {
-    return this.providerController.connectToChains()
+  public getEthereumProvider = (providerId: string) =>
+    this.providerController.getEthereumProvider(providerId)
+
+  public loadAccounts(providerId: string) {
+    return this.providerController.connectToChains(providerId)
   }
 
   // --------------- PUBLIC METHODS --------------- //
@@ -89,7 +109,9 @@ export class WalletConnect {
     new Promise(async (resolve, reject) => {
       this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
       this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
+      this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
+        reject(`Closed by user ${providerId}`)
+      )
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(
@@ -106,8 +128,8 @@ export class WalletConnect {
     })
 
   public async toggle(): Promise<void> {
-    if (this.cachedProvider) {
-      await this.providerController.connectToCachedProvider()
+    if (this.cachedProviders && this.cachedProviders.length > 0) {
+      await this.providerController.connectToCachedProviders()
       return
     }
     if (
@@ -149,9 +171,9 @@ export class WalletConnect {
     return this.userOptions
   }
 
-  public clearCachedProvider(): void {
-    if (this.providerController.clearCachedProvider())
-      this.trigger(WALLETS_EVENTS.CLOSE)
+  public clearCachedProvider(providerId?: string): void {
+    if (this.providerController.clearCachedProvider(providerId))
+      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
   }
 
   // --------------- PRIVATE METHODS --------------- //

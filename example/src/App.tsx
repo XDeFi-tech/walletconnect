@@ -1,71 +1,70 @@
-import React, { useState } from 'react'
-import WalletConnect from '@walletconnect/web3-provider'
-import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
-import Torus from '@toruslabs/torus-embed'
-import Ledger from '@web3modal/ledger-provider'
-import Trezor from '@web3modal/trezor-provider'
-import NetworkManager, {
-  IProviderOptions,
-  injected,
-  connectors
-} from '@xdefi/wallets-connector'
+import React from 'react'
+import styled from 'styled-components'
 
-import MyApp from './MyApp'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useLocation
+} from 'react-router-dom'
 
-const getProviderOptions = (): IProviderOptions => {
-  const infuraId = 'blablaid'
-  const providerOptions = {
-    xdefi: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.XDEFI
-    },
-    injected: {
-      package: true,
-      connector: connectors.injected,
-      display: {
-        ...injected.FALLBACK,
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
-      }
-    },
-    metamask: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.METAMASK
-    },
-    walletconnect: {
-      package: WalletConnect,
-      options: {
-        infuraId
-      }
-    },
-    coinbasewallet: {
-      package: CoinbaseWalletSDK,
-      options: {
-        appName: 'Coinbase Example App',
-        infuraId
-      }
-    },
-    torus: {
-      package: Torus
-    },
-    ledger: {
-      package: Ledger
-    },
-    trezor: {
-      package: Trezor
-    }
-  }
-  return providerOptions
+import SingleProviderPage from './pages/SingleProviderPage'
+import MultiProvidersPage from './pages/MultiProvidersPage'
+
+const Nav = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+`
+
+const LinkStyled = styled(Link)<{ current?: boolean }>`
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${({ current }) => (current ? 1 : 0.4)};
+  background: ${({ current }) => (current ? 'green' : 'initial')};
+  color: black;
+`
+
+const PATHS = {
+  multi: '/multi',
+  single: '/single'
+}
+
+const Navigation = () => {
+  const location = useLocation()
+
+  return (
+    <Nav>
+      <LinkStyled current={location.pathname === PATHS.multi} to={PATHS.multi}>
+        Multi Wallets Connection
+      </LinkStyled>
+      <LinkStyled
+        current={location.pathname === PATHS.single}
+        to={PATHS.single}
+      >
+        Single Wallet Connection
+      </LinkStyled>
+    </Nav>
+  )
 }
 
 function App() {
-  const [options] = useState(() => getProviderOptions())
-
   return (
-    <NetworkManager options={options} network='mainnet' cacheEnabled={true}>
-      <MyApp />
-    </NetworkManager>
+    <Router>
+      <div>
+        <Navigation />
+
+        <Routes>
+          <Route path={PATHS.multi} element={<MultiProvidersPage />} />
+          <Route path={PATHS.single} element={<SingleProviderPage />} />
+          <Route path='*' element={<Navigate to={PATHS.single} />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 

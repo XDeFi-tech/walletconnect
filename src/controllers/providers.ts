@@ -4,7 +4,9 @@ import {
   INJECTED_PROVIDER_ID,
   CACHED_PROVIDER_KEY,
   CACHED_PROVIDER_CHAINS_KEY,
-  WALLETS_EVENTS
+  WALLETS_EVENTS,
+  CACHED_MULTI_PROVIDERS_KEY,
+  CACHED_PROVIDERS_CHAINS_KEY
 } from '../constants'
 import {
   IProviderControllerOptions,
@@ -12,7 +14,6 @@ import {
   IProviderDisplayWithConnector,
   getLocal,
   setLocal,
-  removeLocal,
   getProviderInfoById,
   getProviderDescription,
   IProviderInfo,
@@ -29,29 +30,33 @@ import { EventController } from './events'
 import { METAMASK, XDEFI } from 'src/providers/injected'
 
 export class ProviderController {
-  public cachedProvider = ''
-  public shouldCacheProvider = false
+  public cachedProviders: string[] = []
+  public shouldCacheProviders = false
   public disableInjectedProvider = false
+  public isSingleProviderEnabled: Boolean | undefined
 
   private eventController: EventController = new EventController()
-  public injectedChains: string[] = []
+  public injectedChains: {
+    [providerId: string]: string[]
+  } = {}
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
   private network = ''
 
   constructor(opts: IProviderControllerOptions) {
-    this.cachedProvider = getLocal(CACHED_PROVIDER_KEY) || ''
-    this.injectedChains = getLocal(CACHED_PROVIDER_CHAINS_KEY) || []
-
     this.disableInjectedProvider = opts.disableInjectedProvider
-    this.shouldCacheProvider = opts.cacheProvider
+    this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
     this.network = opts.network
-
-    this.init()
+    this.isSingleProviderEnabled = opts.isSingleProviderEnabled
   }
 
   public init() {
+    this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
+    this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
+
+    this.providers = []
+
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
@@ -63,37 +68,37 @@ export class ProviderController {
           this.providers.push({
             ...list.providers.FALLBACK,
             ...options.display,
-            connector: options.connector
+            connector: options.connector,
+            id
           })
         }
       }
     })
 
     this.providers.push(
-      ...Object.keys(list.connectors).map((id: string) => {
-        let providerInfo: IProviderInfo
-        if (id === INJECTED_PROVIDER_ID) {
-          providerInfo = this.injectedProvider || list.providers.FALLBACK
-        } else {
-          providerInfo = getProviderInfoById(id)
-        }
-        // parse custom display options
-        if (this.providerOptions[id]) {
-          const options = this.providerOptions[id]
-          if (typeof options.display !== 'undefined') {
+      ...Object.keys(list.connectors)
+        .filter((id: string) => !!this.providerOptions[id])
+        .map((id: string) => {
+          let providerInfo: IProviderInfo
+          if (id === INJECTED_PROVIDER_ID) {
+            providerInfo = this.injectedProvider(id) || list.providers.FALLBACK
+          } else {
+            providerInfo = getProviderInfoById(id)
+          }
+          // parse custom display options
+          if (this.providerOptions[id]) {
             providerInfo = {
               ...providerInfo,
               ...this.providerOptions[id].display
             }
           }
-        }
-        return {
-          ...providerInfo,
-          // @ts-ignore
-          connector: list.connectors[id],
-          package: providerInfo.package
-        }
-      })
+          return {
+            ...providerInfo,
+            // @ts-ignore
+            connector: list.connectors[id],
+            package: providerInfo.package
+          }
+        })
     )
   }
 
@@ -175,18 +180,18 @@ export class ProviderController {
     return userOptions
   }
 
-  public connectToChains = async () => {
+  public connectToChains = async (providerId: string) => {
     const currentProviderChains = this.injectedProvider
-      ? this.injectedProvider?.chains
+      ? this.injectedProvider(providerId)?.chains
       : undefined
-
     if (
       this.injectedChains &&
-      this.injectedChains.length > 0 &&
+      this.injectedChains[providerId] &&
+      this.injectedChains[providerId].length > 0 &&
       currentProviderChains
     ) {
       return Promise.allSettled(
-        this.injectedChains
+        this.injectedChains[providerId]
           .filter(
             (chain) =>
               !!currentProviderChains[chain] && chain !== IChainType.ethereum
@@ -203,8 +208,8 @@ export class ProviderController {
           })
       )
     } else {
-      if (this.injectedProvider) {
-        this.setInjectedChains([IChainType.ethereum])
+      if (this.injectedProvider[providerId]) {
+        this.setInjectedChains(providerId, [IChainType.ethereum])
       }
     }
 
@@ -225,36 +230,71 @@ export class ProviderController {
       : ({} as IProviderOption)
   }
 
-  public clearCachedProvider(): boolean {
-    if (this.cachedProvider) {
-      this.cachedProvider = ''
-      removeLocal(CACHED_PROVIDER_KEY)
-      removeLocal(CACHED_PROVIDER_CHAINS_KEY)
+  public clearCachedProvider(providerId?: string): boolean {
+    if (this.cachedProviders) {
+      const listClear = providerId
+        ? this.cachedProviders.filter((x) => x === providerId)
+        : this.cachedProviders
 
-      this.trigger(WALLETS_EVENTS.CLOSE)
+      listClear.forEach((p) => {
+        delete this.injectedChains[p]
+      })
+
+      const available = Object.keys(this.injectedChains)
+
+      this.updateCachedProviders(available)
+
+      setLocal(this.cachedProviderChainsKey, this.injectedChains)
+
+      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
       return true
     }
 
     return false
   }
 
+  private updateCachedProviders(providers: string[]) {
+    this.cachedProviders =
+      this.isSingleProviderEnabled && providers.length > 0
+        ? providers.slice(0, 1)
+        : providers
+    setLocal(this.cachedProvidersKey, this.cachedProviders)
+
+    this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
+  }
+
   public setCachedProvider(id: string, chains: string[]) {
-    this.cachedProvider = id
-    setLocal(CACHED_PROVIDER_KEY, id)
-    this.setInjectedChains(chains)
+    const unique = new Set([...this.cachedProviders, id])
+    this.updateCachedProviders(Array.from(unique))
+
+    this.setInjectedChains(id, chains)
   }
 
-  public setInjectedChains(chains: string[]) {
-    this.injectedChains = chains
-    setLocal(CACHED_PROVIDER_CHAINS_KEY, chains)
+  get cachedProvidersKey() {
+    return this.isSingleProviderEnabled
+      ? CACHED_PROVIDER_KEY
+      : CACHED_MULTI_PROVIDERS_KEY
   }
 
-  get injectedProvider() {
-    return this.getProviderOption(this.cachedProvider).display || null
+  get cachedProviderChainsKey() {
+    return this.isSingleProviderEnabled
+      ? CACHED_PROVIDER_CHAINS_KEY
+      : CACHED_PROVIDERS_CHAINS_KEY
   }
 
-  public getEthereumProvider = () => {
-    const options = this.injectedProvider
+  public setInjectedChains(providerId: string, chains: string[]) {
+    this.injectedChains[providerId] = chains
+    setLocal(this.cachedProviderChainsKey, this.injectedChains)
+  }
+
+  public injectedProvider(providerId: string) {
+    return this.getProviderOption(providerId).display || null
+  }
+
+  public getEthereumProvider = (providerId: string) => {
+    const options =
+      this.injectedProvider(providerId) ||
+      list.providers[providerId.toUpperCase()]
 
     return options && options?.getEthereumProvider
       ? options?.getEthereumProvider()
@@ -285,25 +325,38 @@ export class ProviderController {
         chains,
         display?.getEthereumProvider
       )
+
       const cachedChains = chains ? chains : [IChainType.ethereum]
 
-      this.trigger(WALLETS_EVENTS.CONNECT, provider)
+      this.trigger(WALLETS_EVENTS.CONNECT, {
+        provider,
+        id
+      })
 
-      if (this.shouldCacheProvider && this.cachedProvider !== id) {
+      if (this.shouldCacheProviders) {
         this.setCachedProvider(id, cachedChains)
       }
 
-      this.connectToChains()
+      this.connectToChains(id)
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }
   }
 
-  public async connectToCachedProvider() {
-    const provider = this.getProvider(this.cachedProvider)
-    if (provider) {
-      await this.connectTo(provider.id, provider.connector, this.injectedChains)
-    }
+  public async connectToCachedProviders() {
+    return Promise.allSettled(
+      this.cachedProviders.map((pid: string) => {
+        const provider = this.getProvider(pid)
+        if (provider) {
+          return this.connectTo(
+            provider.id,
+            provider.connector,
+            this.injectedChains[provider.id]
+          )
+        }
+        return null
+      })
+    )
   }
 
   public on(event: string, callback: (result: any) => void): () => void {

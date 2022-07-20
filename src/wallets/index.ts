@@ -1,18 +1,21 @@
 import {
   canInject,
-  ChainData,
   convertToCommonChain,
   getChainData,
   IChainToAccounts,
   IChainWithAccount,
+  IProviderConfigs,
   IProviderOptions,
+  IProviderWithAccounts,
+  IProviderWithChains,
+  IWeb3Providers,
   SimpleFunction
 } from '../helpers'
-import { IChainType, WALLETS, WALLETS_EVENTS } from '../constants'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { Web3Provider, Network } from '@ethersproject/providers'
 
-const INIT_RETRY_TIMEOUT = 300
+const INIT_RETRY_TIMEOUT = 500
 
 export default function getLibrary(
   provider: any,
@@ -31,119 +34,134 @@ export default function getLibrary(
   return library
 }
 
-export type IWalletConnectorConfigs = Network &
-  ChainData & { activeAddress?: string }
-
 export class WalletsConnector {
   public library: Web3Provider
-  public configs: IWalletConnectorConfigs
+  public configs: IProviderConfigs = {}
 
   public connector: WalletConnect
-  public currentProvider: any
+  public currentProviders: IWeb3Providers = {}
 
-  private accounts: IChainWithAccount | null = null
-  private timeoutId: ReturnType<typeof setTimeout>
+  private accounts: IProviderWithAccounts = {}
 
   constructor(
     providerOptions: IProviderOptions,
     network = 'mainnet',
-    cacheProvider = true
+    cacheProviders = true,
+    isSingleProviderEnabled = true
   ) {
     const connector = new WalletConnect({
       network,
-      cacheProvider,
-      providerOptions
+      cacheProviders,
+      providerOptions,
+      isSingleProviderEnabled
     })
 
     this.connector = connector
 
-    this.connector.on(WALLETS_EVENTS.CONNECT, (provider) =>
-      this.fireConfigs(provider)
-    )
-
-    this.init()
-  }
-
-  private init() {
-    if (canInject()) {
-      this.connect()
-    } else {
-      this.retry()
-    }
-  }
-
-  private retry() {
-    if (this.connector.cachedProvider === WALLETS.xdefi) {
-      this.timeoutId = setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
-    }
-  }
-
-  private getEthereumProvider = () => this.connector.getEthereumProvider()
-
-  private connect = async () => {
-    try {
-      this.connector.init()
-
-      const provider = await this.connector
-        .connect()
-        .then((provider: any) => {
-          return provider && provider.enable()
-        })
-        .catch((e) => {
-          console.warn('Error', e)
-        })
-
-      if (provider) {
-        const ethereum = this.getEthereumProvider()
-
+    this.connector.on(WALLETS_EVENTS.CONNECT, (data: any) => {
+      const { provider, id: providerId } = data
+      this.fireConfigs(providerId, provider)
+      if (providerId) {
+        const ethereum = this.getEthereumProvider(providerId)
         if (ethereum) {
-          ethereum.on('accountsChanged', () => {
-            this.loadAccounts()
+          ethereum.on('accountsChanged', (accounts: string[]) => {
+            this.loadAccounts(providerId, undefined, accounts)
           })
           ethereum.on('disconnect', () => {
             this.disconnect()
           })
           ethereum.on('chainChanged', (chainId: string) =>
-            this.setActiveChain(chainId)
+            this.setActiveChain(providerId, chainId)
           )
         }
       }
+    })
+
+    this.connector.init()
+
+    this.init()
+  }
+
+  private init() {
+    const hasProviders = this.providers.every((providerId) => {
+      // GarageInc | 15.07.2022: XDEFI injects async by timeout
+      return !!this.connector.getEthereumProvider(providerId)
+    })
+    if (canInject() && hasProviders) {
+      this.connect()
+    } else {
+      setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
+    }
+  }
+
+  get providers() {
+    return this.connector.cachedProviders
+  }
+
+  private getEthereumProvider = (providerId: string) => {
+    return this.currentProviders[providerId]
+  }
+
+  private connect = async () => {
+    try {
+      await this.connector
+        .connect()
+        .then(({ provider }: any) => {
+          return provider && provider.enable()
+        })
+        .catch((e) => {
+          console.warn('Error', e)
+        })
     } catch (e) {
       console.log('Error', e)
     }
   }
 
   public dispose = () => {
-    clearTimeout(this.timeoutId)
-    const ethereum = this.getEthereumProvider()
-    if (ethereum) {
-      ethereum.removeListener('accountsChanged')
-      ethereum.removeListener('disconnect')
-      ethereum.removeListener('chainChanged')
-    }
+    this.providers.forEach((p) => {
+      const ethereum = this.getEthereumProvider(p)
+      if (ethereum) {
+        ethereum.removeListener('accountsChanged')
+        ethereum.removeListener('disconnect')
+        ethereum.removeListener('chainChanged')
+      }
+    })
   }
 
-  private setActiveChain = (chainId: string) => {
-    const c: IWalletConnectorConfigs = {
-      name: 'unknown',
-      ...getChainData(parseInt(chainId, 16))
+  private setActiveChain = (providerId: string, chainId: string) => {
+    const c: IProviderConfigs = {
+      ...this.configs,
+      [providerId]: {
+        ...this.configs[providerId],
+        name: 'unknown',
+        ...getChainData(parseInt(chainId, 16))
+      }
     }
-    this.loadAccounts(c)
+    this.loadAccounts(providerId, c)
   }
 
   private loadAccounts = async (
-    c: IWalletConnectorConfigs | undefined = undefined
+    providerId: string,
+    c: IProviderConfigs | undefined,
+    updatedAccounts: string[] | undefined = undefined
   ) => {
     if (!canInject()) {
       return
     }
-    this.setAccounts(null)
-    const ethereum = this.getEthereumProvider()
 
-    const ethAccounts = await ethereum.request({
-      method: 'eth_requestAccounts'
-    })
-    const accounts = await this.connector.loadAccounts()
+    this.setAccounts(providerId, null)
+    const ethereum = this.getEthereumProvider(providerId)
+
+    const ethAccounts =
+      updatedAccounts && updatedAccounts.length > 0
+        ? updatedAccounts
+        : Array.isArray(ethereum.accounts)
+        ? ethereum.accounts
+        : await ethereum.request({
+            method: 'eth_requestAccounts'
+          })
+
+    const accounts = await this.connector.loadAccounts(providerId)
 
     const map = accounts
       ? accounts.reduce(
@@ -161,10 +179,10 @@ export class WalletsConnector {
         )
       : {}
 
-    this.setConfigs(c || this.configs, ethAccounts)
+    this.setConfigs(providerId, c || this.configs, ethAccounts)
 
     const evmChainsAvailable =
-      this.connector.injectedProvider?.supportedEvmChains
+      this.connector.injectedProvider(providerId)?.supportedEvmChains
 
     if (evmChainsAvailable) {
       map[IChainType.ethereum] = ethAccounts
@@ -172,81 +190,64 @@ export class WalletsConnector {
         map[chain] = ethAccounts
       })
     } else {
-      map[this.configs?.network || IChainType.ethereum] = ethAccounts
+      map[this.configs[providerId]?.network || IChainType.ethereum] =
+        ethAccounts
     }
 
-    this.setAccounts(map as IChainWithAccount)
+    this.setAccounts(providerId, map as IChainWithAccount)
   }
 
   private setConfigs = (
-    targetConfigs: IWalletConnectorConfigs,
+    providerId: string,
+    targetConfigs: IProviderConfigs,
     ethAccounts: string[]
   ) => {
     this.configs = {
       ...targetConfigs,
-      activeAddress: ethAccounts[0],
-      network: convertToCommonChain(targetConfigs?.network)
+      [providerId]: {
+        ...targetConfigs[providerId],
+        activeAddress: ethAccounts[0],
+        network: convertToCommonChain(targetConfigs[providerId]?.network)
+      }
     }
     this.connector.trigger(WALLETS_EVENTS.CONNECTION_INFO, this.configs)
   }
 
-  private setAccounts = (map: IChainWithAccount | null) => {
-    this.accounts = map
+  private setAccounts = (providerId: string, map: IChainWithAccount | null) => {
+    if (map) {
+      this.accounts[providerId] = map
+    } else {
+      delete this.accounts[providerId]
+    }
     this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
-  public disconnect = () => {
-    this.connector.clearCachedProvider()
+  public disconnect = (providerId?: string) => {
+    this.connector.clearCachedProvider(providerId)
 
-    this.setAccounts(null)
+    if (providerId) {
+      this.setAccounts(providerId, null)
+    } else {
+      this.providers.forEach((p) => {
+        this.setAccounts(p, null)
+      })
+    }
   }
 
-  public getChainMethods = (chain: IChainType) => {
-    const chains = this.connector.injectedProvider?.chains
+  public getChainMethods = (providerId: string, chain: IChainType) => {
+    const chains = this.connector.injectedProvider(providerId)?.chains
     return chains ? chains[chain] : undefined
   }
 
-  public signMessage = async (chainId: IChainType, data: any) => {
-    if (!canInject()) {
-      return
-    }
-
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return this.getEthereumProvider().request({
-          method: 'eth_sign',
-          params: data
-        })
-      }
-
-      default: {
-        const targetProvider = this.getChainMethods(chainId)
-        if (targetProvider && targetProvider.methods.signTransaction) {
-          return targetProvider.methods.signTransaction(data)
-        }
-      }
-    }
-  }
-
-  public isSignAvailable = (chainId: IChainType) => {
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return true
-      }
-
-      default: {
-        const targetProvider = this.getChainMethods(chainId)
-        if (targetProvider && targetProvider.methods.signTransaction) {
-          return !!targetProvider.methods.signTransaction
-        }
-      }
-    }
-
-    return false
-  }
-
-  public isRequestAvailable = (chainId: IChainType) => {
-    const targetProvider = this.getChainMethods(chainId)
+  public isRequestAvailable = ({
+    providerId,
+    chainId
+  }: {
+    providerId?: string
+    chainId: IChainType
+  }) => {
+    const targetId = this.validateSingleProvider()
+    const targetProvider = this.getChainMethods(targetId, chainId)
 
     return (
       targetProvider &&
@@ -255,18 +256,47 @@ export class WalletsConnector {
     )
   }
 
-  public request = async (chainId: IChainType, method: string, data: any) => {
-    const targetProvider = this.getChainMethods(chainId)
+  private validateSingleProvider = (providerId?: string): string => {
+    if (!this.connector.isSingleProviderEnabled) {
+      if (!providerId)
+        throw new Error(
+          'Multi providers were enabled, but target provider id was not provided'
+        )
+      return providerId
+    } else {
+      const target = this.providers[0]
+
+      if (!target) {
+        throw new Error('Not found provider for request')
+      }
+
+      return target
+    }
+  }
+
+  public request = async ({
+    providerId,
+    chainId,
+    method,
+    params
+  }: {
+    providerId?: string
+    chainId: IChainType
+    method: string
+    params: any
+  }) => {
+    const targetId = this.validateSingleProvider()
+    const targetProvider = this.getChainMethods(targetId, chainId)
 
     if (targetProvider && targetProvider.methods.request) {
-      return targetProvider.methods.request(method, data)
+      return targetProvider.methods.request(method, params)
     }
 
     switch (chainId) {
       case IChainType.ethereum: {
-        return this.getEthereumProvider().request({
+        return this.getEthereumProvider(targetId).request({
           method: method,
-          params: data
+          params: params
         })
       }
     }
@@ -282,30 +312,51 @@ export class WalletsConnector {
     this.connector.off(event, callback)
   }
 
-  public getAccounts = (): IChainWithAccount | null => {
+  public getAccounts = (): IProviderWithAccounts | null => {
     return this.accounts
   }
 
-  private fireConfigs = async (provider: any = undefined) => {
-    this.connector.trigger(
-      WALLETS_EVENTS.CURRENT_WALLET,
-      this.connector.injectedProvider
-    )
+  public getInjectedChains = (): IProviderWithChains => {
+    return this.providers.reduce((acc, item) => {
+      acc[item] = this.connector.injectedChains(item)
+      return acc
+    }, {})
+  }
 
-    this.connector.trigger(
-      WALLETS_EVENTS.CONNECTED_CHAINS,
-      this.connector.injectedChains
-    )
+  public getCurrentProviders = (): IWeb3Providers => {
+    return this.currentProviders
+  }
+
+  private fireConfigs = async (
+    providerId: string,
+    provider: any = undefined
+  ) => {
+    this.connector.trigger(WALLETS_EVENTS.CURRENT_WALLET, {
+      providerId,
+      injected: this.connector.injectedProvider(providerId)
+    })
+
+    this.connector.trigger(WALLETS_EVENTS.CONNECTED_CHAINS, {
+      providerId,
+      chains: this.connector.injectedChains(providerId)
+    })
 
     if (provider) {
-      this.currentProvider = provider
+      this.currentProviders[providerId] = provider
 
-      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, provider)
+      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, {
+        providerId,
+        provider
+      })
 
       this.library = getLibrary(provider, (n: Network) => {
-        this.loadAccounts({
-          ...n,
-          ...getChainData(n.chainId)
+        this.loadAccounts(providerId, {
+          ...this.configs,
+          [providerId]: {
+            ...this.configs[providerId],
+            ...n,
+            ...getChainData(n.chainId)
+          }
         })
       })
     }

@@ -1,15 +1,12 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import * as PropTypes from 'prop-types'
-import {
-  WalletsModal,
-  useWalletEvents,
-  useWalletsConnector
-} from '@xdefi/wallets-connector'
+import { WalletsModal, useWalletEvents } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
 
 import Banner from './Banner'
+import { CUSTOM_THEME_BUILDER } from 'src/pages/utils'
 
 const SHeader = styled.div`
   margin-top: -1px;
@@ -70,28 +67,8 @@ interface IHeaderProps {
   killSession: () => void
 }
 
-const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
-  white: darkMode ? '#0969da' : '#9a6700',
-  black: darkMode ? '#9a6700' : '#0969da',
-  modal: {
-    bg: darkMode ? '#2b2b2b' : '#E5E5E5',
-    layoutBg: darkMode ? '#000000' : '#000000'
-  },
-  wallet: {
-    name: darkMode ? '#9a6700' : '#333333',
-    descColor: darkMode ? '#c4c4c4' : '#979797',
-    titleColor: darkMode ? '#f2f1f1' : '#333333',
-    bg: darkMode ? '#333333' : '#F2F1F1',
-    activeBg: darkMode ? 'lightslategrey' : 'darkseagreen'
-  }
-})
-
 const Header = (props: IHeaderProps) => {
   const { killSession } = props
-
-  const { provider } = useWalletsConnector()
-
-  console.log('provider', provider)
 
   const [isConnected, setIsConnected] = useState(false)
 

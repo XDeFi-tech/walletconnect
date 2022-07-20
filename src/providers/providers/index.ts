@@ -97,7 +97,10 @@ export const BINANCECHAINWALLET: IProviderInfo = {
   name: 'Binance Chain',
   logo: BinanceChainWalletLogo,
   type: 'injected',
-  check: 'isBinanceChainWallet'
+  check: 'isBinanceChainWallet',
+  getEthereumProvider: () => {
+    return window.BinanceChain
+  }
 }
 
 /**
