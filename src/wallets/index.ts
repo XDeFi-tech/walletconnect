@@ -63,10 +63,9 @@ export class WalletsConnector {
       this.fireConfigs(providerId, provider)
       if (providerId) {
         const ethereum = this.getEthereumProvider(providerId)
-
         if (ethereum) {
-          ethereum.on('accountsChanged', () => {
-            this.loadAccounts(providerId)
+          ethereum.on('accountsChanged', (accounts: string[]) => {
+            this.loadAccounts(providerId, undefined, accounts)
           })
           ethereum.on('disconnect', () => {
             this.disconnect()
@@ -99,8 +98,9 @@ export class WalletsConnector {
     return this.connector.cachedProviders
   }
 
-  private getEthereumProvider = (providerId: string) =>
-    this.connector.getEthereumProvider(providerId)
+  private getEthereumProvider = (providerId: string) => {
+    return this.currentProviders[providerId]
+  }
 
   private connect = async () => {
     try {
@@ -142,7 +142,8 @@ export class WalletsConnector {
 
   private loadAccounts = async (
     providerId: string,
-    c: IProviderConfigs | undefined = undefined
+    c: IProviderConfigs | undefined,
+    updatedAccounts: string[] | undefined = undefined
   ) => {
     if (!canInject()) {
       return
@@ -151,9 +152,14 @@ export class WalletsConnector {
     this.setAccounts(providerId, null)
     const ethereum = this.getEthereumProvider(providerId)
 
-    const ethAccounts = await ethereum.request({
-      method: 'eth_requestAccounts'
-    })
+    const ethAccounts =
+      updatedAccounts && updatedAccounts.length > 0
+        ? updatedAccounts
+        : Array.isArray(ethereum.accounts)
+        ? ethereum.accounts
+        : await ethereum.request({
+            method: 'eth_requestAccounts'
+          })
 
     const accounts = await this.connector.loadAccounts(providerId)
 

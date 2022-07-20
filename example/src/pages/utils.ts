@@ -11,7 +11,7 @@ import {
 } from '@xdefi/wallets-connector'
 
 export const getProviderOptions = (): IProviderOptions => {
-  const infuraId = 'blablaid'
+  const infuraId = '2d3d8075607640d4b88e2626f8c11ea7'
   const providerOptions = {
     xdefi: {
       package: true,
