@@ -335,11 +335,6 @@ export class WalletsConnector {
     providerId: string,
     provider: any = undefined
   ) => {
-    this.connector.trigger(WALLETS_EVENTS.CURRENT_WALLET, {
-      providerId,
-      injected: this.connector.injectedProvider(providerId)
-    })
-
     this.connector.trigger(WALLETS_EVENTS.CONNECTED_CHAINS, {
       providerId,
       chains: this.connector.injectedChains(providerId)

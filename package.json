@@ -1,6 +1,6 @@
 {
   "name": "@xdefi/wallets-connector",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Cross chain wallets connector with react hooks",
   "author": "garageinc",
   "license": "MIT",
@@ -11,6 +11,23 @@
   "engines": {
     "node": ">=10"
   },
+  "contributors": [
+    {
+      "name": "Rinat Fihtengolts",
+      "email": "rinat@xdefi.io",
+      "url": "https://xdefi.io"
+    },
+    {
+      "name": "Amur Anzorov",
+      "email": "amur@xdefi.io",
+      "url": "https://xdefi.io"
+    },
+    {
+      "name": "Roman Chalyi",
+      "email": "roman@xdefi.io",
+      "url": "https://xdefi.io"
+    }
+  ],
   "private": false,
   "scripts": {
     "build": "microbundle-crl --no-compress --format modern,cjs",

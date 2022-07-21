@@ -29,7 +29,6 @@ declare global {
     BinanceChain: any
     web3: any
     celo: any
-    updateWeb3Modal: any
     xfi: any
     terraWallets: any[]
   }
