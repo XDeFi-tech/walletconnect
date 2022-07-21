@@ -65,7 +65,7 @@ export class WalletsConnector {
         const ethereum = this.getEthereumProvider(providerId)
         if (ethereum) {
           ethereum.on('accountsChanged', (accounts: string[]) => {
-            this.loadAccounts(providerId, undefined, accounts)
+            this.loadAccounts(providerId, undefined)
           })
           ethereum.on('disconnect', () => {
             this.disconnect()
@@ -142,8 +142,7 @@ export class WalletsConnector {
 
   private loadAccounts = async (
     providerId: string,
-    c: IProviderConfigs | undefined,
-    updatedAccounts: string[] | undefined = undefined
+    c: IProviderConfigs | undefined
   ) => {
     if (!canInject()) {
       return
@@ -155,12 +154,9 @@ export class WalletsConnector {
     let ethAccounts: string[] = []
 
     try {
-      ethAccounts =
-        updatedAccounts && updatedAccounts.length > 0
-          ? updatedAccounts
-          : await ethereum.request({
-              method: 'eth_requestAccounts'
-            })
+      ethAccounts = await ethereum.request({
+        method: 'eth_requestAccounts'
+      })
     } catch (e) {
       ethAccounts = Array.isArray(ethereum.accounts) ? ethereum.accounts : []
     }
