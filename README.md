@@ -288,14 +288,14 @@ useEffect(() => {
 
 | Hooks                      | Description                                                                         |
 | -------------------------- | ----------------------------------------------------------------------------------- |
-| useConnectorActiveIds      | Return list of connected providers (Metamask, XDeFi, WalletConnect, etc)            |
+| useConnectorActiveIds      | Returns list of connected providers (Metamask, XDeFi, WalletConnect, etc)           |
 | useConnectorMultiConfigs   | Return configs per provider (chain, network, address - just for web3/EVM providers) |
 | useConnectorSingleConfigs  | Same, just for one connected provider (for single connection mode)                  |
-| useConnectorMultiProviders | Return list of providers for using with `Web3` or `Ether.js` library                |
+| useConnectorMultiProviders | Returns list of providers for using with `Web3` or `Ether.js` library               |
 | useConnectorSingleProvider | Same, just for one connected provider (for single connection mode)                  |
-| useConnectorMultiChains    | Return list of connected chains per provider                                        |
+| useConnectorMultiChains    | Returns list of connected chains per provider                                       |
 | useConnectorSingleChains   | Same, just for one connected provider (for single connection mode)                  |
-| useConnectedMultiAccounts  | Return list of connected accounts with providers                                    |
+| useConnectedMultiAccounts  | Returns list of connected accounts with providers                                   |
 | useConnectedSingleAccounts | Same, just for one connected provider (for single connection mode)                  |
 | useWalletEvents            | Hook tracks connection/error/disconnection events                                   |
 | useWalletsOptions          | Returns list of providers (provided by user application) and method to disconnect   |
