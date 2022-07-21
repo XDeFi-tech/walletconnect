@@ -3,13 +3,14 @@
 - [@xdefi/wallets-connector](#xdefiwallets-connector)
   - [Install](#install)
   - [Introduction](#introduction)
-  - [Usage/Custom Providers Display](#usagecustom-providers-display)
+- [Usage/Custom Providers Display](#usagecustom-providers-display)
   - [Using with ethers.js](#using-with-ethersjs)
   - [Using with Vite](#using-with-vite)
   - [Using in vanilla JavaScript](#using-in-vanilla-javascript)
+- [Events](#events)
   - [Provider Events](#provider-events)
-- [Internal events (`src/constants/events` and usage at `src/hooks/events` )](#internal-events-srcconstantsevents-and-usage-at-srchooksevents-)
-  - [React example of usage with custom hooks (but we recommend to use this Hooks)](#react-example-of-usage-with-custom-hooks-but-we-recommend-to-use-this-hooks)
+  - [Connector events (`src/constants/events` and usage at `src/hooks/events` )](#connector-events-srcconstantsevents-and-usage-at-srchooksevents-)
+    - [React example of usage with custom hooks (but we recommend to use this Hooks)](#react-example-of-usage-with-custom-hooks-but-we-recommend-to-use-this-hooks)
 - [Hooks](#hooks)
   - [Hooks for multi/single connections (library allows to connect more then 1 provider per session)](#hooks-for-multisingle-connections-library-allows-to-connect-more-then-1-provider-per-session)
   - [Hooks for multichain methods](#hooks-for-multichain-methods)
@@ -38,7 +39,7 @@ yarn add @xdefi/wallets-connector
 
 By default Library supports injected providers like ( **Metamask**,**Brave Wallet**, **Dapper**, **Frame**, **Gnosis Safe**, **Tally**, Web3 Browsers, etc) and **WalletConnect**. You can also easily configure the library to support **Coinbase Wallet**, **Torus**, **Portis**, **Fortmatic** and many more.
 
-## Usage/Custom Providers Display
+# Usage/Custom Providers Display
 
 It's possible to customize the display of each provider to change the name, description and logo. These options are available as part of the provider options as following
 
@@ -237,6 +238,8 @@ connector.on(WALLETS_EVENTS.ACCOUNTS, (newList: IProviderWithAccounts) => {
 })
 ```
 
+# Events
+
 ## Provider Events
 
 You can subscribe to provider events compatible with [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) standard.
@@ -263,7 +266,7 @@ provider.on('disconnect', (error: { code: number; message: string }) => {
 })
 ```
 
-# Internal events (`src/constants/events` and usage at `src/hooks/events` )
+## Connector events (`src/constants/events` and usage at `src/hooks/events` )
 
 ### React example of usage with custom hooks (but we recommend to use this [Hooks](#hooks))
 
