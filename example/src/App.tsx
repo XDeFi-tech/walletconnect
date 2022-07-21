@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   Link,
@@ -30,20 +30,24 @@ const LinkStyled = styled(Link)<{ current?: boolean }>`
 `
 
 const PATHS = {
-  multi: '/walletconnect/multi',
-  single: '/walletconnect/single'
+  multi: 'multi',
+  single: 'single'
 }
 
 const Navigation = () => {
   const location = useLocation()
 
+  console.log(location)
   return (
     <Nav>
-      <LinkStyled current={location.pathname === PATHS.multi} to={PATHS.multi}>
+      <LinkStyled
+        current={location.pathname === `/${PATHS.multi}`}
+        to={PATHS.multi}
+      >
         Multi Wallets Connection
       </LinkStyled>
       <LinkStyled
-        current={location.pathname === PATHS.single}
+        current={location.pathname === `/${PATHS.single}`}
         to={PATHS.single}
       >
         Single Wallet Connection
