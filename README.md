@@ -1,5 +1,7 @@
 # @xdefi/wallets-connector
 
+Example: https://xdefi-tech.github.io/walletconnect/
+
 ![UI](./example/wallets-example-dark.jpg)
 ![UI](./example/wallets-example-light.png)
 

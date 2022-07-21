@@ -1,13 +1,15 @@
 {
   "name": "wallets-connector-example",
-  "homepage": ".",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://xdefi-tech.github.io/walletconnect/",
   "scripts": {
     "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
     "build": "node ../node_modules/react-scripts/bin/react-scripts.js build",
     "test": "node ../node_modules/react-scripts/bin/react-scripts.js test",
-    "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
+    "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "^3.0.11",
@@ -20,6 +22,7 @@
     "@types/react-dom": "^17.0.0",
     "@web3auth/web3auth": "^1.1.1",
     "@xdefi/wallets-connector": "link:..",
+    "gh-pages": "^4.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.3.0",

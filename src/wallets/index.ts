@@ -152,14 +152,18 @@ export class WalletsConnector {
     this.setAccounts(providerId, null)
     const ethereum = this.getEthereumProvider(providerId)
 
-    const ethAccounts =
-      updatedAccounts && updatedAccounts.length > 0
-        ? updatedAccounts
-        : Array.isArray(ethereum.accounts)
-        ? ethereum.accounts
-        : await ethereum.request({
-            method: 'eth_requestAccounts'
-          })
+    let ethAccounts: string[] = []
+
+    try {
+      ethAccounts =
+        updatedAccounts && updatedAccounts.length > 0
+          ? updatedAccounts
+          : await ethereum.request({
+              method: 'eth_requestAccounts'
+            })
+    } catch (e) {
+      ethAccounts = Array.isArray(ethereum.accounts) ? ethereum.accounts : []
+    }
 
     const accounts = await this.connector.loadAccounts(providerId)
 
