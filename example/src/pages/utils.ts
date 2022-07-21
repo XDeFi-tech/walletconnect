@@ -46,7 +46,7 @@ export const getProviderOptions = (): IProviderOptions => {
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
-        appName: 'Web3Modal Example App',
+        appName: 'WalletConnect Example App',
         infuraId
       }
     },

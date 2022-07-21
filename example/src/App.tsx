@@ -30,8 +30,8 @@ const LinkStyled = styled(Link)<{ current?: boolean }>`
 `
 
 const PATHS = {
-  multi: '/multi',
-  single: '/single'
+  multi: '/walletconnect/multi',
+  single: '/walletconnect/single'
 }
 
 const Navigation = () => {
