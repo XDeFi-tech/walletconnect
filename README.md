@@ -6,16 +6,17 @@
   - [Usage/Custom Providers Display](#usagecustom-providers-display)
   - [Using with ethers.js](#using-with-ethersjs)
   - [Using with Vite](#using-with-vite)
+  - [Using in vanilla JavaScript](#using-in-vanilla-javascript)
   - [Provider Events](#provider-events)
 - [Internal events (`src/constants/events` and usage at `src/hooks/events` )](#internal-events-srcconstantsevents-and-usage-at-srchooksevents-)
   - [React example of usage with custom hooks (but we recommend to use this Hooks)](#react-example-of-usage-with-custom-hooks-but-we-recommend-to-use-this-hooks)
 - [Hooks](#hooks)
   - [Hooks for multi/single connections (library allows to connect more then 1 provider per session)](#hooks-for-multisingle-connections-library-allows-to-connect-more-then-1-provider-per-session)
   - [Hooks for multichain methods](#hooks-for-multichain-methods)
-- [Custom Theme](#custom-theme)
+  - [Custom Theme](#custom-theme)
   - [Provider Options](#provider-options)
   - [Adding a new provider](#adding-a-new-provider) - [Add new injected provider](#add-new-injected-provider)
-  - [Contributions](#contributions)
+- [Contributions](#contributions)
   - [License](#license)
 
 Example: https://xdefi-tech.github.io/walletconnect/
@@ -206,6 +207,36 @@ export default {
 }
 ```
 
+## Using in vanilla JavaScript
+
+You can use the modal from the old fashioned web page JavaScript as well.
+
+First get a library bundled JavaScript from Releases.
+
+After including the bundle in your HTML, you can use it on your web page:
+
+// You have to refer to default since it was bundled for ESModules
+// but after that the documentation will be the same
+
+```
+const providerOptions = {
+  /* See Provider Options Section */
+};
+
+const connector = new WalletsConnector(
+        options, // from getProviderOptions
+        network, // 'mainnet'
+        cacheEnabled, // true
+        isSingleProviderEnabled // true
+      );
+
+await connector.connect();
+
+connector.on(WALLETS_EVENTS.ACCOUNTS, (newList: IProviderWithAccounts) => {
+  doSmthWithAccounts(newList)
+})
+```
+
 ## Provider Events
 
 You can subscribe to provider events compatible with [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) standard.
@@ -240,15 +271,11 @@ provider.on('disconnect', (error: { code: number; message: string }) => {
 const context = useContext(WalletsContext)
 
 const [current, setCurrentProvider] = useState<IProviderInfo>()
-const [accounts, setAccounts] = useState<IChainWithAccount>({})
+const [accounts, setAccounts] = useState<IProviderWithAccounts>({})
 
 useEffect(() => {
   if (context) {
-    context.on(WALLETS_EVENTS.CURRENT_WALLET, (provider: IProviderInfo) => {
-      setCurrentProvider(provider)
-    })
-
-    context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IChainWithAccount) => {
+    context.on(WALLETS_EVENTS.ACCOUNTS, (newList: IProviderWithAccounts) => {
       setAccounts(newList)
     })
   }
@@ -299,7 +326,7 @@ const onCloseHandler = useCallback(() => {
 useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 ```
 
-# Custom Theme
+## Custom Theme
 
 ```tsx
 
@@ -715,7 +742,7 @@ export const XDEFI: IProviderInfo = {
 }
 ```
 
-## Contributions
+# Contributions
 
 **Code contributions are welcome ❤️❤️❤️!**
 
