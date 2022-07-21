@@ -9,7 +9,7 @@
   - [Using in vanilla JavaScript](#using-in-vanilla-javascript)
 - [Events](#events)
   - [Provider Events](#provider-events)
-  - [Connector events (`src/constants/events` and usage at `src/hooks/events` )](#connector-events-srcconstantsevents-and-usage-at-srchooksevents-)
+  - [Connector events (at `src/constants/events` and usage at `src/hooks/events` )](#connector-events-at-srcconstantsevents-and-usage-at-srchooksevents-)
     - [React example of usage with custom hooks (but we recommend to use this Hooks)](#react-example-of-usage-with-custom-hooks-but-we-recommend-to-use-this-hooks)
 - [Hooks](#hooks)
   - [Hooks for multi/single connections (library allows to connect more then 1 provider per session)](#hooks-for-multisingle-connections-library-allows-to-connect-more-then-1-provider-per-session)
@@ -117,10 +117,10 @@ const signTransaction = useCallback(
         IChainType.litecoin,
         IChainType.bitcoincash,
         IChainType.dogecoin,
-      ].includes(mapChainNameToIChain[chain])
+      ].includes(chainId)
     ) {
       const result = await walletRequest({
-        chainId: mapChainNameToIChain[chain],
+        chainId,
         method: 'transfer',
         params: [
           YOUR_TX_PARAMS,
@@ -128,27 +128,18 @@ const signTransaction = useCallback(
       });
 
       return result;
-    } else if (mapChainNameToIChain[chain] === IChainType.thorchain) {
-      // const asset = assetFromDenom(
-      //   unSignedTx.msg[0].value.coins[0].asset || ''
-      // );
-      const { asset } = unSignedTx.msg[0].value.coins[0];
-      const payloadAsset = {
-        chain: transaction.chain,
-        symbol: asset.includes('.') ? asset.split('.')[1] : asset,
-        ticker: asset.includes('.') ? asset.split('.')[1] : asset,
-      };
+    } else if (chainId === IChainType.thorchain) {
       const result = await walletRequest({
-        chainId: mapChainNameToIChain[chain],
+        chainId,
         method: 'deposit',
         params: [
           YOUR_TX_PARAMS,
         ],
       });
       return result;
-    } else if (mapChainNameToIChain[chain] === IChainType.binance) {
+    } else if (chainId === IChainType.binance) {
       const result = await walletRequest({
-        chainId: mapChainNameToIChain[chain],
+        chainId,
         method: 'transfer',
         params: [
           YOUR_TX_PARAMS,
@@ -266,7 +257,7 @@ provider.on('disconnect', (error: { code: number; message: string }) => {
 })
 ```
 
-## Connector events (`src/constants/events` and usage at `src/hooks/events` )
+## Connector events (at `src/constants/events` and usage at `src/hooks/events` )
 
 ### React example of usage with custom hooks (but we recommend to use this [Hooks](#hooks))
 
@@ -305,10 +296,10 @@ useEffect(() => {
 
 ## Hooks for multichain methods
 
-| Hooks                  | Description                                                                                                                                                                                                                               |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| useWalletRequest       | Allows to send custom txs/request into connected wallet                                                                                                                                                                                   |
-| useRequestAvailability | Just for multichain providers. Check availability for request/method in wallet (check [Adding a new provider](#adding-a-new-provider) field 'methods' with different request. For example XDEFI has `getAccounts` and `request` methods ) |
+| Hooks                  | Description                                                                                                                                                                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| useWalletRequest       | Allows to send custom txs/request into connected wallet                                                                                                                                                                                          |
+| useRequestAvailability | Just for multichain providers. It checks availability for request/method usage in wallet (check [this example](#adding-a-new-provider) with fields 'methods' for different requests. For example XDEFI has `getAccounts` and `request` methods ) |
 
 ```tsx
 const accounts = useConnectedAccounts()
@@ -371,19 +362,9 @@ These are all the providers available with library and how to configure their pr
 - [Torus](./docs/providers/torus.md)
 - [Portis](./docs/providers/portis.md)
 - [Authereum](./docs/providers/authereum.md)
-- [Frame](./docs/providers/frame.md)
-- [Bitski](./docs/providers/bitski.md)
-- [Venly](./docs/providers/venly.md)
-- [DCent](./docs/providers/dcent.md)
-- [BurnerConnect](./docs/providers/burnerconnect.md)
-- [MEWConnect](./docs/providers/mewconnect.md)
-- [Binance Chain Wallet](./docs/providers/binancechainwallet.md)
-  [Opera Wallet](./docs/providers/opera.md)
-- [Sequence](./docs/providers/sequence.md)
-- [CLV Wallet](./docs/providers/clvwallet.md)
-- [Web3Auth](./docs/providers/web3auth.md)
-- [Bitkeep Wallet](./docs/providers/bitkeep.md)
-- [99Starz Wallet](./docs/providers/starzwallet.md)
+- ...
+
+Full list is at `./docs/providers`
 
 ## Adding a new provider
 
@@ -405,14 +386,13 @@ export const XDEFI: IProviderInfo = {
     return window.xfi ? window.xfi.ethereum : undefined
   },
   needPrioritiseFunc: () => {
-    /* if (window.xfi && window.xfi.info) {
+    if (window.xfi && window.xfi.info) {
       const {
         lastConfigChanges: { ethereumProvider }
       } = window.xfi.info
       const { inject, pretendMetamask } = ethereumProvider
       return inject && !pretendMetamask
     }
-    */
     return false
   },
   supportedEvmChains: [
@@ -456,38 +436,6 @@ export const XDEFI: IProviderInfo = {
         request: (method: string, data: any) => {
           return new Promise((resolve, reject) => {
             window.xfi.bitcoin.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.thorchain]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            window.xfi.thorchain.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.thorchain.request(
               { method: method, params: data },
               (error: any, result: any) => {
                 if (error) {
@@ -547,200 +495,7 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.litecoin]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            window.xfi.litecoin.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.litecoin.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.bitcoincash]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            window.xfi.bitcoincash.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.bitcoincash.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.dogecoin]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.xfi.dogecoin) {
-              resolve([])
-              return
-            }
-
-            window.xfi.dogecoin.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.dogecoin.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.ethereum]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.xfi.ethereum) {
-              resolve([])
-              return
-            }
-
-            window.xfi.ethereum.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.ethereum.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
-    [IChainType.terra]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.terraWallets) {
-              reject('No terra connector')
-            }
-
-            const terraWalletXdefi = window.terraWallets.find(
-              (w) => w.identifier === 'xdefi-wallet'
-            )
-
-            if (!terraWalletXdefi) {
-              reject('No terra connector')
-            }
-
-            const connector = terraWalletXdefi.connector()
-
-            const { states: stream } = connector
-
-            stream.subscribe(
-              (x: any) => {
-                if (x.wallets) {
-                  resolve(x.wallets.map((w: any) => w.terraAddress))
-                }
-              },
-              (err: any) => {
-                console.error('something wrong occurred: ' + err)
-              }
-            )
-
-            connector.refetchStates()
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            const terraWalletXdefi = window.terraWallets.find(
-              (w) => w.identifier === 'xdefi-wallet'
-            )
-
-            if (!terraWalletXdefi) {
-              reject('No terra connector')
-            }
-
-            const connector = terraWalletXdefi.connector()
-            const subscriber = connector[method](...data)
-
-            subscriber.subscribe((r: any) => {
-              if (r.payload) {
-                resolve(r.payload)
-              }
-            })
-          })
-        }
-      }
-    }
+    ...
   }
 }
 ```
