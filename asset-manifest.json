@@ -11,12 +11,12 @@
     "static/js/4.fd573297.chunk.js": "/walletconnect/static/js/4.fd573297.chunk.js",
     "static/js/4.fd573297.chunk.js.map": "/walletconnect/static/js/4.fd573297.chunk.js.map",
     "main.css": "/walletconnect/static/css/main.d501265d.chunk.css",
-    "main.js": "/walletconnect/static/js/main.c6048315.chunk.js",
-    "main.js.map": "/walletconnect/static/js/main.c6048315.chunk.js.map",
+    "main.js": "/walletconnect/static/js/main.69dffe91.chunk.js",
+    "main.js.map": "/walletconnect/static/js/main.69dffe91.chunk.js.map",
     "runtime-main.js": "/walletconnect/static/js/runtime-main.914e3766.js",
     "runtime-main.js.map": "/walletconnect/static/js/runtime-main.914e3766.js.map",
-    "static/js/7.e668f69a.chunk.js": "/walletconnect/static/js/7.e668f69a.chunk.js",
-    "static/js/7.e668f69a.chunk.js.map": "/walletconnect/static/js/7.e668f69a.chunk.js.map",
+    "static/js/7.ed098b07.chunk.js": "/walletconnect/static/js/7.ed098b07.chunk.js",
+    "static/js/7.ed098b07.chunk.js.map": "/walletconnect/static/js/7.ed098b07.chunk.js.map",
     "static/js/8.2e590161.chunk.js": "/walletconnect/static/js/8.2e590161.chunk.js",
     "static/js/8.2e590161.chunk.js.map": "/walletconnect/static/js/8.2e590161.chunk.js.map",
     "static/js/9.741e5d99.chunk.js": "/walletconnect/static/js/9.741e5d99.chunk.js",
@@ -42,13 +42,13 @@
     "static/js/1.e3ee12d1.chunk.js.LICENSE.txt": "/walletconnect/static/js/1.e3ee12d1.chunk.js.LICENSE.txt",
     "static/js/3.76093a70.chunk.js.LICENSE.txt": "/walletconnect/static/js/3.76093a70.chunk.js.LICENSE.txt",
     "static/js/4.fd573297.chunk.js.LICENSE.txt": "/walletconnect/static/js/4.fd573297.chunk.js.LICENSE.txt",
-    "static/js/7.e668f69a.chunk.js.LICENSE.txt": "/walletconnect/static/js/7.e668f69a.chunk.js.LICENSE.txt",
+    "static/js/7.ed098b07.chunk.js.LICENSE.txt": "/walletconnect/static/js/7.ed098b07.chunk.js.LICENSE.txt",
     "static/media/index.css": "/walletconnect/static/media/Montserrat-SemiBold.04af9a9e.ttf"
   },
   "entrypoints": [
     "static/js/runtime-main.914e3766.js",
-    "static/js/7.e668f69a.chunk.js",
+    "static/js/7.ed098b07.chunk.js",
     "static/css/main.d501265d.chunk.css",
-    "static/js/main.c6048315.chunk.js"
+    "static/js/main.69dffe91.chunk.js"
   ]
 }
