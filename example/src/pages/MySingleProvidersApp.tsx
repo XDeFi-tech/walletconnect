@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import {
   useConnectedSingleAccounts,
   useConnectorSingleConfigs,
+  useConnectorSingleProvider,
   WalletsContext
 } from '@xdefi/wallets-connector'
 import Column from 'src/components/Column'
@@ -18,13 +19,14 @@ const MySingleProviderApp = () => {
     }
   }
 
-  const accounts = useConnectedSingleAccounts()
+  const accounts: any = useConnectedSingleAccounts()
 
   const configs = useConnectorSingleConfigs()
+  const provider = useConnectorSingleProvider()
 
   const chains = Object.keys(accounts || {})
 
-  console.log('<--- DATA --->: ', configs, accounts)
+  console.log('<--- DATA --->: ', configs, accounts, provider)
 
   return (
     <SLayoutSingle>

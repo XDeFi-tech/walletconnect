@@ -125,10 +125,9 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     return chains ? Object.keys(chains) : []
   }, [chains])
 
-  const needInstall = useMemo(
-    () => installationLink && !canInject(),
-    [installationLink]
-  )
+  const needInstall = useMemo(() => {
+    return installationLink && !canInject()
+  }, [installationLink, context])
 
   const disabledByWallet = useMemo(
     () => disabledByWalletFunc && disabledByWalletFunc(),

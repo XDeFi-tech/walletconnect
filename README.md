@@ -99,7 +99,7 @@ import { ethers } from "ethers";
 
 ...
 
-const { provider } = useConnectorSingleProvider();
+const provider = useConnectorSingleProvider();
 
 const walletRequest = useWalletRequest();
 

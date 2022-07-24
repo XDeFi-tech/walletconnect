@@ -56,6 +56,10 @@ export const METAMASK: IProviderInfo = {
       }
     }
 
+    if (window.ethereum && !window.ethereum.isMetaMask) {
+      return 'Browser'
+    }
+
     return undefined
   }
 }
