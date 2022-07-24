@@ -292,16 +292,16 @@ export class WalletsConnector {
       return targetProvider.methods.request(method, params)
     }
 
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return this.getEthereumProvider(targetId).request({
-          method: method,
-          params: params
-        })
-      }
+    const provider = this.getEthereumProvider(targetId)
+
+    if (!provider) {
+      throw new Error(`Not supported ${method} for ${chainId}`)
     }
 
-    throw new Error(`Not supported ${method} for ${chainId}`)
+    return provider.request({
+      method: method,
+      params: params
+    })
   }
 
   public on = (event: string, callback: SimpleFunction) => {
