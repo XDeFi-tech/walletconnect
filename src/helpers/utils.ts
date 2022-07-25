@@ -77,6 +77,23 @@ export function getProviderInfo(provider: any): IProviderInfo {
   return getProviderInfoFromChecksArray(checks)
 }
 
+export function isCurrentProviderActive(provider: any, injected: any): boolean {
+  if (!provider) {
+    return false
+  }
+
+  const values = Object.values(providers)
+  const target = values.find(
+    ({ id, name }) => id === injected.id && name === injected.name
+  )
+
+  if (!target) {
+    return false
+  }
+
+  return !!provider[target.check]
+}
+
 export function getProviderInfoFromChecksArray(
   checks: string[]
 ): IProviderInfo {

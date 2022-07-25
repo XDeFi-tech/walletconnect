@@ -1,4 +1,4 @@
-import { IProviderInfo } from '../../helpers'
+import { getInjectedProviderName, IProviderInfo } from '../../helpers'
 import { IChainType, WALLETS } from '../../constants'
 import { ReactComponent as Web3DefaultLogo } from '../logos/web3-default.svg'
 import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
@@ -54,6 +54,10 @@ export const METAMASK: IProviderInfo = {
       if (!isXDEFI) {
         return 'XDEFI'
       }
+    }
+
+    if (window.ethereum && !window.ethereum.isMetaMask) {
+      return getInjectedProviderName() || 'Browser'
     }
 
     return undefined

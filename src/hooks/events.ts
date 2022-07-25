@@ -2,7 +2,6 @@ import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
 
 import { WALLETS_EVENTS } from '../constants'
 import {
-  IChainWithAccount,
   IProviderConfigs,
   IProviderWithAccounts,
   IProviderWithChains,
@@ -41,6 +40,11 @@ export const useConnectorActiveIds = () => {
   }, [context, setConfigs])
 
   return pids
+}
+
+const useSingleSelectedProvider = () => {
+  const pids = useConnectorActiveIds()
+  return useMemo(() => pids[0], [pids])
 }
 
 export const useConnectorMultiConfigs = () => {
@@ -82,24 +86,26 @@ export const useConnectorMultiConfigs = () => {
 
 export const useConnectorSingleConfigs = (): IWalletConnectorConfigs => {
   const configs = useConnectorMultiConfigs()
-  const activePids = useConnectorActiveIds()
-  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
+  const active = useSingleSelectedProvider()
+  return useMemo(() => configs[active] || {}, [configs, active])
 }
 
 export const useConnectorMultiProviders = () => {
   const context = useContext(WalletsContext)
 
-  const [provider, setCurrentProviders] = useState<IWeb3Providers>(
+  const [providers, setCurrentProviders] = useState<IWeb3Providers>(
     () => context?.getCurrentProviders() || {}
   )
 
   const setProviderHandler = useCallback(
     (data: any) => {
       const { providerId, provider } = data
-      setCurrentProviders((state) => ({
-        ...state,
-        [providerId]: provider
-      }))
+      if (providerId) {
+        setCurrentProviders((state) => ({
+          ...state,
+          [providerId]: provider
+        }))
+      }
     },
     [setCurrentProviders]
   )
@@ -122,15 +128,15 @@ export const useConnectorMultiProviders = () => {
     }
   }, [context, setProviderHandler])
 
-  return {
-    provider
-  }
+  return providers
 }
 
 export const useConnectorSingleProvider = () => {
-  const configs = useConnectorMultiProviders()
-  const activePids = useConnectorActiveIds()
-  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
+  const providers = useConnectorMultiProviders()
+  const active = useSingleSelectedProvider()
+  return useMemo(() => {
+    return providers[active] || {}
+  }, [providers, active])
 }
 
 export const useConnectorMultiChains = () => {
@@ -176,8 +182,8 @@ export const useConnectorMultiChains = () => {
 
 export const useConnectorSingleChains = () => {
   const configs = useConnectorMultiChains()
-  const activePids = useConnectorActiveIds()
-  return useMemo(() => configs[activePids[0]] || {}, [configs, activePids])
+  const active = useSingleSelectedProvider()
+  return useMemo(() => configs[active] || {}, [configs, active])
 }
 
 export const useConnectedMultiAccounts = () => {
@@ -243,11 +249,8 @@ export const useWalletEvents = (
 
 export const useConnectedSingleAccounts = () => {
   const accounts = useConnectedMultiAccounts()
-  const activePids = useConnectorActiveIds()
-  return useMemo(
-    () => accounts[activePids[0]] || ({} as IChainWithAccount),
-    [accounts, activePids]
-  )
+  const active = useSingleSelectedProvider()
+  return useMemo(() => accounts[active] || {}, [accounts, active])
 }
 
 export const useWalletsOptions = () => {

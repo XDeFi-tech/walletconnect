@@ -73,7 +73,7 @@ export interface IProviderPackageOptions {
 }
 
 export interface IProviderOption {
-  package: any
+  package?: any
   options?: any
   connector?: Connector
   display?: IProviderInfo
@@ -95,6 +95,10 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
   id: string
   connector: any
   package?: IProviderPackageOptions
+  chains?: {
+    [name: string]: ISupportedChain
+  }
+  supportedEvmChains?: IChainType[]
 }
 
 export interface IProviderUserOptions {

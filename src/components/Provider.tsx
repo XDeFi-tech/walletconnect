@@ -98,6 +98,12 @@ const SLink = styled.a`
     text-decoration: underline;
   }
 `
+const SLinkFallback = styled.div`
+  ${({ theme }) => STYLES(theme)}
+
+  margin-top: 4px;
+  font-size: 12px;
+`
 
 const SPrioritise = styled(SName)``
 
@@ -125,10 +131,11 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     return chains ? Object.keys(chains) : []
   }, [chains])
 
-  const needInstall = useMemo(
-    () => installationLink && !canInject(),
-    [installationLink]
-  )
+  const needInstall = useMemo(() => {
+    return (
+      (installationLink && !canInject()) || !context?.isAvailableProvider(id)
+    )
+  }, [installationLink, context])
 
   const disabledByWallet = useMemo(
     () => disabledByWalletFunc && disabledByWalletFunc(),
@@ -145,10 +152,10 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     return pids.some((i) => i === id)
   }, [pids, id])
 
-  const isAvailable = !disabledByWallet && !needPrioritise
+  const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
 
   const connectToProvider = useCallback(async () => {
-    if (isAvailable && context) {
+    if (isAvailable && context && !needInstall) {
       setLoading(true)
       if (context?.connector?.isSingleProviderEnabled) {
         if (!isActive) {
@@ -173,7 +180,8 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     supportedChains,
     onSelect,
     setLoading,
-    isActive
+    isActive,
+    needInstall
   ])
 
   useEffect(() => {
@@ -197,7 +205,15 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
         <SPrioritise>Disable {disabledByWallet} wallet</SPrioritise>
       )}
 
-      {needInstall ? <SLink>Please, install {name}</SLink> : null}
+      {needInstall ? (
+        installationLink ? (
+          <SLink href={installationLink} target='_blank'>
+            Please, install {name}
+          </SLink>
+        ) : (
+          <SLinkFallback>Please, install {name}</SLinkFallback>
+        )
+      ) : null}
 
       {loading && <CircleSpinnerStyled />}
     </SProviderWrapper>

@@ -62,9 +62,9 @@ export class WalletsConnector {
       const { provider, id: providerId } = data
       this.fireConfigs(providerId, provider)
       if (providerId) {
-        const ethereum = this.getEthereumProvider(providerId)
+        const ethereum = this.getSavedEthereumProvider(providerId)
         if (ethereum) {
-          ethereum.on('accountsChanged', (accounts: string[]) => {
+          ethereum.on('accountsChanged', () => {
             this.loadAccounts(providerId, undefined)
           })
           ethereum.on('disconnect', () => {
@@ -98,7 +98,7 @@ export class WalletsConnector {
     return this.connector.cachedProviders
   }
 
-  private getEthereumProvider = (providerId: string) => {
+  private getSavedEthereumProvider = (providerId: string) => {
     return this.currentProviders[providerId]
   }
 
@@ -119,7 +119,7 @@ export class WalletsConnector {
 
   public dispose = () => {
     this.providers.forEach((p) => {
-      const ethereum = this.getEthereumProvider(p)
+      const ethereum = this.getSavedEthereumProvider(p)
       if (ethereum) {
         ethereum.removeListener('accountsChanged')
         ethereum.removeListener('disconnect')
@@ -149,7 +149,7 @@ export class WalletsConnector {
     }
 
     this.setAccounts(providerId, null)
-    const ethereum = this.getEthereumProvider(providerId)
+    const ethereum = this.getSavedEthereumProvider(providerId)
 
     let ethAccounts: string[] = []
 
@@ -181,8 +181,9 @@ export class WalletsConnector {
 
     this.setConfigs(providerId, c || this.configs, ethAccounts)
 
-    const evmChainsAvailable =
-      this.connector.injectedProvider(providerId)?.supportedEvmChains
+    const current = this.connector.findProviderFromOptions(providerId)
+
+    const evmChainsAvailable = current?.supportedEvmChains
 
     if (evmChainsAvailable) {
       map[IChainType.ethereum] = ethAccounts
@@ -235,7 +236,7 @@ export class WalletsConnector {
   }
 
   public getChainMethods = (providerId: string, chain: IChainType) => {
-    const chains = this.connector.injectedProvider(providerId)?.chains
+    const chains = this.connector.findProviderFromOptions(providerId)?.chains
     return chains ? chains[chain] : undefined
   }
 
@@ -292,16 +293,16 @@ export class WalletsConnector {
       return targetProvider.methods.request(method, params)
     }
 
-    switch (chainId) {
-      case IChainType.ethereum: {
-        return this.getEthereumProvider(targetId).request({
-          method: method,
-          params: params
-        })
-      }
+    const provider = this.getSavedEthereumProvider(targetId)
+
+    if (!provider) {
+      throw new Error(`Not supported ${method} for ${chainId}`)
     }
 
-    throw new Error(`Not supported ${method} for ${chainId}`)
+    return provider.request({
+      method: method,
+      params: params
+    })
   }
 
   public on = (event: string, callback: SimpleFunction) => {
@@ -314,6 +315,10 @@ export class WalletsConnector {
 
   public getAccounts = (): IProviderWithAccounts | null => {
     return this.accounts
+  }
+
+  public isAvailableProvider = (providerId: string) => {
+    return this.connector.isAvailableProvider(providerId)
   }
 
   public getInjectedChains = (): IProviderWithChains => {

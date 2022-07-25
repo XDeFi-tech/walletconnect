@@ -1,9 +1,4 @@
-import {
-  ICoreOptions,
-  IProviderInfo,
-  IProviderUserOptions,
-  SimpleFunction
-} from '../helpers'
+import { ICoreOptions, IProviderUserOptions, SimpleFunction } from '../helpers'
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
@@ -68,8 +63,16 @@ export class WalletConnect {
     this.userOptions = this.providerController.getUserOptions()
   }
 
-  injectedProvider(providerId: string): IProviderInfo | null {
-    return this.providerController.injectedProvider(providerId)
+  public findProviderFromOptions(providerId: string) {
+    return this.providerController.findProviderFromOptions(providerId)
+  }
+
+  public getInjectedById = (providerId: string) => {
+    return this.providerController.getInjectedById(providerId)
+  }
+
+  public isAvailableProvider = (providerId: string) => {
+    return this.providerController.isAvailableProvider(providerId)
   }
 
   get cachedProviders(): string[] {
