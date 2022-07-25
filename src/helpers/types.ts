@@ -95,6 +95,10 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
   id: string
   connector: any
   package?: IProviderPackageOptions
+  chains?: {
+    [name: string]: ISupportedChain
+  }
+  supportedEvmChains?: IChainType[]
 }
 
 export interface IProviderUserOptions {

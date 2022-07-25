@@ -181,8 +181,9 @@ export class WalletsConnector {
 
     this.setConfigs(providerId, c || this.configs, ethAccounts)
 
-    const evmChainsAvailable =
-      this.connector.injectedProvider(providerId)?.supportedEvmChains
+    const current = this.connector.findProviderFromOptions(providerId)
+
+    const evmChainsAvailable = current?.supportedEvmChains
 
     if (evmChainsAvailable) {
       map[IChainType.ethereum] = ethAccounts
@@ -235,7 +236,7 @@ export class WalletsConnector {
   }
 
   public getChainMethods = (providerId: string, chain: IChainType) => {
-    const chains = this.connector.injectedProvider(providerId)?.chains
+    const chains = this.connector.findProviderFromOptions(providerId)?.chains
     return chains ? chains[chain] : undefined
   }
 

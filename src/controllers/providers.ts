@@ -67,14 +67,12 @@ export class ProviderController {
       if (id && this.providerOptions[id]) {
         const options = this.providerOptions[id]
         const displayProps = this.getInjectedById(id)
-
         if (typeof displayProps !== 'undefined') {
           this.providers.push({
             ...list.providers.FALLBACK,
-            ...displayProps,
-            ...options.display,
             connector: options.connector || list.connectors.injected,
-            id
+            ...displayProps,
+            ...options.display
           })
         }
       }
@@ -86,7 +84,8 @@ export class ProviderController {
         .map((id: string) => {
           let providerInfo: IProviderInfo
           if (id === INJECTED_PROVIDER_ID) {
-            providerInfo = this.injectedProvider(id) || list.providers.FALLBACK
+            providerInfo =
+              this.getProviderOption(id)?.display || list.providers.FALLBACK
           } else {
             providerInfo = getProviderInfoById(id)
           }
@@ -145,8 +144,7 @@ export class ProviderController {
       defaultProviderList.indexOf(METAMASK.id) !== -1
 
     const displayInjected =
-      (!!this.injectedProvider && !this.disableInjectedProvider && !hasOther) ||
-      !canInject()
+      (!this.disableInjectedProvider && !hasOther) || !canInject()
 
     const providerList: string[] = []
 
@@ -183,8 +181,8 @@ export class ProviderController {
   }
 
   public connectToChains = async (providerId: string) => {
-    const currentProviderChains = this.injectedProvider
-      ? this.injectedProvider(providerId)?.chains
+    const currentProviderChains = this.findProviderFromOptions
+      ? this.findProviderFromOptions(providerId)?.chains
       : undefined
     if (
       this.injectedChains &&
@@ -210,7 +208,7 @@ export class ProviderController {
           })
       )
     } else {
-      if (this.injectedProvider[providerId]) {
+      if (this.findProviderFromOptions(providerId)) {
         this.setInjectedChains(providerId, [IChainType.ethereum])
       }
     }
@@ -290,13 +288,13 @@ export class ProviderController {
     setLocal(this.cachedProviderChainsKey, this.injectedChains)
   }
 
-  public injectedProvider(providerId: string) {
-    return this.getProviderOption(providerId).display || null
+  public findProviderFromOptions(providerId: string) {
+    return this.providers.find(({ id }) => id === providerId)
   }
 
   public getEthereumProvider = (providerId: string) => {
     const options =
-      this.injectedProvider(providerId) ||
+      this.findProviderFromOptions(providerId) ||
       list.providers[providerId.toUpperCase()]
 
     return options && options?.getEthereumProvider
