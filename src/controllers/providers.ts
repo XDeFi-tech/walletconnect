@@ -28,7 +28,6 @@ import {
 import { IChainType } from '../constants'
 
 import { EventController } from './events'
-import { METAMASK, XDEFI } from 'src/providers/injected'
 
 export class ProviderController {
   public cachedProviders: string[] = []
@@ -139,11 +138,13 @@ export class ProviderController {
       new Set(this.providers.map(({ id }) => id))
     )
 
-    const hasOther =
-      defaultProviderList.indexOf(XDEFI.id) !== -1 ||
-      defaultProviderList.indexOf(METAMASK.id) !== -1
+    const availableInjectedList = defaultProviderList.filter(
+      (pid) => this.getInjectedById(pid) && this.isAvailableProvider(pid)
+    )
+
     const displayInjected =
-      !this.disableInjectedProvider && !hasOther && canInject()
+      (!this.disableInjectedProvider && availableInjectedList.length === 0) ||
+      canInject() === undefined
 
     const providerList: string[] = []
 
