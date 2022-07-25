@@ -152,8 +152,6 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
     return pids.some((i) => i === id)
   }, [pids, id])
 
-  console.log(id, isActive, needInstall)
-
   const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
 
   const connectToProvider = useCallback(async () => {
