@@ -73,7 +73,7 @@ export interface IProviderPackageOptions {
 }
 
 export interface IProviderOption {
-  package: any
+  package?: any
   options?: any
   connector?: Connector
   display?: IProviderInfo

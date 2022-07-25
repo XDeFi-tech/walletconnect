@@ -22,7 +22,8 @@ import {
   findMatchingRequiredOptions,
   IProviderOption,
   canInject,
-  findAvailableEthereumProvider
+  findAvailableEthereumProvider,
+  isCurrentProviderActive
 } from '../helpers'
 import { IChainType } from '../constants'
 
@@ -51,6 +52,10 @@ export class ProviderController {
     this.isSingleProviderEnabled = opts.isSingleProviderEnabled
   }
 
+  public getInjectedById = (providerId: string) => {
+    return list.injected[providerId.toUpperCase()]
+  }
+
   public init() {
     this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
     this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
@@ -61,14 +66,14 @@ export class ProviderController {
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
         const options = this.providerOptions[id]
-        if (
-          typeof options.display !== 'undefined' &&
-          typeof options.connector !== 'undefined'
-        ) {
+        const displayProps = this.getInjectedById(id)
+
+        if (typeof displayProps !== 'undefined') {
           this.providers.push({
             ...list.providers.FALLBACK,
+            ...displayProps,
             ...options.display,
-            connector: options.connector,
+            connector: options.connector || list.connectors.injected,
             id
           })
         }
@@ -107,26 +112,23 @@ export class ProviderController {
     if (typeof provider !== 'undefined') {
       const providerPackageOptions = this.providerOptions[id]
       if (providerPackageOptions) {
-        const isProvided = !!providerPackageOptions.package
-        if (isProvided) {
-          const requiredOptions = provider.package
-            ? provider.package.required
-            : undefined
+        const requiredOptions = provider.package
+          ? provider.package.required
+          : undefined
 
-          if (requiredOptions && requiredOptions.length) {
-            const providedOptions = providerPackageOptions.options
-            if (providedOptions && Object.keys(providedOptions).length) {
-              const matches = findMatchingRequiredOptions(
-                requiredOptions,
-                providedOptions
-              )
-              if (requiredOptions.length === matches.length) {
-                return true
-              }
+        if (requiredOptions && requiredOptions.length) {
+          const providedOptions = providerPackageOptions.options
+          if (providedOptions && Object.keys(providedOptions).length) {
+            const matches = findMatchingRequiredOptions(
+              requiredOptions,
+              providedOptions
+            )
+            if (requiredOptions.length === matches.length) {
+              return true
             }
-          } else {
-            return true
           }
+        } else {
+          return true
         }
       }
     }
@@ -254,10 +256,11 @@ export class ProviderController {
   }
 
   private updateCachedProviders(providers: string[]) {
-    this.cachedProviders =
+    this.cachedProviders = (
       this.isSingleProviderEnabled && providers.length > 0
         ? providers.slice(0, 1)
         : providers
+    ).filter(this.isAvailableProvider)
     setLocal(this.cachedProvidersKey, this.cachedProviders)
 
     this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
@@ -345,18 +348,33 @@ export class ProviderController {
 
   public async connectToCachedProviders() {
     return Promise.allSettled(
-      this.cachedProviders.map((pid: string) => {
-        const provider = this.getProvider(pid)
-        if (provider) {
-          return this.connectTo(
-            provider.id,
-            provider.connector,
-            this.injectedChains[provider.id]
-          )
-        }
-        return null
-      })
+      this.cachedProviders
+        .filter(this.isAvailableProvider)
+        .map((pid: string) => {
+          const provider = this.getProvider(pid)
+          if (provider) {
+            return this.connectTo(
+              provider.id,
+              provider.connector,
+              this.injectedChains[provider.id]
+            )
+          }
+          return null
+        })
     )
+  }
+
+  public isAvailableProvider = (providerId: string) => {
+    const injected = this.getInjectedById(providerId)
+
+    if (!injected) {
+      return true // Provider is not defined at list of injected and we do not controll this provider
+    }
+
+    const provider = this.getEthereumProvider(providerId)
+    const isActive = isCurrentProviderActive(provider, injected)
+
+    return isActive
   }
 
   public on(event: string, callback: (result: any) => void): () => void {

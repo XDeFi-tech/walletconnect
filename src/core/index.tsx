@@ -72,6 +72,14 @@ export class WalletConnect {
     return this.providerController.injectedProvider(providerId)
   }
 
+  public getInjectedById = (providerId: string) => {
+    return this.providerController.getInjectedById(providerId)
+  }
+
+  public isAvailableProvider = (providerId: string) => {
+    return this.providerController.isAvailableProvider(providerId)
+  }
+
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
   }

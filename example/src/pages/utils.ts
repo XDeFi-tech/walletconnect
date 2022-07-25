@@ -4,41 +4,22 @@ import Torus from '@toruslabs/torus-embed'
 import Ledger from '@web3modal/ledger-provider'
 import Trezor from '@web3modal/trezor-provider'
 import { Web3Auth } from '@web3auth/web3auth'
-import {
-  IProviderOptions,
-  injected,
-  connectors
-} from '@xdefi/wallets-connector'
+import { IProviderOptions, injected } from '@xdefi/wallets-connector'
 
 export const getProviderOptions = (): IProviderOptions => {
   const infuraId = '2d3d8075607640d4b88e2626f8c11ea7'
   const providerOptions = {
-    xdefi: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.XDEFI
-    },
+    xdefi: {},
     injected: {
-      package: true,
-      connector: connectors.injected,
       display: {
         ...injected.FALLBACK,
         logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
       }
     },
-    metamask: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.METAMASK
-    },
-    opera: {
-      package: true,
-      display: injected.OPERA
-    },
-    safe: {
-      package: true,
-      display: injected.SAFE
-    },
+    metamask: {},
+    opera: {},
+    safe: {},
+    cipher: {},
     binancechainwallet: {
       package: true
     },
