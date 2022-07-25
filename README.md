@@ -25,7 +25,7 @@ Example: https://xdefi-tech.github.io/walletconnect/
 Please, look at the example application in folder `example`
 
 ![UI](./example/wallets-example-dark.png)
-![UI](./example/wallets-example-light.png)
+![UI](./example/wallets-example-light.jpg)
 
 ## Install
 
