@@ -72,12 +72,12 @@ export class ProviderController {
             ...list.providers.FALLBACK,
             connector: options.connector || list.connectors.injected,
             ...displayProps,
-            ...options.display
+            ...options.display,
+            id
           })
         }
       }
     })
-
     this.providers.push(
       ...Object.keys(list.connectors)
         .filter((id: string) => !!this.providerOptions[id])
@@ -142,9 +142,8 @@ export class ProviderController {
     const hasOther =
       defaultProviderList.indexOf(XDEFI.id) !== -1 ||
       defaultProviderList.indexOf(METAMASK.id) !== -1
-
     const displayInjected =
-      (!this.disableInjectedProvider && !hasOther) || !canInject()
+      !this.disableInjectedProvider && !hasOther && canInject()
 
     const providerList: string[] = []
 
