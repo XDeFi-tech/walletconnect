@@ -47,21 +47,14 @@ It's possible to customize the display of each provider to change the name, desc
 const getProviderOptions = (): IProviderOptions => {
   const infuraId = 'your_infura_key'
   const providerOptions = {
-    xdefi: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.XDEFI
-    },
+    xdefi: {},
     injected: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.FALLBACK
+      display: {
+        ...injected.FALLBACK,
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
+      }
     },
-    metamask: {
-      package: true,
-      connector: connectors.injected,
-      display: injected.METAMASK
-    },
+    metamask: {},
     walletconnect: {
       package: WalletConnect,
       options: {
