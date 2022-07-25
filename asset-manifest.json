@@ -11,8 +11,8 @@
     "static/js/4.edb91935.chunk.js": "/walletconnect/static/js/4.edb91935.chunk.js",
     "static/js/4.edb91935.chunk.js.map": "/walletconnect/static/js/4.edb91935.chunk.js.map",
     "main.css": "/walletconnect/static/css/main.d501265d.chunk.css",
-    "main.js": "/walletconnect/static/js/main.7f3e4c82.chunk.js",
-    "main.js.map": "/walletconnect/static/js/main.7f3e4c82.chunk.js.map",
+    "main.js": "/walletconnect/static/js/main.b3107907.chunk.js",
+    "main.js.map": "/walletconnect/static/js/main.b3107907.chunk.js.map",
     "runtime-main.js": "/walletconnect/static/js/runtime-main.3003a039.js",
     "runtime-main.js.map": "/walletconnect/static/js/runtime-main.3003a039.js.map",
     "static/js/7.047b94ac.chunk.js": "/walletconnect/static/js/7.047b94ac.chunk.js",
@@ -49,6 +49,6 @@
     "static/js/runtime-main.3003a039.js",
     "static/js/7.047b94ac.chunk.js",
     "static/css/main.d501265d.chunk.css",
-    "static/js/main.7f3e4c82.chunk.js"
+    "static/js/main.b3107907.chunk.js"
   ]
 }
