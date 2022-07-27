@@ -314,17 +314,19 @@ export class ProviderController {
   ) => {
     try {
       this.trigger(WALLETS_EVENTS.SELECT, id)
-      const options = this.getProviderOption(id)
-      const providerPackage = options?.package
-      const providerOptions = options?.options
-      const display = options?.display
-      const opts = { network: this.network || undefined, ...providerOptions }
+      const options = this.findProviderFromOptions(id)
+      const providerOption = this.getProviderOption(id)
+      const providerPackage = providerOption?.package
+      const opts = {
+        network: this.network || undefined,
+        ...providerOption.options
+      }
 
       const provider = await connector(
         providerPackage,
         opts,
         chains,
-        display?.getEthereumProvider
+        options?.getEthereumProvider
       )
 
       const cachedChains = chains ? chains : [IChainType.ethereum]

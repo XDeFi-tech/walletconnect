@@ -150,7 +150,6 @@ export class WalletsConnector {
 
     this.setAccounts(providerId, null)
     const ethereum = this.getSavedEthereumProvider(providerId)
-
     let ethAccounts: string[] = []
 
     try {
