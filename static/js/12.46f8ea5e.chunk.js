@@ -1,2 +1,0 @@
-(this["webpackJsonpwallets-connector-example"]=this["webpackJsonpwallets-connector-example"]||[]).push([[12],{1381:function(n,c){},1446:function(n,c){},1450:function(n,c){},1453:function(n,c){}}]);
-//# sourceMappingURL=12.46f8ea5e.chunk.js.map
