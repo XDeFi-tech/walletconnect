@@ -100,11 +100,15 @@ export const useConnectorMultiProviders = () => {
   const setProviderHandler = useCallback(
     (data: any) => {
       const { providerId, provider } = data
-      if (providerId) {
+      if (provider) {
         setCurrentProviders((state) => ({
           ...state,
           [providerId]: provider
         }))
+      } else {
+        const state = { ...providers }
+        delete state[providerId]
+        setCurrentProviders(state)
       }
     },
     [setCurrentProviders]
@@ -233,14 +237,14 @@ export const useWalletEvents = (
   useEffect(() => {
     if (context) {
       onConnect && context.on(WALLETS_EVENTS.CONNECT, onConnect)
-      onClose && context.on(WALLETS_EVENTS.CLOSE, onClose)
+      onClose && context.on(WALLETS_EVENTS.DISCONNECTED, onClose)
       onError && context.on(WALLETS_EVENTS.ERROR, onError)
     }
 
     return () => {
       if (context) {
         context.off(WALLETS_EVENTS.CONNECT, onConnect)
-        context.off(WALLETS_EVENTS.CLOSE, onClose)
+        context.off(WALLETS_EVENTS.DISCONNECTED, onClose)
         context.off(WALLETS_EVENTS.ERROR, onError)
       }
     }

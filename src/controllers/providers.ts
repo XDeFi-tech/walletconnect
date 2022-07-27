@@ -230,7 +230,7 @@ export class ProviderController {
       : ({} as IProviderOption)
   }
 
-  public clearCachedProvider(providerId?: string): boolean {
+  public clearCachedProvider(providerId?: string) {
     if (this.cachedProviders) {
       const listClear = providerId
         ? this.cachedProviders.filter((x) => x === providerId)
@@ -246,8 +246,9 @@ export class ProviderController {
 
       setLocal(this.cachedProviderChainsKey, this.injectedChains)
 
-      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
-      return true
+      listClear.forEach((pid) => {
+        this.trigger(WALLETS_EVENTS.CLOSE, pid)
+      })
     }
 
     return false
