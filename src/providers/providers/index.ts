@@ -9,6 +9,7 @@ import { ReactComponent as FrameLogo } from '../logos/frame.svg'
 import { ReactComponent as BinanceChainWalletLogo } from '../logos/binancechainwallet.svg'
 import { ReactComponent as CoinbaseWalletLogo } from '../logos/coinbasewallet.svg'
 import { ReactComponent as SequenceLogo } from '../logos/sequence.svg'
+import { ReactComponent as Web3AuthLogo } from '../logos/web3auth.svg'
 import { IProviderInfo } from '../../helpers'
 
 export * from '../injected'
@@ -134,4 +135,12 @@ export const SEQUENCE: IProviderInfo = {
   logo: SequenceLogo,
   type: 'web',
   check: 'isSequenceWeb'
+}
+
+export const WEB3AUTH: IProviderInfo = {
+  id: 'web3auth',
+  name: 'Web3Auth',
+  logo: Web3AuthLogo,
+  type: 'injected',
+  check: 'isWeb3Auth'
 }

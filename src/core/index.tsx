@@ -175,8 +175,7 @@ export class WalletConnect {
   }
 
   public clearCachedProvider(providerId?: string): void {
-    if (this.providerController.clearCachedProvider(providerId))
-      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
+    this.providerController.clearCachedProvider(providerId)
   }
 
   // --------------- PRIVATE METHODS --------------- //

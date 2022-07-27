@@ -230,7 +230,7 @@ export class ProviderController {
       : ({} as IProviderOption)
   }
 
-  public clearCachedProvider(providerId?: string): boolean {
+  public clearCachedProvider(providerId?: string) {
     if (this.cachedProviders) {
       const listClear = providerId
         ? this.cachedProviders.filter((x) => x === providerId)
@@ -246,8 +246,9 @@ export class ProviderController {
 
       setLocal(this.cachedProviderChainsKey, this.injectedChains)
 
-      this.trigger(WALLETS_EVENTS.CLOSE, providerId)
-      return true
+      listClear.forEach((pid) => {
+        this.trigger(WALLETS_EVENTS.CLOSE, pid)
+      })
     }
 
     return false
@@ -314,17 +315,19 @@ export class ProviderController {
   ) => {
     try {
       this.trigger(WALLETS_EVENTS.SELECT, id)
-      const options = this.getProviderOption(id)
-      const providerPackage = options?.package
-      const providerOptions = options?.options
-      const display = options?.display
-      const opts = { network: this.network || undefined, ...providerOptions }
+      const options = this.findProviderFromOptions(id)
+      const providerOption = this.getProviderOption(id)
+      const providerPackage = providerOption?.package
+      const opts = {
+        network: this.network || undefined,
+        ...providerOption.options
+      }
 
       const provider = await connector(
         providerPackage,
         opts,
         chains,
-        display?.getEthereumProvider
+        options?.getEthereumProvider
       )
 
       const cachedChains = chains ? chains : [IChainType.ethereum]

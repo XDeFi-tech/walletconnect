@@ -68,12 +68,26 @@ export class WalletsConnector {
             this.loadAccounts(providerId, undefined)
           })
           ethereum.on('disconnect', () => {
-            this.disconnect()
+            this.disconnect(providerId)
           })
           ethereum.on('chainChanged', (chainId: string) =>
             this.setActiveChain(providerId, chainId)
           )
         }
+      }
+    })
+
+    this.connector.on(WALLETS_EVENTS.CLOSE, (providerId: string) => {
+      this.setAccounts(providerId, null)
+      this.disposeFor(providerId)
+
+      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, {
+        providerId,
+        provider: null
+      })
+
+      if (this.providers.length === 0) {
+        this.connector.trigger(WALLETS_EVENTS.DISCONNECTED)
       }
     })
 
@@ -118,14 +132,24 @@ export class WalletsConnector {
   }
 
   public dispose = () => {
-    this.providers.forEach((p) => {
-      const ethereum = this.getSavedEthereumProvider(p)
-      if (ethereum) {
-        ethereum.removeListener('accountsChanged')
-        ethereum.removeListener('disconnect')
-        ethereum.removeListener('chainChanged')
-      }
+    this.providers.forEach((p: string) => {
+      this.disposeFor(p)
     })
+  }
+
+  public disposeFor = (providerId: string) => {
+    const ethereum = this.getSavedEthereumProvider(providerId)
+    if (ethereum) {
+      ethereum.removeListener('accountsChanged', () => {
+        this.loadAccounts(providerId, undefined)
+      })
+      ethereum.removeListener('disconnect', () => {
+        this.disconnect(providerId)
+      })
+      ethereum.removeListener('chainChanged', (chainId: string) =>
+        this.setActiveChain(providerId, chainId)
+      )
+    }
   }
 
   private setActiveChain = (providerId: string, chainId: string) => {
@@ -150,7 +174,6 @@ export class WalletsConnector {
 
     this.setAccounts(providerId, null)
     const ethereum = this.getSavedEthereumProvider(providerId)
-
     let ethAccounts: string[] = []
 
     try {
@@ -226,13 +249,8 @@ export class WalletsConnector {
   public disconnect = (providerId?: string) => {
     this.connector.clearCachedProvider(providerId)
 
-    if (providerId) {
-      this.setAccounts(providerId, null)
-    } else {
-      this.providers.forEach((p) => {
-        this.setAccounts(p, null)
-      })
-    }
+    if (this.providers.length === 0)
+      this.connector.trigger(WALLETS_EVENTS.DISCONNECTED)
   }
 
   public getChainMethods = (providerId: string, chain: IChainType) => {

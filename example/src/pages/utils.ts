@@ -20,9 +20,6 @@ export const getProviderOptions = (): IProviderOptions => {
     opera: {},
     safe: {},
     cipher: {},
-    binancechainwallet: {
-      package: true
-    },
 
     coinbasewallet: {
       package: CoinbaseWalletSDK,
