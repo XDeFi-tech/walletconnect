@@ -63,6 +63,14 @@ const BtnOpen = styled.button`
   cursor: pointer;
 `
 
+const WalletsModalStyled = styled(WalletsModal)`
+  background: red;
+
+  .xdeficonnector-modal-bg {
+    border: 5px solid green;
+  }
+`
+
 interface IHeaderProps {
   killSession: () => void
 }
@@ -102,7 +110,7 @@ const Header = (props: IHeaderProps) => {
           )}
         />
 
-        <WalletsModal
+        <WalletsModalStyled
           themeBuilder={CUSTOM_THEME_BUILDER}
           isDark={true}
           trigger={(props: any) => (
