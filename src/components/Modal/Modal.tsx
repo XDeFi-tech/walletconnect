@@ -56,7 +56,7 @@ export const Modal = ({
   isOpen = false,
   children,
   onClose,
-  className
+  className = ''
 }: ModalProps) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const handleEscape = useCallback(
@@ -82,16 +82,20 @@ export const Modal = ({
     createPortal(
       <AnimatePresence>
         {isOpen ? (
-          <ModalStyled ref={ref}>
+          <ModalStyled
+            ref={ref}
+            className={`xdeficonnector-modal ${className}`}
+          >
             <BackdropStyled
               variants={modalBackdropVariants}
               initial='hidden'
               animate='visible'
               exit='exit'
               onClick={onClose}
+              className='xdeficonnector-modal-bg'
             />
             <BodyStyled
-              className={className}
+              className={`xdeficonnector-modal-body`}
               variants={modalVariants}
               initial='hidden'
               animate='visible'

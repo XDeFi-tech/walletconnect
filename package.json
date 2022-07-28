@@ -1,6 +1,6 @@
 {
   "name": "@xdefi/wallets-connector",
-  "version": "1.2.16",
+  "version": "1.2.18",
   "description": "Cross chain wallets connector with react hooks",
   "author": "garageinc",
   "license": "MIT",
