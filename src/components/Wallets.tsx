@@ -78,12 +78,14 @@ interface IProps {
   trigger: any
   isDark?: boolean
   themeBuilder?: (isDark: boolean) => DefaultTheme
+  className?: string
 }
 
 export const WalletsModal = ({
   trigger: Trigger,
   themeBuilder,
-  isDark = true
+  isDark = true,
+  className
 }: IProps) => {
   const { providers: userOptions } = useWalletsOptions()
 
@@ -91,7 +93,7 @@ export const WalletsModal = ({
 
   return (
     <ThemeProvider themeBuilder={themeBuilder} isDark={isDark}>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} className={className}>
         <STitle>Connect wallet</STitle>
 
         <SCard>
