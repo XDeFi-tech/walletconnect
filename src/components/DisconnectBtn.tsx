@@ -26,14 +26,14 @@ interface IProps {
 export const DisconnectBtn = ({ children, providerId, ...rest }: IProps) => {
   const context = useContext(WalletsContext)
 
-  const resetApp = useCallback(async () => {
+  const handleDisconnect = useCallback(async () => {
     if (context) {
       await context.disconnect(providerId)
     }
   }, [context, providerId])
 
   return (
-    <Btn onClick={resetApp} {...rest}>
+    <Btn onClick={handleDisconnect} {...rest}>
       Disconnect
     </Btn>
   )
