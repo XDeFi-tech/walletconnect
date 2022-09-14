@@ -163,6 +163,7 @@ select {
 
 input,
 button {
+  border-width: 0;
   outline: 0;
   color: inherit;
   /* cursor: default; */

@@ -45,10 +45,12 @@ const SIcon = styled.div`
   `};
 `
 
-const SProviderWrapper = styled.div<{ available: boolean; active: boolean }>`
-  opacity: ${({ available }) => (available ? 1 : 0.4)};
-  background: ${({ theme }) => theme.wallet.bg};
-  background: ${({ theme, active }) =>
+const SProviderWrapper = styled.div<{
+  available?: boolean
+  active?: boolean
+}>`
+  opacity: ${({ available = true }) => (available ? 1 : 0.4)};
+  background: ${({ theme, active = true }) =>
     active ? theme.wallet.activeBg : theme.wallet.bg};
   border-radius: 8px;
   display: flex;
@@ -62,11 +64,30 @@ const SProviderWrapper = styled.div<{ available: boolean; active: boolean }>`
   position: relative;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction: row;
+    width: 100%;
+    min-height: 50px;
+    height: auto;
+  `};
+`
+
+const SProviderDisconnectWrapper = styled.div<{
+  available?: boolean
+  active?: boolean
+}>`
+  opacity: ${({ available = true }) => (available ? 1 : 0.4)};
+  background: ${({ theme }) => theme.wallet.bg};
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 16px 44px;
+  position: relative;
   flex-direction: row;
   width: 100%;
-  min-height: 50px;
+  min-height: 60px;
   height: auto;
-  `};
 `
 
 const STYLES = (theme: DefaultTheme) => `
@@ -86,6 +107,13 @@ const STYLES = (theme: DefaultTheme) => `
 
 const SName = styled.div`
   ${({ theme }) => STYLES(theme)}
+`
+
+const SNameDisconnect = styled.div`
+  ${({ theme }) => STYLES(theme)}
+  margin-top: 0;
+  text-align: left;
+  margin-left: 44px;
 `
 
 const SLink = styled.a`
@@ -112,7 +140,11 @@ interface IProviderProps {
   onSelect: () => void
 }
 
-export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
+export function WalletProvider({
+  provider,
+  onSelect,
+  ...rest
+}: IProviderProps) {
   const {
     name,
     logo: El,
@@ -217,5 +249,25 @@ export function Provider({ provider, onSelect, ...rest }: IProviderProps) {
 
       {loading && <CircleSpinnerStyled />}
     </SProviderWrapper>
+  )
+}
+
+export function DisconnectWalletProvider({
+  provider,
+  ...rest
+}: IProviderProps) {
+  const { name, logo: El, id } = provider
+
+  const context = useContext(WalletsContext)
+
+  const disconnectHandler = useCallback(async () => {
+    context && context.disconnect(id)
+  }, [context, context?.connector, id])
+
+  return (
+    <SProviderDisconnectWrapper {...rest} onClick={disconnectHandler}>
+      <SIcon>{typeof El !== 'string' ? <El /> : <img src={El} />}</SIcon>
+      <SNameDisconnect>{name}</SNameDisconnect>
+    </SProviderDisconnectWrapper>
   )
 }

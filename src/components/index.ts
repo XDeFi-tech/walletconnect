@@ -1,4 +1,6 @@
-export * from './Wallets'
+export * from './WalletsModal'
+export * from './DisconnectBtn'
+export * from './DisconnectWalletsModal'
 export * from './Provider'
 export * from './Modal/Modal'
 export * from './theme/colors'
