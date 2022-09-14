@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {
   WalletsModal,
   useWalletEvents,
-  DisconnectBtn
+  DisconnectWalletsModal
 } from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
@@ -64,6 +64,7 @@ const BtnOpen = styled.button`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border: 1px solid;
 `
 
 const WalletsModalStyled = styled(WalletsModal)`
@@ -116,7 +117,7 @@ const Header = () => {
         />
       </SAddress>
       <SActiveAccount>
-        {isConnected && <DisconnectBtn>Disconnect</DisconnectBtn>}
+        {isConnected && <DisconnectWalletsModal />}
       </SActiveAccount>
     </SHeader>
   )

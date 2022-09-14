@@ -7,6 +7,7 @@ import { ReactComponent as CloseSvg } from './close.svg'
 
 interface ModalProps {
   isOpen?: boolean
+  showCloseBtn?: boolean
   children: ReactNode
   onOpen?: () => void
   onClose?: () => void
@@ -54,6 +55,7 @@ const modalElement = document.getElementById('app-modal')
 
 export const Modal = ({
   isOpen = false,
+  showCloseBtn = true,
   children,
   onClose,
   className = ''
@@ -101,7 +103,7 @@ export const Modal = ({
               animate='visible'
               exit='exit'
             >
-              <CloseSvgStyled onClick={onClose} />
+              {showCloseBtn && <CloseModalSvg onClick={onClose} />}
 
               {children}
             </BodyStyled>
@@ -115,7 +117,7 @@ export const Modal = ({
   )
 }
 
-const CloseSvgStyled = styled(CloseSvg)`
+export const CloseModalSvg = styled(CloseSvg)`
   margin-left: auto;
   cursor: pointer;
   width: 17px;

@@ -15,11 +15,14 @@ const Btn = styled.button`
   align-items: center;
   padding: 12px 43px;
   gap: 10px;
+  background: #de350b;
+  border-radius: 8px;
+  color: ${({ theme }) => theme.black};
 `
 
 interface IProps {
   className?: string
-  children: any
+  children?: any
   providerId?: string
 }
 
@@ -34,7 +37,22 @@ export const DisconnectBtn = ({ children, providerId, ...rest }: IProps) => {
 
   return (
     <Btn onClick={handleDisconnect} {...rest}>
-      Disconnect
+      {children || 'Disconnect'}
+    </Btn>
+  )
+}
+
+export const DisconnectWalletsTrigger = ({
+  onClick,
+  children,
+  ...rest
+}: {
+  children?: any
+  onClick: () => void
+}) => {
+  return (
+    <Btn onClick={onClick} {...rest}>
+      {children || 'Disconnect'}
     </Btn>
   )
 }

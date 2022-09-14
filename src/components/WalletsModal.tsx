@@ -1,31 +1,14 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 import styled, { DefaultTheme } from 'styled-components'
 import { useWalletsOptions } from '../hooks'
+import { useWalletsModal } from './hooks'
 import { Modal } from './Modal/Modal'
 
-import { Provider } from './Provider'
+import { WalletProvider } from './Provider'
 import ThemeProvider from './theme'
 
 interface IModalCardStyleProps {
   maxWidth?: number
-}
-
-const useWalletsModal = () => {
-  const [isOpen, setOpen] = useState(false)
-
-  const onClose = useCallback(() => {
-    setOpen(false)
-  }, [setOpen])
-
-  const onOpen = useCallback(() => {
-    setOpen(true)
-  }, [setOpen])
-
-  return {
-    isOpen,
-    onOpen,
-    onClose
-  }
 }
 
 const SCard = styled.div<IModalCardStyleProps>`
@@ -99,7 +82,7 @@ export const WalletsModal = ({
         <SCard>
           {userOptions.map((provider: any) =>
             !!provider ? (
-              <Provider
+              <WalletProvider
                 key={provider.name}
                 provider={provider}
                 onSelect={onClose}
