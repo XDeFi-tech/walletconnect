@@ -1,9 +1,8 @@
-import React, { Fragment, useContext } from 'react'
+import React from 'react'
 import {
   IProviderWithAccounts,
   useConnectedMultiAccounts,
-  useConnectorMultiConfigs,
-  WalletsContext
+  useConnectorMultiConfigs
 } from '@xdefi/wallets-connector'
 import Column from 'src/components/Column'
 import Header from 'src/components/Header'
@@ -13,14 +12,6 @@ import { useMemo } from 'react'
 import { uid } from 'react-uid'
 
 const MyMultiProvidersApp = () => {
-  const context = useContext(WalletsContext)
-
-  const resetApp = async () => {
-    if (context) {
-      await context.disconnect()
-    }
-  }
-
   const providers = useConnectedMultiAccounts()
 
   const configs = useConnectorMultiConfigs()
@@ -30,7 +21,7 @@ const MyMultiProvidersApp = () => {
   return (
     <SLayoutMulti>
       <Column maxWidth={1200} spanHeight>
-        <Header killSession={resetApp} />
+        <Header />
         <Accounts providers={providers} />
       </Column>
     </SLayoutMulti>

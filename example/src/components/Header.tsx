@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
-import * as PropTypes from 'prop-types'
-import { WalletsModal, useWalletEvents } from '@xdefi/wallets-connector'
+import {
+  WalletsModal,
+  useWalletEvents,
+  DisconnectBtn
+} from '@xdefi/wallets-connector'
 
 import { transitions } from '../styles'
 
@@ -71,13 +74,7 @@ const WalletsModalStyled = styled(WalletsModal)`
   }
 `
 
-interface IHeaderProps {
-  killSession: () => void
-}
-
-const Header = (props: IHeaderProps) => {
-  const { killSession } = props
-
+const Header = () => {
   const [isConnected, setIsConnected] = useState(false)
 
   const onConnectHandler = useCallback(() => {
@@ -118,18 +115,11 @@ const Header = (props: IHeaderProps) => {
           )}
         />
       </SAddress>
-      {isConnected && (
-        <SActiveAccount>
-          <BtnOpen onClick={killSession}>Disconnect</BtnOpen>
-        </SActiveAccount>
-      )}
+      <SActiveAccount>
+        {isConnected && <DisconnectBtn>Disconnect</DisconnectBtn>}
+      </SActiveAccount>
     </SHeader>
   )
-}
-
-Header.propTypes = {
-  killSession: PropTypes.func.isRequired,
-  address: PropTypes.string
 }
 
 export default Header
