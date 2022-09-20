@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash'
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
 
 import { WALLETS_EVENTS } from '../constants'
@@ -199,8 +200,11 @@ export const useConnectedMultiAccounts = () => {
 
   const setAccountsHandler = useCallback(
     (newList: IProviderWithAccounts) => {
-      setAccounts({
-        ...newList
+      setAccounts((stored) => {
+        if (!isEqual(stored, newList)) {
+          return newList
+        }
+        return stored
       })
     },
     [setAccounts]
