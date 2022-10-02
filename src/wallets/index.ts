@@ -265,7 +265,7 @@ export class WalletsConnector {
     providerId?: string
     chainId: IChainType
   }) => {
-    const targetId = this.validateSingleProvider()
+    const targetId = this.validateSingleProvider(providerId)
     const targetProvider = this.getChainMethods(targetId, chainId)
 
     return (
@@ -304,7 +304,7 @@ export class WalletsConnector {
     method: string
     params: any
   }) => {
-    const targetId = this.validateSingleProvider()
+    const targetId = this.validateSingleProvider(providerId)
     const targetProvider = this.getChainMethods(targetId, chainId)
 
     if (targetProvider && targetProvider.methods.request) {
