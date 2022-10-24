@@ -11,7 +11,8 @@ export enum IChainType {
   terra = 'terra',
   dogecoin = 'dogecoin',
   fantom = 'fantom',
-  arbitrum = 'arbitrum'
+  arbitrum = 'arbitrum',
+  solana = 'solana'
 }
 
 export enum WALLETS {

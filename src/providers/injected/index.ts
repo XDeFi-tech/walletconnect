@@ -251,6 +251,34 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
+    [IChainType.solana]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            return window.xfi.solana
+              .request('connect', [])
+              .then((accounts: any) => {
+                resolve(accounts)
+              })
+              .catch((e: any) => {
+                return reject(e)
+              })
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            return window.xfi.solana
+              .request(method, data)
+              .then((result: any) => {
+                resolve(result)
+              })
+              .catch((e: any) => {
+                return reject(e)
+              })
+          })
+        }
+      }
+    },
     [IChainType.binance]: {
       methods: {
         getAccounts: () => {
