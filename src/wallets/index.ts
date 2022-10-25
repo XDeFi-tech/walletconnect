@@ -346,10 +346,6 @@ export class WalletsConnector {
     }, {})
   }
 
-  public getCurrentProviders = (): IWeb3Providers => {
-    return this.currentProviders
-  }
-
   private fireConfigs = async (
     providerId: string,
     provider: any = undefined

@@ -14,6 +14,12 @@ export const useConnectorActiveIds = () => {
   const context = useContext(WalletsContext)
   const [pids, setPids] = useState<string[]>(() => context?.providers || [])
 
+  useEffect(() => {
+    if (context?.providers) {
+      setPids(context?.providers)
+    }
+  }, [context?.providers, setPids])
+
   const setConfigs = useCallback(
     (c: string[] = []) => {
       setPids(c)
@@ -94,7 +100,7 @@ export const useConnectorMultiProviders = () => {
   const context = useContext(WalletsContext)
 
   const [providers, setCurrentProviders] = useState<IWeb3Providers>(
-    () => context?.getCurrentProviders() || {}
+    () => context?.currentProviders || {}
   )
 
   const setProviderHandler = useCallback(
@@ -117,10 +123,10 @@ export const useConnectorMultiProviders = () => {
   )
 
   useEffect(() => {
-    if (context) {
-      setProviderHandler(context?.getCurrentProviders())
+    if (context?.currentProviders) {
+      setProviderHandler(context?.currentProviders)
     }
-  }, [context, setProviderHandler])
+  }, [context?.currentProviders, setProviderHandler])
 
   useEffect(() => {
     if (context) {

@@ -37,7 +37,6 @@ const PATHS = {
 const Navigation = () => {
   const location = useLocation()
 
-  console.log(location)
   return (
     <Nav>
       <LinkStyled
