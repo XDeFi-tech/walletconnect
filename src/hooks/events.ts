@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import { isEqual } from 'lodash'
 
 import { WALLETS_EVENTS } from '../constants'
 import {
@@ -16,7 +17,7 @@ export const useConnectorActiveIds = () => {
 
   useEffect(() => {
     if (context?.providers) {
-      setPids(context?.providers)
+      setPids([...context?.providers])
     }
   }, [context?.providers, setPids])
 
@@ -205,7 +206,12 @@ export const useConnectedMultiAccounts = () => {
 
   const setAccountsHandler = useCallback(
     (newList: IProviderWithAccounts) => {
-      setAccounts(newList)
+      setAccounts((stored) => {
+        if (!isEqual(stored, newList)) {
+          return { ...newList }
+        }
+        return stored
+      })
     },
     [setAccounts]
   )
