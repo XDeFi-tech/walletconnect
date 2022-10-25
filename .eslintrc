@@ -6,7 +6,9 @@
     "plugin:prettier/recommended",
     "prettier/standard",
     "prettier/react",
-    "plugin:@typescript-eslint/eslint-recommended"
+    "plugin:@typescript-eslint/eslint-recommended",
+    // "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended"
   ],
   "env": {
     "node": true
@@ -23,6 +25,7 @@
       "version": "16"
     }
   },
+  // "plugins": ["unused-imports"], // "simple-import-sort",
   "rules": {
     "space-before-function-paren": 0,
     "react/prop-types": 0,

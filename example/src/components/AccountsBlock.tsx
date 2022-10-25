@@ -44,7 +44,11 @@ const AccountsBlock = ({
       <SChain>{chain}</SChain>
       <SAccounts>
         with accounts{' '}
-        <SList>{accounts ? accounts.join(', ') : '<not set>'}</SList>
+        <SList>
+          {accounts && Array.isArray(accounts)
+            ? accounts.join(', ')
+            : '<not set>'}
+        </SList>
       </SAccounts>
     </SBalances>
   )

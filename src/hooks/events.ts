@@ -1,5 +1,5 @@
-import { isEqual } from 'lodash'
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import { isEqual } from 'lodash'
 
 import { WALLETS_EVENTS } from '../constants'
 import {
@@ -15,11 +15,17 @@ export const useConnectorActiveIds = () => {
   const context = useContext(WalletsContext)
   const [pids, setPids] = useState<string[]>(() => context?.providers || [])
 
+  useEffect(() => {
+    if (context?.providers) {
+      setPids([...context?.providers])
+    }
+  }, [context?.providers, setPids])
+
   const setConfigs = useCallback(
     (c: string[] = []) => {
       setPids(c)
     },
-    [setPids, context]
+    [setPids]
   )
 
   useEffect(() => {
@@ -45,7 +51,7 @@ export const useConnectorActiveIds = () => {
 
 const useSingleSelectedProvider = () => {
   const pids = useConnectorActiveIds()
-  return useMemo(() => pids[0], [pids])
+  return pids[0]
 }
 
 export const useConnectorMultiConfigs = () => {
@@ -88,14 +94,14 @@ export const useConnectorMultiConfigs = () => {
 export const useConnectorSingleConfigs = (): IWalletConnectorConfigs => {
   const configs = useConnectorMultiConfigs()
   const active = useSingleSelectedProvider()
-  return useMemo(() => configs[active] || {}, [configs, active])
+  return configs[active]
 }
 
 export const useConnectorMultiProviders = () => {
   const context = useContext(WalletsContext)
 
   const [providers, setCurrentProviders] = useState<IWeb3Providers>(
-    () => context?.getCurrentProviders() || {}
+    () => context?.currentProviders || {}
   )
 
   const setProviderHandler = useCallback(
@@ -107,19 +113,21 @@ export const useConnectorMultiProviders = () => {
           [providerId]: provider
         }))
       } else {
-        const state = { ...providers }
-        delete state[providerId]
-        setCurrentProviders(state)
+        setCurrentProviders((store) => {
+          const state = { ...store }
+          delete state[providerId]
+          return state
+        })
       }
     },
     [setCurrentProviders]
   )
 
   useEffect(() => {
-    if (context) {
-      setProviderHandler(context?.getCurrentProviders())
+    if (context?.currentProviders) {
+      setProviderHandler(context?.currentProviders)
     }
-  }, [context, setProviderHandler])
+  }, [context?.currentProviders, setProviderHandler])
 
   useEffect(() => {
     if (context) {
@@ -139,9 +147,7 @@ export const useConnectorMultiProviders = () => {
 export const useConnectorSingleProvider = () => {
   const providers = useConnectorMultiProviders()
   const active = useSingleSelectedProvider()
-  return useMemo(() => {
-    return providers[active] || {}
-  }, [providers, active])
+  return providers[active]
 }
 
 export const useConnectorMultiChains = () => {
@@ -188,7 +194,7 @@ export const useConnectorMultiChains = () => {
 export const useConnectorSingleChains = () => {
   const configs = useConnectorMultiChains()
   const active = useSingleSelectedProvider()
-  return useMemo(() => configs[active] || {}, [configs, active])
+  return configs[active]
 }
 
 export const useConnectedMultiAccounts = () => {
@@ -202,7 +208,7 @@ export const useConnectedMultiAccounts = () => {
     (newList: IProviderWithAccounts) => {
       setAccounts((stored) => {
         if (!isEqual(stored, newList)) {
-          return newList
+          return { ...newList }
         }
         return stored
       })
@@ -226,7 +232,7 @@ export const useConnectedMultiAccounts = () => {
         context.off(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
       }
     }
-  }, [context, setAccounts])
+  }, [context, setAccountsHandler])
 
   return accounts
 }
@@ -258,7 +264,7 @@ export const useWalletEvents = (
 export const useConnectedSingleAccounts = () => {
   const accounts = useConnectedMultiAccounts()
   const active = useSingleSelectedProvider()
-  return useMemo(() => accounts[active] || {}, [accounts, active])
+  return accounts[active]
 }
 
 export const useWalletsOptions = () => {

@@ -167,7 +167,7 @@ export function WalletProvider({
     return (
       (installationLink && !canInject()) || !context?.isAvailableProvider(id)
     )
-  }, [installationLink, context])
+  }, [installationLink, context, id])
 
   const disabledByWallet = useMemo(
     () => disabledByWalletFunc && disabledByWalletFunc(),
@@ -207,7 +207,6 @@ export function WalletProvider({
   }, [
     isAvailable,
     context,
-    context?.connector,
     id,
     supportedChains,
     onSelect,
@@ -262,7 +261,7 @@ export function DisconnectWalletProvider({
 
   const disconnectHandler = useCallback(async () => {
     context && context.disconnect(id)
-  }, [context, context?.connector, id])
+  }, [context, id])
 
   return (
     <SProviderDisconnectWrapper {...rest} onClick={disconnectHandler}>

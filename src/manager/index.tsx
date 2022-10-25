@@ -33,7 +33,7 @@ export const NetworkManager = ({
     return () => {
       c && c.dispose()
     }
-  }, [options, network, cacheEnabled])
+  }, [options, isSingleProviderEnabled, network, cacheEnabled])
 
   return (
     <WalletsContext.Provider value={c}>
