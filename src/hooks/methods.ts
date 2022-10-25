@@ -43,5 +43,5 @@ export const useRequestAvailability = ({
     }
 
     return context.isRequestAvailable({ providerId, chainId })
-  }, [context, chainId])
+  }, [context, chainId, providerId])
 }

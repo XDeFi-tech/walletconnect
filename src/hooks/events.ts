@@ -1,4 +1,3 @@
-import { isEqual } from 'lodash'
 import { useContext, useState, useEffect, useMemo, useCallback } from 'react'
 
 import { WALLETS_EVENTS } from '../constants'
@@ -19,7 +18,7 @@ export const useConnectorActiveIds = () => {
     (c: string[] = []) => {
       setPids(c)
     },
-    [setPids, context]
+    [setPids]
   )
 
   useEffect(() => {
@@ -107,9 +106,11 @@ export const useConnectorMultiProviders = () => {
           [providerId]: provider
         }))
       } else {
-        const state = { ...providers }
-        delete state[providerId]
-        setCurrentProviders(state)
+        setCurrentProviders((store) => {
+          const state = { ...store }
+          delete state[providerId]
+          return state
+        })
       }
     },
     [setCurrentProviders]
@@ -198,12 +199,7 @@ export const useConnectedMultiAccounts = () => {
 
   const setAccountsHandler = useCallback(
     (newList: IProviderWithAccounts) => {
-      setAccounts((stored) => {
-        if (!isEqual(stored, newList)) {
-          return newList
-        }
-        return stored
-      })
+      setAccounts(newList)
     },
     [setAccounts]
   )
@@ -224,7 +220,7 @@ export const useConnectedMultiAccounts = () => {
         context.off(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
       }
     }
-  }, [context, setAccounts])
+  }, [context, setAccountsHandler])
 
   return accounts
 }
