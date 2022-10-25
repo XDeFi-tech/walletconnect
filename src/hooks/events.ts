@@ -45,7 +45,7 @@ export const useConnectorActiveIds = () => {
 
 const useSingleSelectedProvider = () => {
   const pids = useConnectorActiveIds()
-  return useMemo(() => pids[0], [pids])
+  return pids[0]
 }
 
 export const useConnectorMultiConfigs = () => {
@@ -88,7 +88,7 @@ export const useConnectorMultiConfigs = () => {
 export const useConnectorSingleConfigs = (): IWalletConnectorConfigs => {
   const configs = useConnectorMultiConfigs()
   const active = useSingleSelectedProvider()
-  return useMemo(() => configs[active] || {}, [configs, active])
+  return configs[active]
 }
 
 export const useConnectorMultiProviders = () => {
@@ -139,9 +139,7 @@ export const useConnectorMultiProviders = () => {
 export const useConnectorSingleProvider = () => {
   const providers = useConnectorMultiProviders()
   const active = useSingleSelectedProvider()
-  return useMemo(() => {
-    return providers[active] || {}
-  }, [providers, active])
+  return providers[active]
 }
 
 export const useConnectorMultiChains = () => {
@@ -188,7 +186,7 @@ export const useConnectorMultiChains = () => {
 export const useConnectorSingleChains = () => {
   const configs = useConnectorMultiChains()
   const active = useSingleSelectedProvider()
-  return useMemo(() => configs[active] || {}, [configs, active])
+  return configs[active]
 }
 
 export const useConnectedMultiAccounts = () => {
@@ -258,7 +256,7 @@ export const useWalletEvents = (
 export const useConnectedSingleAccounts = () => {
   const accounts = useConnectedMultiAccounts()
   const active = useSingleSelectedProvider()
-  return useMemo(() => accounts[active] || {}, [accounts, active])
+  return accounts[active]
 }
 
 export const useWalletsOptions = () => {
