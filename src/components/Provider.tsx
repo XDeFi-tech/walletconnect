@@ -151,7 +151,6 @@ export function WalletProvider({
     chains,
     id,
     installationLink,
-    disabledByWalletFunc,
     needPrioritiseFunc
   } = provider
 
@@ -170,8 +169,8 @@ export function WalletProvider({
   }, [installationLink, context, id])
 
   const disabledByWallet = useMemo(
-    () => disabledByWalletFunc && disabledByWalletFunc(),
-    [disabledByWalletFunc]
+    () => context && context.disabledByProvider(id),
+    [context]
   )
 
   const needPrioritise = useMemo(

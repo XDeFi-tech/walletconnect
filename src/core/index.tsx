@@ -75,6 +75,10 @@ export class WalletConnect {
     return this.providerController.isAvailableProvider(providerId)
   }
 
+  public disabledByProvider = (providerId: string) => {
+    return this.providerController.disabledByProvider(providerId)
+  }
+
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
   }

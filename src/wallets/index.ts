@@ -339,6 +339,10 @@ export class WalletsConnector {
     return this.connector.isAvailableProvider(providerId)
   }
 
+  public disabledByProvider = (providerId: string) => {
+    return this.connector.disabledByProvider(providerId)
+  }
+
   public getInjectedChains = (): IProviderWithChains => {
     return this.providers.reduce((acc, item) => {
       acc[item] = this.connector.injectedChains(item)
