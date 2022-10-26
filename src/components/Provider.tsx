@@ -236,7 +236,7 @@ export function WalletProvider({
         <SPrioritise>Disable {disabledByWallet} wallet</SPrioritise>
       )}
 
-      {needInstall ? (
+      {needInstall && !disabledByWallet ? (
         installationLink ? (
           <SLink href={installationLink} target='_blank'>
             Please, install {name}

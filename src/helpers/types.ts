@@ -99,6 +99,7 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
     [name: string]: ISupportedChain
   }
   supportedEvmChains?: IChainType[]
+  disabledByWalletFunc?: () => string | undefined
 }
 
 export interface IProviderUserOptions {

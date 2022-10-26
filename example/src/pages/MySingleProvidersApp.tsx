@@ -25,7 +25,6 @@ const MySingleProviderApp = () => {
         <Header />
         {chains && (
           <SContent>
-            List {chains.length} {JSON.stringify(multi)}
             {accounts &&
               chains.map((chain: string) => {
                 return (

@@ -374,6 +374,16 @@ export class ProviderController {
     const provider = this.getEthereumProvider(providerId)
     const isActive = isCurrentProviderActive(provider, injected)
 
+    const options = this.findProviderFromOptions(providerId)
+
+    if (
+      options &&
+      options.disabledByWalletFunc &&
+      options.disabledByWalletFunc()
+    ) {
+      return false
+    }
+
     return isActive
   }
 
