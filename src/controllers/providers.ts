@@ -28,6 +28,7 @@ import {
 import { IChainType } from '../constants'
 
 import { EventController } from './events'
+import { disabledDefault } from 'src/providers/injected'
 
 export class ProviderController {
   public cachedProviders: string[] = []
@@ -371,10 +372,37 @@ export class ProviderController {
       return true // Provider is not defined at list of injected and we do not controll this provider
     }
 
+    if (this.disabledByProvider(providerId)) {
+      return false
+    }
+
     const provider = this.getEthereumProvider(providerId)
     const isActive = isCurrentProviderActive(provider, injected)
 
     return isActive
+  }
+
+  public disabledByProvider = (providerId: string) => {
+    if (!this.getInjectedById(providerId)) {
+      return undefined // Provider is not defined at list of injected and we do not controll this provider
+    }
+
+    const options = this.findProviderFromOptions(providerId)
+
+    const defaultDisabledByProvider = disabledDefault(providerId)
+    if (defaultDisabledByProvider) {
+      return defaultDisabledByProvider
+    }
+
+    if (
+      options &&
+      options.disabledByWalletFunc &&
+      options.disabledByWalletFunc()
+    ) {
+      return options.disabledByWalletFunc()
+    }
+
+    return undefined
   }
 
   public on(event: string, callback: (result: any) => void): () => void {

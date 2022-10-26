@@ -41,6 +41,17 @@ export const FALLBACK: IProviderInfo = {
   check: 'isWeb3'
 }
 
+export const disabledDefault = (providerId: string) => {
+  if (providerId !== WALLETS.xdefi && window.xfi && window.xfi.ethereum) {
+    const { isXDEFI } = window.xfi.ethereum
+    if (!isXDEFI) {
+      return 'XDEFI'
+    }
+  }
+
+  return undefined
+}
+
 export const METAMASK: IProviderInfo = {
   id: WALLETS.metamask,
   name: 'MetaMask',
@@ -49,13 +60,6 @@ export const METAMASK: IProviderInfo = {
   check: 'isMetaMask',
   installationLink: 'https://metamask.io',
   disabledByWalletFunc: () => {
-    if (window.xfi && window.xfi.ethereum) {
-      const { isXDEFI } = window.xfi.ethereum
-      if (!isXDEFI) {
-        return 'XDEFI'
-      }
-    }
-
     if (window.ethereum && !window.ethereum.isMetaMask) {
       return getInjectedProviderName() || 'Browser'
     }
