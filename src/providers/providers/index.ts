@@ -3,6 +3,7 @@ import { ReactComponent as PortisLogo } from '../logos/portis.svg'
 import { ReactComponent as FortmaticLogo } from '../logos/fortmatic.svg'
 import { ReactComponent as VenlyLogo } from '../logos/venly.svg'
 import { ReactComponent as TorusLogo } from '../logos/torus.svg'
+import { ReactComponent as LedgerLogo } from '../logos/ledger.svg'
 import { ReactComponent as AuthereumLogo } from '../logos/authereum.svg'
 import { ReactComponent as BitskiLogo } from '../logos/bitski.svg'
 import { ReactComponent as FrameLogo } from '../logos/frame.svg'
@@ -53,6 +54,14 @@ export const TORUS: IProviderInfo = {
   logo: TorusLogo,
   type: 'web',
   check: 'isTorus'
+}
+
+export const LEDGER: IProviderInfo = {
+  id: 'ledger',
+  name: 'Ledger',
+  logo: LedgerLogo,
+  type: 'web',
+  check: 'isLedger'
 }
 
 export const VENLY: IProviderInfo = {

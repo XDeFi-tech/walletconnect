@@ -15,6 +15,7 @@ import binancechainwallet from './binancechainwallet'
 import coinbasewallet from './coinbasewallet'
 import sequence from './sequence'
 import web3auth from './web3auth'
+import ledger from './ledger'
 
 export {
   injected,
@@ -33,5 +34,6 @@ export {
   binancechainwallet,
   coinbasewallet,
   sequence,
-  web3auth
+  web3auth,
+  ledger
 }

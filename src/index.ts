@@ -1,3 +1,5 @@
+import { NetworkManager } from './manager'
+
 export * from './components'
 export * from './constants'
 export * from './controllers'
@@ -6,7 +8,5 @@ export * from './helpers'
 export * from './wallets'
 export * from './hooks'
 export { WalletsContext } from './manager'
-
-import { NetworkManager } from './manager'
 
 export default NetworkManager
