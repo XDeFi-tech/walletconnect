@@ -92,9 +92,11 @@ export const WalletsModal = ({
         </SCard>
 
         <SDescription>
-          Non-XDEFI wallets are provided by external providers and by selecting
-          you agree to terms of those providers. Your access to the wallet might
-          be reliant on the external provider being operational.
+          Non-XDEFI wallets are provided by external third-party providers and
+          by connecting your wallet you confirm that you have agreed to the
+          terms of the relevant third-party provider(s). Your access to the
+          WebApp is reliant on the continued functionality and compatibility of
+          the relevant third-party wallet provider(s).
         </SDescription>
       </Modal>
       <Trigger onClick={onOpen} />
