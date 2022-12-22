@@ -238,10 +238,10 @@ export function WalletProvider({
       {needInstall && !disabledByWallet ? (
         installationLink ? (
           <SLink href={installationLink} target='_blank'>
-            Please, install {name}
+            Please install {name}
           </SLink>
         ) : (
-          <SLinkFallback>Please, install {name}</SLinkFallback>
+          <SLinkFallback>Please install {name}</SLinkFallback>
         )
       ) : null}
 
