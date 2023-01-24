@@ -1,6 +1,6 @@
 import { getInjectedProviderName, IProviderInfo } from '../../helpers'
 import { IChainType, WALLETS } from '../../constants'
-import { ReactComponent as Web3DefaultLogo } from '../logos/web3-default.svg'
+import { ReactComponent as Wallet } from '../../components/icons/Wallet.svg'
 import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
 import { ReactComponent as SafeLogo } from '../logos/safe.svg'
 import { ReactComponent as TrustLogo } from '../logos/trust.svg'
@@ -35,8 +35,8 @@ declare global {
 }
 export const FALLBACK: IProviderInfo = {
   id: 'injected',
-  name: 'Browser',
-  logo: Web3DefaultLogo,
+  name: 'Browser Wallet',
+  logo: Wallet,
   type: 'injected',
   check: 'isWeb3'
 }

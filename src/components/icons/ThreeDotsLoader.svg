@@ -1,0 +1,36 @@
+<svg
+  id="L4"
+  x="0px"
+  y="0px"
+  enableBackground="new 0 0 0 0"
+  xmlSpace="preserve"
+  width="60px"
+  height="22px">
+  <circle fill="#fff" stroke="none" cx="12px" cy="12px" r="4px">
+    <animate
+      attributeName="r"
+      dur="1s"
+      values="4px; 8px; 4px"
+      repeatCount="indefinite"
+      begin="0.2"
+    />
+  </circle>
+  <circle fill="#fff" stroke="none" cx="30px" cy="12px" r="4px">
+    <animate
+      attributeName="r"
+      dur="1s"
+      values="4px; 8px; 4px"
+      repeatCount="indefinite"
+      begin="0.4"
+    />
+  </circle>
+  <circle fill="#fff" stroke="none" cx="48px" cy="12px" r="4px">
+    <animate
+      attributeName="r"
+      dur="1s"
+      values="4px; 8px; 4px"
+      repeatCount="indefinite"
+      begin="0.6"
+    />
+  </circle>
+</svg>

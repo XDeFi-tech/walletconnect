@@ -1,4 +1,4 @@
-/*eslint import/namespace: ['error', { allowComputed: true }]*/
+/* eslint import/namespace: ['error', { allowComputed: true }] */
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
@@ -6,7 +6,8 @@ import {
   CACHED_PROVIDER_CHAINS_KEY,
   WALLETS_EVENTS,
   CACHED_MULTI_PROVIDERS_KEY,
-  CACHED_PROVIDERS_CHAINS_KEY
+  CACHED_PROVIDERS_CHAINS_KEY,
+  IChainType
 } from '../constants'
 import {
   IProviderControllerOptions,
@@ -25,7 +26,6 @@ import {
   findAvailableEthereumProvider,
   isCurrentProviderActive
 } from '../helpers'
-import { IChainType } from '../constants'
 
 import { EventController } from './events'
 import { disabledDefault } from 'src/providers/injected'
@@ -40,6 +40,7 @@ export class ProviderController {
   public injectedChains: {
     [providerId: string]: string[]
   } = {}
+
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
   private network = ''
@@ -61,7 +62,6 @@ export class ProviderController {
     this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
 
     this.providers = []
-
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
       if (id && this.providerOptions[id]) {
@@ -141,9 +141,16 @@ export class ProviderController {
     const availableInjectedList = defaultProviderList.filter(
       (pid) => this.getInjectedById(pid) && this.isAvailableProvider(pid)
     )
+    const injectedList = defaultProviderList.filter(
+      (pid) => this.getInjectedById(pid) && pid !== 'xdefi'
+    )
+
+    const browserInjectedList = availableInjectedList.filter(
+      (provider) => provider !== 'xdefi'
+    )
 
     const displayInjected =
-      (!this.disableInjectedProvider && availableInjectedList.length === 0) ||
+      (!this.disableInjectedProvider && browserInjectedList.length === 0) ||
       canInject() === undefined
 
     const providerList: string[] = []
@@ -177,7 +184,27 @@ export class ProviderController {
       }
     })
 
-    return userOptions
+    const providersWithoutInjected = userOptions.filter(
+      (provider) => !injectedList.find((id) => id === provider.id)
+    )
+
+    if (browserInjectedList.length) {
+      const wallet = userOptions.find(
+        (option) => option.id === browserInjectedList[0]
+      )
+
+      if (wallet) {
+        return [
+          providersWithoutInjected[0],
+          { ...wallet, label: 'Browser Wallet' },
+          ...providersWithoutInjected.slice(1)
+        ]
+      }
+
+      return providersWithoutInjected
+    } else {
+      return providersWithoutInjected
+    }
   }
 
   public connectToChains = async (providerId: string) => {
@@ -330,7 +357,7 @@ export class ProviderController {
         options?.getEthereumProvider
       )
 
-      const cachedChains = chains ? chains : [IChainType.ethereum]
+      const cachedChains = chains || [IChainType.ethereum]
 
       this.trigger(WALLETS_EVENTS.CONNECT, {
         provider,
@@ -375,7 +402,6 @@ export class ProviderController {
     if (this.disabledByProvider(providerId)) {
       return false
     }
-
     const provider = this.getEthereumProvider(providerId)
     const isActive = isCurrentProviderActive(provider, injected)
 

@@ -5,7 +5,7 @@ import MyMultiProvidersApp from './MyMultiProvidersApp'
 
 function MultiProvidersPage() {
   const [options] = useState(() => getProviderOptions())
-
+  
   return (
     <NetworkManager
       options={options}

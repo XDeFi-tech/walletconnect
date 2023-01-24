@@ -12,8 +12,7 @@ export const getProviderOptions = (): IProviderOptions => {
     xdefi: {},
     injected: {
       display: {
-        ...injected.FALLBACK,
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
+        ...injected.FALLBACK
       }
     },
     metamask: {},

@@ -1,4 +1,4 @@
-export * from './WalletsModal'
+export * from './WalletsModal/WalletsModal'
 export * from './DisconnectBtn'
 export * from './DisconnectWalletsModal'
 export * from './Provider'
