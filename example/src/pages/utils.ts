@@ -64,6 +64,21 @@ export const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
     descColor: darkMode ? '#c4c4c4' : '#979797',
     titleColor: darkMode ? '#f2f1f1' : '#333333',
     bg: darkMode ? '#333333' : '#F2F1F1',
-    activeBg: darkMode ? 'lightslategrey' : 'darkseagreen'
+    activeBg: darkMode ? 'lightslategrey' : 'darkseagreen',
+    disableText: '#ffc400',
+    recommendedText: '#36b37e',
+    connectedText: '#36b37e'
+  },
+  button: {
+    color: '#fff',
+    bg: '#4476F2',
+    hover: '#0b1114',
+    disabledColor: '#969da3',
+    disabledBg: '#111314'
+  },
+  selectChain: {
+    title: '#fff',
+    deselectAll: '#9ecaff',
+    description: '#969da3'
   }
 })

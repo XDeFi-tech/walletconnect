@@ -126,7 +126,7 @@ const Title = styled.div`
   font-weight: 700;
   font-size: 20px;
   line-height: 24px;
-  color: #ffffff;
+  color: ${({ theme }) => theme.selectChain.title};
 `
 
 const ChainContainer = styled.div<{ padding?: string }>`
@@ -153,7 +153,7 @@ const DeselectAllWrapper = styled.div`
   font-size: 16px;
   line-height: 20px;
   text-align: right;
-  color: #9ecaff;
+  color: ${({ theme }) => theme.selectChain.deselectAll};
   cursor: pointer;
 `
 const ButtonWrapper = styled.div`
@@ -166,7 +166,7 @@ const DescriptionWrapper = styled.div`
   width: 100%;
   font-size: 12px;
   line-height: 16px;
-  color: #969da3;
+  color: ${({ theme }) => theme.selectChain.description};
 `
 
 const DescTitle = styled.div`

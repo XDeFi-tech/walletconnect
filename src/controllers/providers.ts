@@ -141,6 +141,7 @@ export class ProviderController {
     const availableInjectedList = defaultProviderList.filter(
       (pid) => this.getInjectedById(pid) && this.isAvailableProvider(pid)
     )
+
     const injectedList = defaultProviderList.filter(
       (pid) => this.getInjectedById(pid) && pid !== 'xdefi'
     )

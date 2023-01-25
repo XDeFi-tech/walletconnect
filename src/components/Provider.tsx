@@ -197,7 +197,7 @@ export function DisconnectWalletProvider({
   ...rest
 }: IProviderProps) {
   const { name, logo: El, id } = provider
-
+  console.log('provider', provider)
   const context = useContext(WalletsContext)
 
   const disconnectHandler = useCallback(async () => {
@@ -315,7 +315,7 @@ const linkStyles = css`
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
-  color: #9ecaff;
+  color: ${({ theme }) => theme.wallet.link};
   text-align: right;
 `
 
@@ -338,7 +338,7 @@ const NameWrapper = styled.div`
 `
 
 const DisabledText = styled.div`
-  color: #ffc400;
+  color: ${({ theme }) => theme.wallet.disableText};
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
@@ -348,7 +348,7 @@ const RecommendedWrapper = styled.div`
   display: flex;
   align-items: center;
   grid-gap: 8px;
-  color: #36b37e;
+  color: ${({ theme }) => theme.wallet.recommendedText};
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
@@ -358,5 +358,5 @@ const ConnectedText = styled.div`
   font-weight: 500;
   font-size: 12px;
   line-height: 16px;
-  color: #36b37e;
+  color: ${({ theme }) => theme.wallet.connectedText};
 `

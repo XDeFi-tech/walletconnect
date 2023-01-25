@@ -35,11 +35,16 @@ export const WalletsModal = ({
     setIsChainSelectorVisible(false)
   }
 
+  const handleCloseModal = () => {
+    handleHideChainSelector()
+    onClose()
+  }
+
   return (
     <ThemeProvider themeBuilder={themeBuilder} isDark={isDark}>
       <StyledModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleCloseModal}
         className={className}
         renderHeader={
           isChainSelectorVisible

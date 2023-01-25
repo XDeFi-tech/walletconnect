@@ -40,7 +40,7 @@ export const PrimaryButton: FC<PrimaryButtonProps> = ({
       disabled={disabled}
       type={type}
       onClick={onClick}
-      className={`${className} XdefiPrimaryButton-root`}
+      className={`${className} xdefiprimarybutton-root`}
       isLoading={loading}
       data-testid={dataTestId}
       {...restProps}
@@ -48,8 +48,8 @@ export const PrimaryButton: FC<PrimaryButtonProps> = ({
       {loading ? (
         <ThreeDotsLoader />
       ) : (
-        <LabelWrapper className='XdefiPrimaryButton-labelRoot'>
-          <Typography className='XdefiPrimaryButton-typography'>
+        <LabelWrapper className='xdefiprimarybutton-labelRoot'>
+          <Typography className='xdefiprimarybutton-typography'>
             {label}
           </Typography>
         </LabelWrapper>
@@ -67,19 +67,19 @@ export const PrimaryButtonWrapper = styled.button<PrimaryButtonWrapperProps>`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  min-width: 148px
-  color: #fff;
-  background-color: #4476F2;
+  min-width: 148px;
+  color: ${({ theme }) => theme.button.color};
+  background-color: ${({ theme }) => theme.button.bg};
   border: none;
 
   &[disabled] {
-    color: #969da3;
-    background-color: #111314;
+    color: ${({ theme }) => theme.button.disabledColor};
+    background-color: ${({ theme }) => theme.button.disabledBg};
   }
 
   &:hover:not([disabled]),
   &:focus:not([disabled]) {
-    background-color: #0b1114;
+    background-color: ${({ theme }) => theme.button.hover};
   }
 
   &:focus:not([disabled]) {
@@ -99,5 +99,4 @@ const Typography = styled.div`
   font-weight: 500;
   font-size: 16px;
   line-height: 20px;
-  color: #ffffff;
 `
