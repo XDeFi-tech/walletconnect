@@ -197,7 +197,7 @@ export function DisconnectWalletProvider({
   ...rest
 }: IProviderProps) {
   const { name, logo: El, id } = provider
-  console.log('provider', provider)
+
   const context = useContext(WalletsContext)
 
   const disconnectHandler = useCallback(async () => {
