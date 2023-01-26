@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 
-import { ReactComponent as CloseSvg } from './close.svg'
+import { ReactComponent as CloseSvg } from '../icons/close.svg'
 
 interface ModalProps {
   isOpen?: boolean
@@ -12,6 +12,16 @@ interface ModalProps {
   onOpen?: () => void
   onClose?: () => void
   className?: string
+  title?: string
+  renderHeader?: ({
+    title,
+    onClose,
+    isOpen
+  }: {
+    onClose?: () => void
+    isOpen?: boolean
+    title?: string
+  }) => JSX.Element
 }
 
 export const modalVariants = {
@@ -58,7 +68,9 @@ export const Modal = ({
   showCloseBtn = true,
   children,
   onClose,
-  className = ''
+  renderHeader,
+  className = '',
+  title = 'Connect wallet'
 }: ModalProps) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const handleEscape = useCallback(
@@ -97,19 +109,31 @@ export const Modal = ({
               className='xdeficonnector-modal-bg'
             />
             <BodyStyled
-              className={`xdeficonnector-modal-body`}
+              className='xdeficonnector-modal-body'
               variants={modalVariants}
               initial='hidden'
               animate='visible'
               exit='exit'
             >
-              {showCloseBtn && <CloseModalSvg onClick={onClose} />}
-
+              {renderHeader ? (
+                renderHeader({ isOpen, title, onClose })
+              ) : (
+                <ModalHeaderWrapper className='xdeficonnector-modal-header'>
+                  <HeaderTitle className='xdeficonnector-modal-header-title'>
+                    {title}
+                  </HeaderTitle>
+                  {showCloseBtn ? (
+                    <CloseModalSvg
+                      onClick={onClose}
+                      className='xdeficonnector-modal-header-icon'
+                    />
+                  ) : null}
+                </ModalHeaderWrapper>
+              )}
               {children}
             </BodyStyled>
           </ModalStyled>
         ) : null}
-        )
       </AnimatePresence>,
 
       modalElement
@@ -118,7 +142,6 @@ export const Modal = ({
 }
 
 export const CloseModalSvg = styled(CloseSvg)`
-  margin-left: auto;
   cursor: pointer;
   width: 17px;
   height: 17px;
@@ -149,7 +172,6 @@ const BackdropStyled = styled(motion.div)`
 
 const BodyStyled = styled(motion.div)`
   width: 100%;
-  padding: 27px 50px;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -157,14 +179,23 @@ const BodyStyled = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 840px;
+  max-width: 517px;
   max-height: 720px;
   opacity: 1;
   background: ${({ theme }) => theme.modal.bg};
   border-radius: 8px;
+`
 
-  @media screen and (max-width: 768px) {
-    padding: 24px;
-    max-width: 340px;
-  }
+const ModalHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+`
+const HeaderTitle = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  color: ${({ theme }) => theme.wallet.titleColor};
 `

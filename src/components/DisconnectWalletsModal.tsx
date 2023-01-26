@@ -5,7 +5,7 @@ import styled, { DefaultTheme } from 'styled-components'
 import { DisconnectWalletProvider, DisconnectWalletsTrigger } from '.'
 import { useConnectorActiveIds, useWalletsOptions } from '../hooks'
 import { useWalletsModal } from './hooks'
-import { Modal, CloseModalSvg } from './Modal/Modal'
+import { Modal } from './Modal/Modal'
 import ThemeProvider from './theme'
 
 interface IModalCardStyleProps {
@@ -31,23 +31,6 @@ const SCard = styled.div<IModalCardStyleProps>`
     grid-template-columns: 1fr;
     margin-top: 16px;
   `};
-`
-
-const SHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-`
-
-const STitle = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 20px;
-
-  color: ${({ theme }) => theme.wallet.titleColor};
-  text-align: center;
 `
 
 const DisconnectBtnStyled = styled(DisconnectBtn)`
@@ -96,15 +79,11 @@ export const DisconnectWalletsModal = ({
         onClose={onClose}
         className={className}
         showCloseBtn={false}
+        title='Disconnect wallet'
       >
-        <SHeader>
-          <STitle>Disconnect wallet</STitle>
-          <CloseModalSvg onClick={onClose} />
-        </SHeader>
-
         <SCard>
           {connected.map((provider: any) => {
-            return !!provider ? (
+            return provider ? (
               <DisconnectWalletProvider
                 key={provider.name}
                 provider={provider}

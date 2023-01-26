@@ -115,6 +115,7 @@ export interface IProviderUserOptions {
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
   supportedEvmChains?: IChainType[]
+  label?: string
 }
 
 export type SimpleFunction = (input?: any) => void
