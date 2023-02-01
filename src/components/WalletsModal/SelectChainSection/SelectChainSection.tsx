@@ -1,16 +1,34 @@
-import React, { useState } from 'react'
+// @ts-nocheck
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import styled, { css } from 'styled-components'
 
 import { useMediaQuery } from 'src/hooks/utils'
 import { CHAIN_OPTIONS, CHAIN_VALUES } from './SelectChainSection.constants'
 import { ChainCard } from '../ChainCard'
 import { PrimaryButton } from '../../PrimaryButton'
+import { canInject, IProviderUserOptions } from 'src/helpers'
+import { useConnectorActiveIds } from 'src/hooks'
+import { WalletsContext } from 'src/manager'
 
 interface IProps {
   className?: string
+  provider?: IProviderUserOptions | null
+  onSelect: () => void
+  onShowChainSelector?: () => void
 }
 
-export const SelectChainSection = ({ className }: IProps) => {
+export const SelectChainSection = ({
+  className,
+  provider,
+  onSelect,
+  onShowChainSelector
+}: IProps) => {
   const isTablet = useMediaQuery('(max-width: 768px)')
   const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
   const handleClick = (value: string) => {
@@ -28,6 +46,77 @@ export const SelectChainSection = ({ className }: IProps) => {
   const handleDeselectAllChain = () => {
     setSelectedChain([])
   }
+
+  const pids = useConnectorActiveIds()
+  const context = useContext(WalletsContext)
+  const supportedChains = useMemo(() => {
+    return provider?.chains ? Object.keys(provider?.chains) : []
+  }, [provider?.chains])
+
+  const needInstall = useMemo(() => {
+    return (
+      (provider?.installationLink && !canInject()) ||
+      !context?.isAvailableProvider(provider?.id)
+    )
+  }, [provider?.installationLink, context, provider?.id])
+
+  const disabledByWallet = useMemo(
+    () => context && context.disabledByProvider(provider?.id),
+    [context, provider?.id]
+  )
+
+  const needPrioritise = useMemo(
+    () => provider?.needPrioritiseFunc && provider?.needPrioritiseFunc(),
+    [provider?.needPrioritiseFunc]
+  )
+
+  const [loading, setLoading] = useState(false)
+  const isActive = useMemo(() => {
+    return pids.some((i) => i === provider?.id)
+  }, [provider?.pids, provider?.id])
+
+  const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
+
+  const isConnected = !!pids.find((providerId) => providerId === provider?.id)
+
+  const handleConnectToProvider = useCallback(async () => {
+    try {
+      if (isAvailable && context && !needInstall) {
+        setLoading(true)
+        if (context?.connector?.isSingleProviderEnabled) {
+          if (!isActive) {
+            context.disconnect()
+            await context.connector.connect(provider?.id, selectedChains)
+          }
+        } else {
+          if (!isActive) {
+            await context.connector.connectTo(provider?.id, selectedChains)
+          } else {
+            context.disconnect(provider?.id)
+          }
+        }
+        setLoading(false)
+        onSelect()
+      }
+    } catch (e) {
+      setLoading(false)
+      throw new Error(e?.message || 'Something went wrong')
+    }
+  }, [
+    isAvailable,
+    context,
+    needInstall,
+    onSelect,
+    isActive,
+    provider?.id,
+    selectedChains
+  ])
+
+  useEffect(() => {
+    if (isActive && !isAvailable && context) {
+      context?.disconnect()
+    }
+  }, [context, isActive, isAvailable])
 
   return (
     <Container className={className}>
@@ -100,8 +189,9 @@ export const SelectChainSection = ({ className }: IProps) => {
         <PrimaryButton
           label='Connect wallet'
           fullWidth
-          disabled={!selectedChains.length}
-          loading={false}
+          disabled={!selectedChains.length || loading || isConnected}
+          loading={loading}
+          onClick={handleConnectToProvider}
         />
       </ButtonWrapper>
       <DescriptionWrapper>

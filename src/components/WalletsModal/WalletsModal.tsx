@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled, { DefaultTheme } from 'styled-components'
 
 import { useWalletsOptions } from '../../hooks'
@@ -40,6 +40,11 @@ export const WalletsModal = ({
     onClose()
   }
 
+  const xdefiProvider = useMemo(() => {
+    if (!userOptions || userOptions.length === 0) return null
+    return userOptions.find((item) => item.id === 'xdefi')
+  }, [userOptions])
+
   return (
     <ThemeProvider themeBuilder={themeBuilder} isDark={isDark}>
       <StyledModal
@@ -58,7 +63,11 @@ export const WalletsModal = ({
         }
       >
         {isChainSelectorVisible ? (
-          <SelectChainSection />
+          <SelectChainSection
+            provider={xdefiProvider}
+            onSelect={onClose}
+            onShowChainSelector={handleShowChainSelector}
+          />
         ) : (
           <SRow>
             {userOptions.map((provider: any) =>

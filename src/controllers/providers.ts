@@ -1,4 +1,5 @@
 /* eslint import/namespace: ['error', { allowComputed: true }] */
+// @ts-nocheck
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
@@ -60,7 +61,6 @@ export class ProviderController {
   public init() {
     this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
     this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
-
     this.providers = []
     // parse custom providers
     Object.keys(this.providerOptions).map((id) => {
@@ -208,7 +208,7 @@ export class ProviderController {
     }
   }
 
-  public connectToChains = async (providerId: string) => {
+  public connectToChains = async (providerId: string, chains?: string[]) => {
     const currentProviderChains = this.findProviderFromOptions
       ? this.findProviderFromOptions(providerId)?.chains
       : undefined
@@ -218,8 +218,8 @@ export class ProviderController {
       this.injectedChains[providerId].length > 0 &&
       currentProviderChains
     ) {
-      return Promise.allSettled(
-        this.injectedChains[providerId]
+      const results = await Promise.allSettled(
+        (chains || this.injectedChains[providerId])
           .filter(
             (chain) =>
               !!currentProviderChains[chain] && chain !== IChainType.ethereum
@@ -235,10 +235,52 @@ export class ProviderController {
             })
           })
       )
+      // const rejected = results
+      //   .filter((result) => result.status === 'rejected')
+      //   .map((result) => result.reason)
+      // if (rejected.length > 0) {
+      //   throw new Error(rejected[0])
+      // }
+      return results
     } else {
       if (this.findProviderFromOptions(providerId)) {
         this.setInjectedChains(providerId, [IChainType.ethereum])
       }
+    }
+
+    return []
+  }
+
+  public connectToMultipleChains = async (
+    providerId: string,
+    chains?: string[]
+  ) => {
+    const currentProviderChains = this.findProviderFromOptions
+      ? this.findProviderFromOptions(providerId)?.chains
+      : undefined
+
+    if (currentProviderChains) {
+      const results = await Promise.allSettled(
+        chains
+          .filter((chain) => chain !== IChainType.ethereum)
+          .map((chain) => {
+            const target = currentProviderChains[chain]
+
+            return target.methods.getAccounts().then((accounts: string[]) => {
+              return {
+                chain: chain,
+                accounts: accounts
+              }
+            })
+          })
+      )
+      const rejected = results
+        .filter((result) => result.status === 'rejected')
+        .map((result) => result.reason)
+      if (rejected.length > 0) {
+        throw new Error(rejected[0])
+      }
+      return results
     }
 
     return []
@@ -369,7 +411,7 @@ export class ProviderController {
         this.setCachedProvider(id, cachedChains)
       }
 
-      this.connectToChains(id)
+      this.connectToChains(id, chains)
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }

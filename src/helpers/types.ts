@@ -116,6 +116,7 @@ export interface IProviderUserOptions {
   needPrioritiseFunc?: () => boolean
   supportedEvmChains?: IChainType[]
   label?: string
+  pids: any
 }
 
 export type SimpleFunction = (input?: any) => void
