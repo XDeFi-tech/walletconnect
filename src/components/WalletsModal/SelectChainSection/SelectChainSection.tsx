@@ -81,6 +81,7 @@ export const SelectChainSection = ({
         if (isActive) {
           context.disconnect(provider?.id)
         }
+        debugger
         await context.connector.connectTo(provider?.id, selectedChains)
         onSelect()
       }
@@ -127,7 +128,7 @@ export const SelectChainSection = ({
       ) : (
         <React.Fragment>
           <ChainContainer padding='0 30px'>
-            {CHAIN_OPTIONS.slice(0, 5).map((chain) => (
+            {CHAIN_OPTIONS.slice(0, 4).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
@@ -140,8 +141,22 @@ export const SelectChainSection = ({
               />
             ))}
           </ChainContainer>
-          <ChainContainer padding='0 40px'>
-            {CHAIN_OPTIONS.slice(5, 10).map((chain) => (
+          <ChainContainer padding='0 30px'>
+            {CHAIN_OPTIONS.slice(4, 8).map((chain) => (
+              <ChainCard
+                key={chain.value}
+                icon={chain.icon}
+                label={chain.label}
+                value={chain.value}
+                checked={Boolean(
+                  selectedChains.find((chainName) => chain.value === chainName)
+                )}
+                onClick={handleClick}
+              />
+            ))}
+          </ChainContainer>
+          <ChainContainer padding='0 30px'>
+            {CHAIN_OPTIONS.slice(8, 12).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
@@ -155,7 +170,7 @@ export const SelectChainSection = ({
             ))}
           </ChainContainer>
           <ChainContainer padding='0 90px'>
-            {CHAIN_OPTIONS.slice(10).map((chain) => (
+            {CHAIN_OPTIONS.slice(12).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
