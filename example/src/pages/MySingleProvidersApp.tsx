@@ -25,16 +25,18 @@ const MySingleProviderApp = () => {
         <Header />
         {chains && (
           <SContent>
-            {accounts &&
-              chains.map((chain: string) => {
-                return (
-                  <AccountsBlock
-                    key={chain}
-                    chain={chain}
-                    accounts={accounts[chain]}
-                  />
-                )
-              })}
+            <>
+              {accounts &&
+                chains.map((chain: string) => {
+                  return (
+                    <AccountsBlock
+                      key={chain}
+                      chain={chain}
+                      accounts={accounts[chain]}
+                    />
+                  )
+                })}
+            </>
           </SContent>
         )}
       </Column>

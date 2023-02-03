@@ -11,21 +11,17 @@ import {
   IChainType
 } from '../constants'
 import {
-  IProviderControllerOptions,
-  IProviderOptions,
-  IProviderDisplayWithConnector,
   getLocal,
   setLocal,
   getProviderInfoById,
   getProviderDescription,
-  IProviderInfo,
   filterMatches,
-  IProviderUserOptions,
   findMatchingRequiredOptions,
-  IProviderOption,
   canInject,
   findAvailableEthereumProvider,
-  isCurrentProviderActive
+  isCurrentProviderActive,
+  IProviderControllerOptions,
+  IProviderOption
 } from '../helpers'
 
 import { EventController } from './events'
@@ -209,31 +205,29 @@ export class ProviderController {
   }
 
   public connectToChains = async (providerId: string, chains?: string[]) => {
-    const currentProviderChains = this.findProviderFromOptions
-      ? this.findProviderFromOptions(providerId)?.chains
-      : undefined
+    const currentProviderChains =
+      this.findProviderFromOptions(providerId)?.chains
     if (
       this.injectedChains &&
       this.injectedChains[providerId] &&
       this.injectedChains[providerId].length > 0 &&
       currentProviderChains
     ) {
+      const listChains = (chains || this.injectedChains[providerId]).filter(
+        (chain) =>
+          !!currentProviderChains[chain] && chain !== IChainType.ethereum
+      )
       const results = await Promise.allSettled(
-        (chains || this.injectedChains[providerId])
-          .filter(
-            (chain) =>
-              !!currentProviderChains[chain] && chain !== IChainType.ethereum
-          )
-          .map((chain) => {
-            const target = currentProviderChains[chain]
+        listChains.map((chain) => {
+          const target = currentProviderChains[chain]
 
-            return target.methods.getAccounts().then((accounts: string[]) => {
-              return {
-                chain: chain,
-                accounts: accounts
-              }
-            })
+          return target.methods.getAccounts().then((accounts: string[]) => {
+            return {
+              chain: chain,
+              accounts: accounts
+            }
           })
+        })
       )
       // const rejected = results
       //   .filter((result) => result.status === 'rejected')
@@ -246,41 +240,6 @@ export class ProviderController {
       if (this.findProviderFromOptions(providerId)) {
         this.setInjectedChains(providerId, [IChainType.ethereum])
       }
-    }
-
-    return []
-  }
-
-  public connectToMultipleChains = async (
-    providerId: string,
-    chains?: string[]
-  ) => {
-    const currentProviderChains = this.findProviderFromOptions
-      ? this.findProviderFromOptions(providerId)?.chains
-      : undefined
-
-    if (currentProviderChains) {
-      const results = await Promise.allSettled(
-        chains
-          .filter((chain) => chain !== IChainType.ethereum)
-          .map((chain) => {
-            const target = currentProviderChains[chain]
-
-            return target.methods.getAccounts().then((accounts: string[]) => {
-              return {
-                chain: chain,
-                accounts: accounts
-              }
-            })
-          })
-      )
-      const rejected = results
-        .filter((result) => result.status === 'rejected')
-        .map((result) => result.reason)
-      if (rejected.length > 0) {
-        throw new Error(rejected[0])
-      }
-      return results
     }
 
     return []

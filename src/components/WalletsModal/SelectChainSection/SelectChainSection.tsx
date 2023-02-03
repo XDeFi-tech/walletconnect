@@ -20,14 +20,12 @@ interface IProps {
   className?: string
   provider?: IProviderUserOptions | null
   onSelect: () => void
-  onShowChainSelector?: () => void
 }
 
 export const SelectChainSection = ({
   className,
   provider,
-  onSelect,
-  onShowChainSelector
+  onSelect
 }: IProps) => {
   const isTablet = useMediaQuery('(max-width: 768px)')
   const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
@@ -49,9 +47,6 @@ export const SelectChainSection = ({
 
   const pids = useConnectorActiveIds()
   const context = useContext(WalletsContext)
-  const supportedChains = useMemo(() => {
-    return provider?.chains ? Object.keys(provider?.chains) : []
-  }, [provider?.chains])
 
   const needInstall = useMemo(() => {
     return (
@@ -67,13 +62,13 @@ export const SelectChainSection = ({
 
   const needPrioritise = useMemo(
     () => provider?.needPrioritiseFunc && provider?.needPrioritiseFunc(),
-    [provider?.needPrioritiseFunc]
+    [provider]
   )
 
   const [loading, setLoading] = useState(false)
   const isActive = useMemo(() => {
     return pids.some((i) => i === provider?.id)
-  }, [provider?.pids, provider?.id])
+  }, [provider, pids])
 
   const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
 
@@ -83,24 +78,17 @@ export const SelectChainSection = ({
     try {
       if (isAvailable && context && !needInstall) {
         setLoading(true)
-        if (context?.connector?.isSingleProviderEnabled) {
-          if (!isActive) {
-            context.disconnect()
-            await context.connector.connect(provider?.id, selectedChains)
-          }
-        } else {
-          if (!isActive) {
-            await context.connector.connectTo(provider?.id, selectedChains)
-          } else {
-            context.disconnect(provider?.id)
-          }
+        if (isActive) {
+          context.disconnect(provider?.id)
         }
-        setLoading(false)
+        await context.connector.connectTo(provider?.id, selectedChains)
         onSelect()
       }
     } catch (e) {
       setLoading(false)
       throw new Error(e?.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
     }
   }, [
     isAvailable,

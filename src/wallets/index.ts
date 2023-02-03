@@ -57,7 +57,6 @@ export class WalletsConnector {
     })
 
     this.connector = connector
-
     this.connector.on(WALLETS_EVENTS.CONNECT, (data: any) => {
       const { provider, id: providerId } = data
       this.fireConfigs(providerId, provider)
@@ -76,7 +75,6 @@ export class WalletsConnector {
         }
       }
     })
-
     this.connector.on(WALLETS_EVENTS.CLOSE, (providerId: string) => {
       this.setAccounts(providerId, null)
       this.disposeFor(providerId)
@@ -93,7 +91,8 @@ export class WalletsConnector {
 
     this.connector.init()
 
-    this.init()
+    // GarageInc | 3.02.2022, handle for all subscription hooks in react app
+    setTimeout(() => this.init())
   }
 
   private init() {
@@ -102,7 +101,7 @@ export class WalletsConnector {
       return !!this.connector.getEthereumProvider(providerId)
     })
     if (canInject() && hasProviders) {
-      this.connect()
+      this.initFirstConnection()
     } else {
       setTimeout(() => this.init(), INIT_RETRY_TIMEOUT)
     }
@@ -116,10 +115,10 @@ export class WalletsConnector {
     return this.currentProviders[providerId]
   }
 
-  private connect = async () => {
+  private initFirstConnection = async () => {
     try {
       await this.connector
-        .connect()
+        .initFirstConnection()
         .then(({ provider }: any) => {
           return provider && provider.enable()
         })
@@ -206,7 +205,7 @@ export class WalletsConnector {
 
     const current = this.connector.findProviderFromOptions(providerId)
 
-    const evmChainsAvailable = current?.supportedEvmChains
+    const evmChainsAvailable: string[] = current?.supportedEvmChains
 
     if (evmChainsAvailable) {
       map[IChainType.ethereum] = ethAccounts
@@ -324,11 +323,11 @@ export class WalletsConnector {
   }
 
   public on = (event: string, callback: SimpleFunction) => {
-    this.connector.on(event, callback)
+    return this.connector.on(event, callback)
   }
 
   public off(event: string, callback?: SimpleFunction): void {
-    this.connector.off(event, callback)
+    return this.connector.off(event, callback)
   }
 
   public getAccounts = (): IProviderWithAccounts | null => {

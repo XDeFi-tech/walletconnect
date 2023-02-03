@@ -100,27 +100,18 @@ export class WalletConnect {
 
   // --------------- PUBLIC METHODS --------------- //
 
-  public connect = (): Promise<any> =>
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      // eslint-disable-next-line prefer-promise-reject-errors
-      this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
-
-      await this.toggle()
+  public initFirstConnection = (): Promise<any> =>
+    new Promise((resolve, reject) => {
+      this.subscribeToWalletEvents(resolve, reject)
+      this.connectToCached()
     })
 
   public connectTo = (
     id: string,
     chains: string[] = [IChainType.ethereum]
   ): Promise<any> =>
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
-        // eslint-disable-next-line prefer-promise-reject-errors
-        reject(`Closed by user ${providerId}`)
-      )
+    new Promise((resolve, reject) => {
+      this.subscribeToWalletEvents(resolve, reject)
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(
@@ -129,68 +120,49 @@ export class WalletConnect {
           )
         )
       }
-      await this.providerController.connectTo(provider.id, provider.connector, [
-        IChainType.bitcoin
-      ])
+      this.providerController.connectTo(provider.id, provider.connector, chains)
     })
 
   public connectToChains = (
     id: string,
     chains: string[] = [IChainType.ethereum]
   ): Promise<any> =>
-    // eslint-disable-next-line no-async-promise-executor
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
-        // eslint-disable-next-line prefer-promise-reject-errors
-        reject(`Closed by user ${providerId}`)
-      )
-      const provider = this.providerController.getProvider(id)
-      if (!provider) {
-        return reject(
-          new Error(
-            `Cannot connect to provider (${id}), check provider options`
-          )
-        )
-      }
-      await this.providerController.connectToChains(provider.id, chains)
+    new Promise((resolve, reject) => {
+      const provider = this.subscribeToConnection(id, resolve, reject)
+      provider && this.providerController.connectToChains(provider.id, chains)
     })
 
-  public connectToMultipleChains = (
+  private subscribeToConnection = (
     id: string,
-    chains: string[] = [IChainType.ethereum]
-  ): Promise<any> =>
-    // eslint-disable-next-line no-async-promise-executor
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
-        // eslint-disable-next-line prefer-promise-reject-errors
-        reject(`Closed by user ${providerId}`)
+    resolve: (value: any) => void,
+    reject: (reason: any) => void
+  ) => {
+    this.subscribeToWalletEvents(resolve, reject)
+    const provider = this.providerController.getProvider(id)
+    if (!provider) {
+      return reject(
+        new Error(`Cannot connect to provider (${id}), check provider options`)
       )
-      const provider = this.providerController.getProvider(id)
-      if (!provider) {
-        return reject(
-          new Error(
-            `Cannot connect to provider (${id}), check provider options`
-          )
-        )
-      }
-      await this.providerController.connectToMultipleChains(provider.id, chains)
-    })
+    }
 
-  public async toggle(): Promise<void> {
+    return provider
+  }
+
+  private subscribeToWalletEvents = (
+    resolve: (value: any) => void,
+    reject: (reason: any) => void
+  ) => {
+    this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
+    this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
+    this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject(`Closed by user ${providerId}`)
+    )
+  }
+
+  private async connectToCached() {
     if (this.cachedProviders && this.cachedProviders.length > 0) {
       await this.providerController.connectToCachedProviders()
-      return
-    }
-    if (
-      this.userOptions &&
-      this.userOptions.length === 1 &&
-      this.userOptions[0].name
-    ) {
-      await this.userOptions[0].onClick()
     }
   }
 
@@ -209,7 +181,7 @@ export class WalletConnect {
   }
 
   public off(event: string, callback?: SimpleFunction): void {
-    this.eventController.off({
+    return this.eventController.off({
       event,
       callback
     })

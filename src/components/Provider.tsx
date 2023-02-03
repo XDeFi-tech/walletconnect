@@ -50,7 +50,7 @@ export function WalletProvider({
 
   const disabledByWallet = useMemo(
     () => context && context.disabledByProvider(id),
-    [context]
+    [context, id]
   )
 
   const needPrioritise = useMemo(
@@ -70,19 +70,22 @@ export function WalletProvider({
   const connectToProvider = useCallback(async () => {
     if (isAvailable && context && !needInstall) {
       setLoading(true)
-      if (context?.connector?.isSingleProviderEnabled) {
-        if (!isActive) {
-          context.disconnect()
-          await context.connector.connectTo(id, supportedChains)
-        }
-      } else {
-        if (!isActive) {
-          await context.connector.connectTo(id, supportedChains)
+      try {
+        if (context?.connector?.isSingleProviderEnabled) {
+          if (!isActive) {
+            context.disconnect()
+            await context.connector.connectTo(id, supportedChains)
+          }
         } else {
-          context.disconnect(id)
+          if (!isActive) {
+            await context.connector.connectTo(id, supportedChains)
+          } else {
+            context.disconnect(id)
+          }
         }
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
       onSelect()
     }
   }, [
