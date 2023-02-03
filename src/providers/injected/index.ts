@@ -316,7 +316,6 @@ export const XDEFI: IProviderInfo = {
     [IChainType.cosmos]: {
       methods: {
         getAccounts: () => {
-          debugger
           return new Promise((resolve, reject) => {
             const chainId = 'cosmoshub-4'
             return window.keplr
@@ -325,11 +324,9 @@ export const XDEFI: IProviderInfo = {
                 return window.keplr.getOfflineSigner(chainId).getAccounts()
               })
               .then((accounts: any) => {
-                debugger
                 resolve(accounts.map((addressItem: any) => addressItem.address))
               })
               .catch((e: any) => {
-                debugger
                 return reject(e)
               })
           })

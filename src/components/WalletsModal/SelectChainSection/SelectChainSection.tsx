@@ -81,7 +81,6 @@ export const SelectChainSection = ({
         if (isActive) {
           context.disconnect(provider?.id)
         }
-        debugger
         await context.connector.connectTo(provider?.id, selectedChains)
         onSelect()
       }
