@@ -2,7 +2,6 @@ import {
   canInject,
   convertToCommonChain,
   getChainData,
-  IChainToAccounts,
   IChainWithAccount,
   IProviderConfigs,
   IProviderOptions,
@@ -34,6 +33,8 @@ export default function getLibrary(
   return library
 }
 
+const isValidProvider = (p: any) => p && Object.keys(p).length > 0
+
 export class WalletsConnector {
   public library: Web3Provider
   public configs: IProviderConfigs = {}
@@ -62,9 +63,9 @@ export class WalletsConnector {
       this.fireConfigs(providerId, provider)
       if (providerId) {
         const ethereum = this.getSavedEthereumProvider(providerId)
-        if (ethereum) {
+        if (isValidProvider(ethereum)) {
           ethereum.on('accountsChanged', () => {
-            this.loadAccounts(providerId, undefined)
+            this.loadAccounts(providerId)
           })
           ethereum.on('disconnect', () => {
             this.disconnect(providerId)
@@ -138,9 +139,9 @@ export class WalletsConnector {
 
   public disposeFor = (providerId: string) => {
     const ethereum = this.getSavedEthereumProvider(providerId)
-    if (ethereum) {
+    if (isValidProvider(ethereum)) {
       ethereum.removeListener('accountsChanged', () => {
-        this.loadAccounts(providerId, undefined)
+        this.loadAccounts(providerId)
       })
       ethereum.removeListener('disconnect', () => {
         this.disconnect(providerId)
@@ -163,73 +164,39 @@ export class WalletsConnector {
     this.loadAccounts(providerId, c)
   }
 
-  private loadAccounts = async (
-    providerId: string,
-    c: IProviderConfigs | undefined
-  ) => {
+  private loadAccounts = async (providerId: string, c?: IProviderConfigs) => {
     if (!canInject()) {
       return
     }
 
     this.setAccounts(providerId, null)
-    const ethereum = this.getSavedEthereumProvider(providerId)
-    let ethAccounts: string[] = []
-
-    try {
-      ethAccounts = await ethereum.request({
-        method: 'eth_requestAccounts'
-      })
-    } catch (e) {
-      ethAccounts = Array.isArray(ethereum.accounts) ? ethereum.accounts : []
-    }
 
     const accounts = await this.connector.loadAccounts(providerId)
 
-    const map = accounts
-      ? accounts.reduce(
-          (
-            acc: Record<string, string[]>,
-            item: PromiseFulfilledResult<IChainToAccounts>
-          ) => {
-            if (item.value) {
-              const { chain, accounts } = item.value
-              acc[chain] = accounts
-            }
-            return acc
-          },
-          {}
-        )
-      : {}
+    this.setConfigs(providerId, c || this.configs)
 
-    this.setConfigs(providerId, c || this.configs, ethAccounts)
+    const mapped = accounts.reduce((acc, item) => {
+      if (item.status !== 'fulfilled') {
+        return acc
+      }
+      return {
+        ...acc,
+        // @ts-ignore
+        [item.value.chain]: item.value.accounts
+      }
+    }, {} as IChainWithAccount)
 
-    const current = this.connector.findProviderFromOptions(providerId)
-
-    const evmChainsAvailable: string[] = current?.supportedEvmChains
-
-    if (evmChainsAvailable) {
-      map[IChainType.ethereum] = ethAccounts
-      evmChainsAvailable.forEach((chain) => {
-        map[chain] = ethAccounts
-      })
-    } else {
-      map[this.configs[providerId]?.network || IChainType.ethereum] =
-        ethAccounts
-    }
-
-    this.setAccounts(providerId, map as IChainWithAccount)
+    this.setAccounts(providerId, mapped)
   }
 
   private setConfigs = (
     providerId: string,
-    targetConfigs: IProviderConfigs,
-    ethAccounts: string[]
+    targetConfigs: IProviderConfigs
   ) => {
     this.configs = {
       ...targetConfigs,
       [providerId]: {
         ...targetConfigs[providerId],
-        activeAddress: ethAccounts[0],
         network: convertToCommonChain(targetConfigs[providerId]?.network)
       }
     }
@@ -358,14 +325,14 @@ export class WalletsConnector {
       chains: this.connector.injectedChains(providerId)
     })
 
-    if (provider) {
-      this.currentProviders[providerId] = provider
+    this.currentProviders[providerId] = provider
 
-      this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, {
-        providerId,
-        provider
-      })
+    this.connector.trigger(WALLETS_EVENTS.CURRENT_PROVIDER, {
+      providerId,
+      provider: provider
+    })
 
+    if (isValidProvider(provider)) {
       this.library = getLibrary(provider, (n: Network) => {
         this.loadAccounts(providerId, {
           ...this.configs,

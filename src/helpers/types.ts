@@ -59,7 +59,6 @@ export interface IProviderInfo extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
-  supportedEvmChains?: IChainType[]
   installationLink?: string
   getEthereumProvider?: () => any
   disabledByWalletFunc?: () => string | undefined
@@ -98,7 +97,6 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
-  supportedEvmChains?: IChainType[]
   disabledByWalletFunc?: () => string | undefined
 }
 
@@ -114,7 +112,6 @@ export interface IProviderUserOptions {
   installationLink?: string
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
-  supportedEvmChains?: IChainType[]
   label?: string
   pids: any
 }

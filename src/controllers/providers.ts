@@ -217,25 +217,25 @@ export class ProviderController {
         (chain) =>
           !!currentProviderChains[chain] && chain !== IChainType.ethereum
       )
-      const results = await Promise.allSettled(
-        listChains.map((chain) => {
-          const target = currentProviderChains[chain]
+      const promises = listChains.map((chain) => {
+        const target = currentProviderChains[chain]
 
-          return target.methods.getAccounts().then((accounts: string[]) => {
-            return {
-              chain: chain,
-              accounts: accounts
-            }
-          })
+        return target.methods.getAccounts().then((accounts: string[]) => {
+          return {
+            chain: chain,
+            accounts: accounts
+          }
         })
-      )
+      })
+
+      const results = await Promise.allSettled(promises)
       // const rejected = results
       //   .filter((result) => result.status === 'rejected')
       //   .map((result) => result.reason)
       // if (rejected.length > 0) {
       //   throw new Error(rejected[0])
       // }
-      return results
+      return await results
     } else {
       if (this.findProviderFromOptions(providerId)) {
         this.setInjectedChains(providerId, [IChainType.ethereum])
@@ -352,14 +352,21 @@ export class ProviderController {
         ...providerOption.options
       }
 
-      const provider = await connector(
-        providerPackage,
-        opts,
-        chains,
-        options?.getEthereumProvider
-      )
+      const connectedList = this.connectToChains(id, chains)
 
-      const cachedChains = chains || [IChainType.ethereum]
+      const provider =
+        connectedList.length > 0
+          ? options?.getEthereumProvider
+            ? options?.getEthereumProvider()
+            : providerPackage
+          : await connector(
+              providerPackage,
+              opts,
+              chains,
+              options?.getEthereumProvider
+            )
+
+      const cachedChains = chains
 
       this.trigger(WALLETS_EVENTS.CONNECT, {
         provider,
@@ -369,8 +376,6 @@ export class ProviderController {
       if (this.shouldCacheProviders) {
         this.setCachedProvider(id, cachedChains)
       }
-
-      this.connectToChains(id, chains)
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
     }

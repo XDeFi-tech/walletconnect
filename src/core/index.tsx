@@ -1,5 +1,5 @@
 import { ICoreOptions, IProviderUserOptions, SimpleFunction } from '../helpers'
-import { IChainType, WALLETS_EVENTS } from '../constants'
+import { WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
@@ -106,10 +106,7 @@ export class WalletConnect {
       this.connectToCached()
     })
 
-  public connectTo = (
-    id: string,
-    chains: string[] = [IChainType.ethereum]
-  ): Promise<any> =>
+  public connectTo = (id: string, chains: string[]): Promise<any> =>
     new Promise((resolve, reject) => {
       this.subscribeToWalletEvents(resolve, reject)
       const provider = this.providerController.getProvider(id)
@@ -123,10 +120,7 @@ export class WalletConnect {
       this.providerController.connectTo(provider.id, provider.connector, chains)
     })
 
-  public connectToChains = (
-    id: string,
-    chains: string[] = [IChainType.ethereum]
-  ): Promise<any> =>
+  public connectToChains = (id: string, chains: string[]): Promise<any> =>
     new Promise((resolve, reject) => {
       const provider = this.subscribeToConnection(id, resolve, reject)
       provider && this.providerController.connectToChains(provider.id, chains)

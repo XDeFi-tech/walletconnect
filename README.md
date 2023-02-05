@@ -16,7 +16,8 @@
   - [Hooks for multichain methods](#hooks-for-multichain-methods)
   - [Custom Theme](#custom-theme)
   - [Provider Options](#provider-options)
-  - [Adding a new provider](#adding-a-new-provider) - [Add new injected provider](#add-new-injected-provider)
+  - [Adding a new provider](#adding-a-new-provider)
+        - [Add new injected provider](#add-new-injected-provider)
 - [Contributions](#contributions)
   - [License](#license)
 
@@ -388,13 +389,6 @@ export const XDEFI: IProviderInfo = {
     }
     return false
   },
-  supportedEvmChains: [
-    IChainType.avalanche,
-    IChainType.binancesmartchain,
-    IChainType.polygon,
-    IChainType.fantom,
-    IChainType.arbitrum
-  ],
   chains: {
     [IChainType.bitcoin]: {
       methods: {

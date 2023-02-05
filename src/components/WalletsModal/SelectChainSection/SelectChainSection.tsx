@@ -72,8 +72,6 @@ export const SelectChainSection = ({
 
   const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
 
-  const isConnected = !!pids.find((providerId) => providerId === provider?.id)
-
   const handleConnectToProvider = useCallback(async () => {
     try {
       if (isAvailable && context && !needInstall) {
@@ -191,7 +189,7 @@ export const SelectChainSection = ({
         <PrimaryButton
           label='Connect wallet'
           fullWidth
-          disabled={!selectedChains.length || loading || isConnected}
+          disabled={!selectedChains.length || loading}
           loading={loading}
           onClick={handleConnectToProvider}
         />

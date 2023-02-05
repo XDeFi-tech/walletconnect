@@ -149,6 +149,44 @@ export const RWALLET: IProviderInfo = {
   check: 'isRWallet'
 }
 
+const EVM_TEMPLATE = {
+  methods: {
+    getAccounts: () => {
+      return new Promise((resolve, reject) => {
+        if (!window.xfi.ethereum) {
+          resolve([])
+          return
+        }
+
+        window.xfi.ethereum.request(
+          { method: 'eth_requestAccounts', params: [] },
+          (error: any, accounts: any) => {
+            if (error) {
+              reject(error)
+            }
+
+            resolve(accounts)
+          }
+        )
+      })
+    },
+    request: (method: string, data: any) => {
+      return new Promise((resolve, reject) => {
+        window.xfi.ethereum.request(
+          { method: method, params: data },
+          (error: any, result: any) => {
+            if (error) {
+              reject(error)
+            }
+
+            resolve(result)
+          }
+        )
+      })
+    }
+  }
+}
+
 export const XDEFI: IProviderInfo = {
   id: WALLETS.xdefi,
   name: 'XDEFI',
@@ -170,14 +208,6 @@ export const XDEFI: IProviderInfo = {
     */
     return false
   },
-  supportedEvmChains: [
-    IChainType.avalanche,
-    IChainType.binancesmartchain,
-    IChainType.polygon,
-    IChainType.fantom,
-    IChainType.arbitrum,
-    IChainType.aurora
-  ],
   chains: {
     [IChainType.bitcoin]: {
       methods: {
@@ -512,43 +542,13 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.ethereum]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.xfi.ethereum) {
-              resolve([])
-              return
-            }
-
-            window.xfi.ethereum.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.ethereum.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
+    [IChainType.ethereum]: EVM_TEMPLATE,
+    [IChainType.binancesmartchain]: EVM_TEMPLATE,
+    [IChainType.arbitrum]: EVM_TEMPLATE,
+    [IChainType.aurora]: EVM_TEMPLATE,
+    [IChainType.avalanche]: EVM_TEMPLATE,
+    [IChainType.polygon]: EVM_TEMPLATE,
+    [IChainType.fantom]: EVM_TEMPLATE,
     [IChainType.terra]: {
       methods: {
         getAccounts: () => {
