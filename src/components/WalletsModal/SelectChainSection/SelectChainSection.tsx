@@ -13,7 +13,7 @@ import { CHAIN_OPTIONS, CHAIN_VALUES } from './SelectChainSection.constants'
 import { ChainCard } from '../ChainCard'
 import { PrimaryButton } from '../../PrimaryButton'
 import { canInject, IProviderUserOptions } from 'src/helpers'
-import { useConnectorActiveIds } from 'src/hooks'
+import { useConnectorActiveIds, useConnectorMultiChains } from 'src/hooks'
 import { WalletsContext } from 'src/manager'
 
 interface IProps {
@@ -98,11 +98,35 @@ export const SelectChainSection = ({
     selectedChains
   ])
 
+  const { injectedChains: injectedChainsPerProvider } =
+    useConnectorMultiChains()
+
+  const providerInjectedChains = useMemo(() => {
+    return injectedChainsPerProvider && provider
+      ? injectedChainsPerProvider[provider.id]
+      : []
+  }, [injectedChainsPerProvider, provider])
+
   useEffect(() => {
     if (isActive && !isAvailable && context) {
       context?.disconnect()
     }
   }, [context, isActive, isAvailable])
+
+  const isChecked = useCallback(
+    (chain) =>
+      Boolean(selectedChains.some((chainName) => chain.value === chainName)),
+    [selectedChains]
+  )
+
+  const isDisabled = useCallback(
+    (chain) =>
+      Boolean(
+        providerInjectedChains &&
+          providerInjectedChains.some((chainName) => chain.value === chainName)
+      ),
+    [providerInjectedChains]
+  )
 
   return (
     <Container className={className}>
@@ -115,9 +139,8 @@ export const SelectChainSection = ({
               icon={chain.icon}
               label={chain.label}
               value={chain.value}
-              checked={Boolean(
-                selectedChains.find((chainName) => chain.value === chainName)
-              )}
+              checked={isChecked(chain)}
+              disabled={isDisabled(chain)}
               onClick={handleClick}
             />
           ))}
@@ -131,9 +154,8 @@ export const SelectChainSection = ({
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
@@ -145,9 +167,8 @@ export const SelectChainSection = ({
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
@@ -159,9 +180,7 @@ export const SelectChainSection = ({
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
                 onClick={handleClick}
               />
             ))}
@@ -173,9 +192,7 @@ export const SelectChainSection = ({
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
                 onClick={handleClick}
               />
             ))}

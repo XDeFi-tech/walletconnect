@@ -94,7 +94,7 @@ export class WalletConnect {
   public getEthereumProvider = (providerId: string) =>
     this.providerController.getEthereumProvider(providerId)
 
-  public loadAccounts(providerId: string) {
+  public loadProviderAccounts(providerId: string) {
     return this.providerController.connectToChains(providerId)
   }
 
@@ -103,7 +103,7 @@ export class WalletConnect {
   public initFirstConnection = (): Promise<any> =>
     new Promise((resolve, reject) => {
       this.subscribeToWalletEvents(resolve, reject)
-      this.connectToCached()
+      this.providerController.connectToCachedProviders()
     })
 
   public connectTo = (id: string, chains: string[]): Promise<any> =>
@@ -152,12 +152,6 @@ export class WalletConnect {
       // eslint-disable-next-line prefer-promise-reject-errors
       reject(`Closed by user ${providerId}`)
     )
-  }
-
-  private async connectToCached() {
-    if (this.cachedProviders && this.cachedProviders.length > 0) {
-      await this.providerController.connectToCachedProviders()
-    }
   }
 
   public on(event: string, callback: SimpleFunction): SimpleFunction {

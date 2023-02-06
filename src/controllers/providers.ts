@@ -214,28 +214,27 @@ export class ProviderController {
       currentProviderChains
     ) {
       const listChains = (chains || this.injectedChains[providerId]).filter(
-        (chain) =>
-          !!currentProviderChains[chain] && chain !== IChainType.ethereum
+        (chain) => !!currentProviderChains[chain]
       )
-      const promises = listChains.map((chain) => {
+      const results = []
+
+      for (let i = 0; i < listChains.length; i++) {
+        const chain = listChains[i]
         const target = currentProviderChains[chain]
-
-        return target.methods.getAccounts().then((accounts: string[]) => {
-          return {
-            chain: chain,
-            accounts: accounts
-          }
+        const accounts = await target.methods.getAccounts()
+        results.push({
+          chain: chain,
+          accounts: accounts
         })
-      })
+      }
 
-      const results = await Promise.allSettled(promises)
       // const rejected = results
       //   .filter((result) => result.status === 'rejected')
       //   .map((result) => result.reason)
       // if (rejected.length > 0) {
       //   throw new Error(rejected[0])
       // }
-      return await results
+      return results
     } else {
       if (this.findProviderFromOptions(providerId)) {
         this.setInjectedChains(providerId, [IChainType.ethereum])
@@ -352,13 +351,15 @@ export class ProviderController {
         ...providerOption.options
       }
 
-      const connectedList = this.connectToChains(id, chains)
+      const connectedList = await this.connectToChains(id, chains)
+
+      const providerTemplate = options?.getEthereumProvider
+        ? options?.getEthereumProvider()
+        : options
 
       const provider =
         connectedList.length > 0
-          ? options?.getEthereumProvider
-            ? options?.getEthereumProvider()
-            : providerPackage
+          ? providerTemplate
           : await connector(
               providerPackage,
               opts,
@@ -383,7 +384,7 @@ export class ProviderController {
 
   public async connectToCachedProviders() {
     return Promise.allSettled(
-      this.cachedProviders
+      (this.cachedProviders || [])
         .filter(this.isAvailableProvider)
         .map((pid: string) => {
           const provider = this.getProvider(pid)

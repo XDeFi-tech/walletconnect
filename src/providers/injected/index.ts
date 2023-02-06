@@ -159,7 +159,7 @@ const EVM_TEMPLATE = {
         }
 
         window.xfi.ethereum.request(
-          { method: 'eth_requestAccounts', params: [] },
+          { method: 'request_accounts' },
           (error: any, accounts: any) => {
             if (error) {
               reject(error)

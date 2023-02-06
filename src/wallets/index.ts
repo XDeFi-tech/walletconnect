@@ -65,7 +65,7 @@ export class WalletsConnector {
         const ethereum = this.getSavedEthereumProvider(providerId)
         if (isValidProvider(ethereum)) {
           ethereum.on('accountsChanged', () => {
-            this.loadAccounts(providerId)
+            this.loadProviderAccounts(providerId)
           })
           ethereum.on('disconnect', () => {
             this.disconnect(providerId)
@@ -141,7 +141,7 @@ export class WalletsConnector {
     const ethereum = this.getSavedEthereumProvider(providerId)
     if (isValidProvider(ethereum)) {
       ethereum.removeListener('accountsChanged', () => {
-        this.loadAccounts(providerId)
+        this.loadProviderAccounts(providerId)
       })
       ethereum.removeListener('disconnect', () => {
         this.disconnect(providerId)
@@ -161,28 +161,27 @@ export class WalletsConnector {
         ...getChainData(parseInt(chainId, 16))
       }
     }
-    this.loadAccounts(providerId, c)
+    this.loadProviderAccounts(providerId, c)
   }
 
-  private loadAccounts = async (providerId: string, c?: IProviderConfigs) => {
+  private loadProviderAccounts = async (
+    providerId: string,
+    c?: IProviderConfigs
+  ) => {
     if (!canInject()) {
       return
     }
 
     this.setAccounts(providerId, null)
 
-    const accounts = await this.connector.loadAccounts(providerId)
+    const accounts = await this.connector.loadProviderAccounts(providerId)
 
     this.setConfigs(providerId, c || this.configs)
 
     const mapped = accounts.reduce((acc, item) => {
-      if (item.status !== 'fulfilled') {
-        return acc
-      }
       return {
         ...acc,
-        // @ts-ignore
-        [item.value.chain]: item.value.accounts
+        [item.chain]: item.accounts
       }
     }, {} as IChainWithAccount)
 
@@ -209,6 +208,7 @@ export class WalletsConnector {
     } else {
       delete this.accounts[providerId]
     }
+    console.log('setAccounts', providerId, map)
     this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
   }
 
@@ -334,7 +334,7 @@ export class WalletsConnector {
 
     if (isValidProvider(provider)) {
       this.library = getLibrary(provider, (n: Network) => {
-        this.loadAccounts(providerId, {
+        this.loadProviderAccounts(providerId, {
           ...this.configs,
           [providerId]: {
             ...this.configs[providerId],
