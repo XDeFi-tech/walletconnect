@@ -210,10 +210,7 @@ export class ProviderController {
     }
   }
 
-  public connectToChains = async (
-    providerId: string,
-    chains: string[] = [IChainType.ethereum]
-  ) => {
+  public connectToChains = async (providerId: string, chains: string[]) => {
     const options = this.findProviderFromOptions(providerId)
     const providerOption = this.getProviderOption(providerId)
     const providerPackage = providerOption?.package
@@ -243,7 +240,11 @@ export class ProviderController {
         const chain = targetList[i]
         const target = currentProviderChains[chain]
         if (target) {
-          const accounts = await target.methods.getAccounts()
+          const accounts = await target.methods.getAccounts(
+            options?.getEthereumProvider
+              ? options.getEthereumProvider()
+              : undefined
+          )
           results.push({
             chain: chain as IChainType,
             accounts: accounts

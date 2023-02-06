@@ -28,7 +28,7 @@ export interface ISupportedChain {
   methods: {
     signTransaction?: (data: any) => Promise<any>
     sendTransaction?: (txData: any) => Promise<any>
-    getAccounts: () => Promise<any>
+    getAccounts: (provider?: any) => Promise<any>
     request?: (type: string, data: any) => Promise<any>
   }
 }
@@ -62,7 +62,6 @@ export interface IProviderInfo extends IProviderDisplay {
   installationLink?: string
   getEthereumProvider?: () => any
   disabledByWalletFunc?: () => string | undefined
-  needPrioritiseFunc?: () => boolean
 }
 
 export type RequiredOption = string | string[]
@@ -111,7 +110,6 @@ export interface IProviderUserOptions {
   }
   installationLink?: string
   disabledByWalletFunc?: () => string | undefined
-  needPrioritiseFunc?: () => boolean
   label?: string
   pids?: any
 }

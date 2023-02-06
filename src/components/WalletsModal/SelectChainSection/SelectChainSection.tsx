@@ -59,17 +59,21 @@ export const SelectChainSection = ({
     [context, provider]
   )
 
-  const needPrioritise = useMemo(
-    () => provider?.needPrioritiseFunc && provider?.needPrioritiseFunc(),
-    [provider]
-  )
-
   const [loading, setLoading] = useState(false)
   const isActive = useMemo(() => {
     return pids.some((i) => i === provider?.id)
   }, [provider, pids])
 
-  const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
+  const isAvailable = !disabledByWallet && !needInstall
+
+  const { injectedChains: injectedChainsPerProvider } =
+    useConnectorMultiChains()
+
+  const providerInjectedChains = useMemo(() => {
+    return injectedChainsPerProvider && provider
+      ? injectedChainsPerProvider[provider.id] || []
+      : []
+  }, [injectedChainsPerProvider, provider])
 
   const handleConnectToProvider = useCallback(async () => {
     try {
@@ -78,7 +82,10 @@ export const SelectChainSection = ({
         if (isActive) {
           context.disconnect(provider?.id)
         }
-        await context.connector.connectTo(provider?.id, selectedChains)
+        await context.connector.connectTo(provider?.id, [
+          ...providerInjectedChains,
+          ...selectedChains
+        ])
         onSelect()
       }
     } catch (e) {
@@ -94,17 +101,9 @@ export const SelectChainSection = ({
     onSelect,
     isActive,
     provider,
+    providerInjectedChains,
     selectedChains
   ])
-
-  const { injectedChains: injectedChainsPerProvider } =
-    useConnectorMultiChains()
-
-  const providerInjectedChains = useMemo(() => {
-    return injectedChainsPerProvider && provider
-      ? injectedChainsPerProvider[provider.id]
-      : []
-  }, [injectedChainsPerProvider, provider])
 
   useEffect(() => {
     if (isActive && !isAvailable && context) {

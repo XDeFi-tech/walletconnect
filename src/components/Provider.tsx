@@ -28,14 +28,7 @@ export function WalletProvider({
   onShowChainSelector,
   ...rest
 }: IProviderProps) {
-  const {
-    name,
-    logo: El,
-    chains,
-    id,
-    installationLink,
-    needPrioritiseFunc
-  } = provider
+  const { name, logo: El, chains, id, installationLink } = provider
   const pids = useConnectorActiveIds()
   const context = useContext(WalletsContext)
   const supportedChains = useMemo(() => {
@@ -53,18 +46,13 @@ export function WalletProvider({
     [context, id]
   )
 
-  const needPrioritise = useMemo(
-    () => needPrioritiseFunc && needPrioritiseFunc(),
-    [needPrioritiseFunc]
-  )
-
   const [loading, setLoading] = useState(false)
 
   const isActive = useMemo(() => {
     return pids.some((i) => i === id)
   }, [pids, id])
 
-  const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
+  const isAvailable = !disabledByWallet && !needInstall
 
   const isConnected = !!pids.find((providerId) => providerId === id)
 

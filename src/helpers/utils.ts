@@ -43,8 +43,7 @@ export function checkInjectedProviders(): IInjectedProvidersMap {
 
 export function verifyInjectedProvider(check: string): boolean {
   return window.ethereum
-    ? // @ts-ignore
-      window.ethereum[check]
+    ? window.ethereum[check]
     : window.web3 &&
         window.web3.currentProvider &&
         window.web3.currentProvider[check]
@@ -163,7 +162,6 @@ export function filterProviders(
   if (!value) return providers.FALLBACK
   const match = filterMatches<IProviderInfo>(
     Object.values(providers),
-    // @ts-ignore
     (x) => x[param] === value,
     providers.FALLBACK
   )

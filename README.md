@@ -379,16 +379,6 @@ export const XDEFI: IProviderInfo = {
   getEthereumProvider: () => {
     return window.xfi ? window.xfi.ethereum : undefined
   },
-  needPrioritiseFunc: () => {
-    if (window.xfi && window.xfi.info) {
-      const {
-        lastConfigChanges: { ethereumProvider }
-      } = window.xfi.info
-      const { inject, pretendMetamask } = ethereumProvider
-      return inject && !pretendMetamask
-    }
-    return false
-  },
   chains: {
     [IChainType.bitcoin]: {
       methods: {

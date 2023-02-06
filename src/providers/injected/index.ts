@@ -24,7 +24,6 @@ import { ReactComponent as RabbyLogo } from '../logos/rabby.svg'
 
 declare global {
   interface Window {
-    // @ts-ignore
     ethereum: any
     BinanceChain: any
     web3: any
@@ -140,23 +139,10 @@ export const RWALLET: IProviderInfo = {
 
 const EVM_TEMPLATE = {
   methods: {
-    getAccounts: () => {
-      return new Promise((resolve, reject) => {
-        if (!window.xfi.ethereum) {
-          resolve([])
-          return
-        }
-
-        window.xfi.ethereum.request(
-          { method: 'eth_requestAccounts', params: [] },
-          (error: any, accounts: any) => {
-            if (error) {
-              reject(error)
-            }
-
-            resolve(accounts)
-          }
-        )
+    getAccounts: (provider: any = window.xfi.ethereum) => {
+      return provider.request({
+        method: 'eth_requestAccounts',
+        params: []
       })
     },
     request: (method: string, data: any) => {
@@ -186,17 +172,7 @@ export const XDEFI: IProviderInfo = {
   getEthereumProvider: () => {
     return window.xfi ? window.xfi.ethereum : undefined
   },
-  needPrioritiseFunc: () => {
-    /* if (window.xfi && window.xfi.info) {
-      const {
-        lastConfigChanges: { ethereumProvider }
-      } = window.xfi.info
-      const { inject, pretendMetamask } = ethereumProvider
-      return inject && !pretendMetamask
-    }
-    */
-    return false
-  },
+
   chains: {
     [IChainType.bitcoin]: {
       methods: {
@@ -587,13 +563,13 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.ethereum]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.binancesmartchain]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.arbitrum]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.aurora]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.avalanche]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.polygon]: Object.assign({}, EVM_TEMPLATE),
-    [IChainType.fantom]: Object.assign({}, EVM_TEMPLATE)
+    [IChainType.ethereum]: EVM_TEMPLATE,
+    [IChainType.binancesmartchain]: EVM_TEMPLATE,
+    [IChainType.arbitrum]: EVM_TEMPLATE,
+    [IChainType.aurora]: EVM_TEMPLATE,
+    [IChainType.avalanche]: EVM_TEMPLATE,
+    [IChainType.polygon]: EVM_TEMPLATE,
+    [IChainType.fantom]: EVM_TEMPLATE
   }
 }
 
