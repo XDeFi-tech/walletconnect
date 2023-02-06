@@ -210,7 +210,10 @@ export class ProviderController {
     }
   }
 
-  public connectToChains = async (providerId: string, chains: string[]) => {
+  public connectToChains = async (
+    providerId: string,
+    chains: string[] = []
+  ) => {
     const options = this.findProviderFromOptions(providerId)
     const providerOption = this.getProviderOption(providerId)
     const providerPackage = providerOption?.package
