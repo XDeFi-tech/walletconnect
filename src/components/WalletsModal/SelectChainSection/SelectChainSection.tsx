@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, {
   useCallback,
   useContext,
@@ -51,13 +50,13 @@ export const SelectChainSection = ({
   const needInstall = useMemo(() => {
     return (
       (provider?.installationLink && !canInject()) ||
-      !context?.isAvailableProvider(provider?.id)
+      (provider && !context?.isAvailableProvider(provider?.id))
     )
-  }, [provider?.installationLink, context, provider?.id])
+  }, [provider, context])
 
   const disabledByWallet = useMemo(
-    () => context && context.disabledByProvider(provider?.id),
-    [context, provider?.id]
+    () => context && provider && context.disabledByProvider(provider?.id),
+    [context, provider]
   )
 
   const needPrioritise = useMemo(
@@ -74,7 +73,7 @@ export const SelectChainSection = ({
 
   const handleConnectToProvider = useCallback(async () => {
     try {
-      if (isAvailable && context && !needInstall) {
+      if (isAvailable && context && !needInstall && provider) {
         setLoading(true)
         if (isActive) {
           context.disconnect(provider?.id)
@@ -94,7 +93,7 @@ export const SelectChainSection = ({
     needInstall,
     onSelect,
     isActive,
-    provider?.id,
+    provider,
     selectedChains
   ])
 
@@ -120,13 +119,25 @@ export const SelectChainSection = ({
   )
 
   const isDisabled = useCallback(
-    (chain) =>
-      Boolean(
+    (chain) => {
+      return Boolean(
         providerInjectedChains &&
           providerInjectedChains.some((chainName) => chain.value === chainName)
-      ),
+      )
+    },
     [providerInjectedChains]
   )
+
+  useEffect(() => {
+    if (providerInjectedChains) {
+      setSelectedChain((prev) => {
+        return prev.filter(
+          (item) =>
+            !providerInjectedChains.some((chainName) => item === chainName)
+        )
+      })
+    }
+  }, [providerInjectedChains])
 
   return (
     <Container className={className}>
@@ -181,6 +192,7 @@ export const SelectChainSection = ({
                 label={chain.label}
                 value={chain.value}
                 checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
@@ -193,15 +205,18 @@ export const SelectChainSection = ({
                 label={chain.label}
                 value={chain.value}
                 checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
           </ChainContainer>
         </React.Fragment>
       )}
-      <DeselectAllWrapper onClick={handleDeselectAllChain}>
-        Deselect All
-      </DeselectAllWrapper>
+      {selectedChains.length > 0 && (
+        <DeselectAllWrapper onClick={handleDeselectAllChain}>
+          Deselect All
+        </DeselectAllWrapper>
+      )}
       <ButtonWrapper>
         <PrimaryButton
           label='Connect wallet'

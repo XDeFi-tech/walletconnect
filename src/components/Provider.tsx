@@ -59,6 +59,7 @@ export function WalletProvider({
   )
 
   const [loading, setLoading] = useState(false)
+
   const isActive = useMemo(() => {
     return pids.some((i) => i === id)
   }, [pids, id])
@@ -71,18 +72,7 @@ export function WalletProvider({
     if (isAvailable && context && !needInstall) {
       setLoading(true)
       try {
-        if (context?.connector?.isSingleProviderEnabled) {
-          if (!isActive) {
-            context.disconnect()
-            await context.connector.connectTo(id, supportedChains)
-          }
-        } else {
-          if (!isActive) {
-            await context.connector.connectTo(id, supportedChains)
-          } else {
-            context.disconnect(id)
-          }
-        }
+        await context.connector.connectTo(id, supportedChains)
       } finally {
         setLoading(false)
       }
@@ -95,7 +85,6 @@ export function WalletProvider({
     supportedChains,
     onSelect,
     setLoading,
-    isActive,
     needInstall
   ])
 

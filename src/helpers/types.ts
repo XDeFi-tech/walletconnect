@@ -113,7 +113,7 @@ export interface IProviderUserOptions {
   disabledByWalletFunc?: () => string | undefined
   needPrioritiseFunc?: () => boolean
   label?: string
-  pids: any
+  pids?: any
 }
 
 export type SimpleFunction = (input?: any) => void

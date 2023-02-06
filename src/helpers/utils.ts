@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as env from 'detect-browser'
 import ReactDOMServer from 'react-dom/server'
 

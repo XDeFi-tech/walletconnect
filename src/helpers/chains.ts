@@ -400,7 +400,7 @@ function filterMatches<T>(
   return result
 }
 
-export function convertToCommonChain(network?: string): string {
+export function convertToCommonChain(network?: string): IChainType {
   switch (network) {
     case 'mainnet': {
       return IChainType.ethereum
@@ -416,7 +416,7 @@ export function convertToCommonChain(network?: string): string {
     }
   }
 
-  return network || ''
+  return network as IChainType
 }
 
 export function getChainData(chainId: number): ChainData {

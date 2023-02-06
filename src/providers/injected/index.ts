@@ -42,17 +42,6 @@ export const FALLBACK: IProviderInfo = {
   check: 'isWeb3'
 }
 
-export const disabledDefault = (providerId: string) => {
-  if (providerId !== WALLETS.xdefi && window.xfi && window.xfi.ethereum) {
-    const { isXDEFI } = window.xfi.ethereum
-    if (!isXDEFI) {
-      return 'XDEFI'
-    }
-  }
-
-  return undefined
-}
-
 export const METAMASK: IProviderInfo = {
   id: WALLETS.metamask,
   name: 'MetaMask',
@@ -159,7 +148,7 @@ const EVM_TEMPLATE = {
         }
 
         window.xfi.ethereum.request(
-          { method: 'request_accounts' },
+          { method: 'eth_requestAccounts', params: [] },
           (error: any, accounts: any) => {
             if (error) {
               reject(error)
@@ -542,13 +531,6 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.ethereum]: EVM_TEMPLATE,
-    [IChainType.binancesmartchain]: EVM_TEMPLATE,
-    [IChainType.arbitrum]: EVM_TEMPLATE,
-    [IChainType.aurora]: EVM_TEMPLATE,
-    [IChainType.avalanche]: EVM_TEMPLATE,
-    [IChainType.polygon]: EVM_TEMPLATE,
-    [IChainType.fantom]: EVM_TEMPLATE,
     [IChainType.terra]: {
       methods: {
         getAccounts: () => {
@@ -604,7 +586,14 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
-    }
+    },
+    [IChainType.ethereum]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.binancesmartchain]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.arbitrum]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.aurora]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.avalanche]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.polygon]: Object.assign({}, EVM_TEMPLATE),
+    [IChainType.fantom]: Object.assign({}, EVM_TEMPLATE)
   }
 }
 

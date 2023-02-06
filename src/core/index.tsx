@@ -94,8 +94,8 @@ export class WalletConnect {
   public getEthereumProvider = (providerId: string) =>
     this.providerController.getEthereumProvider(providerId)
 
-  public loadProviderAccounts(providerId: string) {
-    return this.providerController.connectToChains(providerId)
+  public loadProviderAccounts = async (providerId: string) => {
+    return await this.providerController.connectToChains(providerId)
   }
 
   // --------------- PUBLIC METHODS --------------- //
@@ -122,8 +122,8 @@ export class WalletConnect {
 
   public connectToChains = (id: string, chains: string[]): Promise<any> =>
     new Promise((resolve, reject) => {
-      const provider = this.subscribeToConnection(id, resolve, reject)
-      provider && this.providerController.connectToChains(provider.id, chains)
+      this.subscribeToConnection(id, resolve, reject)
+      this.providerController.connectToChains(id, chains)
     })
 
   private subscribeToConnection = (
@@ -132,14 +132,6 @@ export class WalletConnect {
     reject: (reason: any) => void
   ) => {
     this.subscribeToWalletEvents(resolve, reject)
-    const provider = this.providerController.getProvider(id)
-    if (!provider) {
-      return reject(
-        new Error(`Cannot connect to provider (${id}), check provider options`)
-      )
-    }
-
-    return provider
   }
 
   private subscribeToWalletEvents = (

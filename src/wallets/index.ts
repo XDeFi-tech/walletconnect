@@ -174,7 +174,8 @@ export class WalletsConnector {
 
     this.setAccounts(providerId, null)
 
-    const accounts = await this.connector.loadProviderAccounts(providerId)
+    const { connectedList: accounts } =
+      await this.connector.loadProviderAccounts(providerId)
 
     this.setConfigs(providerId, c || this.configs)
 
