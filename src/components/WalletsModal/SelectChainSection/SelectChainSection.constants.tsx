@@ -8,12 +8,12 @@ import { ReactComponent as BinanceSmartChain } from '../../icons/BinanceSmartCha
 import { ReactComponent as Bitcoin } from '../../icons/Bitcoin.svg'
 import { ReactComponent as Bitcoincash } from '../../icons/Bitcoincash.svg'
 import { ReactComponent as Doge } from '../../icons/DOGE.svg'
-import { ReactComponent as Solana } from '../../icons/solana.svg'
-import { ReactComponent as Cosmos } from '../../icons/osmosis.svg'
+// import { ReactComponent as Solana } from '../../icons/solana.svg'
+// import { ReactComponent as Cosmos } from '../../icons/osmosis.svg'
 import { ReactComponent as Ethereum } from '../../icons/Ethereum.svg'
 import { ReactComponent as Fantom } from '../../icons/Fantom.svg'
 import { ReactComponent as Litecoin } from '../../icons/Litecoin.svg'
-import { ReactComponent as Near } from '../../icons/Near.svg'
+// import { ReactComponent as Near } from '../../icons/Near.svg'
 import { ReactComponent as Polygon } from '../../icons/Polygon.svg'
 import { ReactComponent as Thor } from '../../icons/Thor.svg'
 
@@ -63,11 +63,11 @@ export const CHAIN_OPTIONS = [
     value: IChainType.thorchain,
     label: 'Thorchain'
   },
-  {
+  /*{
     icon: <Near />,
     value: 'near',
     label: 'NEAR'
-  },
+  },*/
   {
     icon: <Litecoin />,
     value: IChainType.litecoin,
@@ -82,8 +82,11 @@ export const CHAIN_OPTIONS = [
     icon: <Doge />,
     value: IChainType.dogecoin,
     label: 'Dogecoin'
-  },
-  {
+  }
+]
+
+// eslint-disable-next-line spaced-comment
+/*{
     icon: <Cosmos />,
     value: IChainType.cosmos,
     label: 'Cosmos'
@@ -92,7 +95,5 @@ export const CHAIN_OPTIONS = [
     icon: <Solana />,
     value: IChainType.solana,
     label: 'Solana'
-  }
-]
-
+  } */
 export const CHAIN_VALUES = CHAIN_OPTIONS.map((item) => item.value)

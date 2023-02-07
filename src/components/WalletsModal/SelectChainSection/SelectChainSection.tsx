@@ -80,7 +80,11 @@ export const SelectChainSection = ({
       if (isAvailable && context && !needInstall && provider) {
         setLoading(true)
         if (isActive) {
-          context.disconnect(provider?.id)
+          if (context.connector.isSingleProviderEnabled) {
+            context.disconnect()
+          } else {
+            context.disconnect(provider?.id)
+          }
         }
         await context.connector.connectTo(provider?.id, [
           ...providerInjectedChains,
