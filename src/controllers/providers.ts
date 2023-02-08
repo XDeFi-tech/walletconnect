@@ -230,6 +230,7 @@ export class ProviderController {
 
     const currentProviderChains = options?.chains
 
+    let hasError = false
     if (currentProviderChains) {
       const targetList = (
         this.injectedChains &&
@@ -243,15 +244,20 @@ export class ProviderController {
         const chain = targetList[i]
         const target = currentProviderChains[chain]
         if (target) {
-          const accounts = await target.methods.getAccounts(
-            options?.getEthereumProvider
-              ? options.getEthereumProvider()
-              : undefined
-          )
-          results.push({
-            chain: chain as IChainType,
-            accounts: accounts
-          })
+          try {
+            const accounts = await target.methods.getAccounts(
+              options?.getEthereumProvider
+                ? options.getEthereumProvider()
+                : undefined
+            )
+            results.push({
+              chain: chain as IChainType,
+              accounts: accounts
+            })
+          } catch (e) {
+            hasError = true
+            console.error(e)
+          }
         }
       }
     }
@@ -267,7 +273,7 @@ export class ProviderController {
           options?.getEthereumProvider
         )
 
-    if (!hasCustomAccountsLoading) {
+    if (!hasCustomAccountsLoading && !hasError) {
       let ethAccounts: string[] = []
 
       let chain = IChainType.ethereum
