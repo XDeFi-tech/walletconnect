@@ -90,6 +90,7 @@ const Header = () => {
 
   useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 
+  console.log('isConnected', isConnected)
   return (
     <SHeader>
       {isConnected ? <SActiveChain>Connected</SActiveChain> : <Banner />}

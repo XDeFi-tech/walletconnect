@@ -28,14 +28,7 @@ export function WalletProvider({
   onShowChainSelector,
   ...rest
 }: IProviderProps) {
-  const {
-    name,
-    logo: El,
-    chains,
-    id,
-    installationLink,
-    needPrioritiseFunc
-  } = provider
+  const { name, logo: El, chains, id, installationLink } = provider
   const pids = useConnectorActiveIds()
   const context = useContext(WalletsContext)
   const supportedChains = useMemo(() => {
@@ -50,39 +43,27 @@ export function WalletProvider({
 
   const disabledByWallet = useMemo(
     () => context && context.disabledByProvider(id),
-    [context]
-  )
-
-  const needPrioritise = useMemo(
-    () => needPrioritiseFunc && needPrioritiseFunc(),
-    [needPrioritiseFunc]
+    [context, id]
   )
 
   const [loading, setLoading] = useState(false)
+
   const isActive = useMemo(() => {
     return pids.some((i) => i === id)
   }, [pids, id])
 
-  const isAvailable = !disabledByWallet && !needPrioritise && !needInstall
+  const isAvailable = !disabledByWallet && !needInstall
 
   const isConnected = !!pids.find((providerId) => providerId === id)
 
   const connectToProvider = useCallback(async () => {
     if (isAvailable && context && !needInstall) {
       setLoading(true)
-      if (context?.connector?.isSingleProviderEnabled) {
-        if (!isActive) {
-          context.disconnect()
-          await context.connector.connectTo(id, supportedChains)
-        }
-      } else {
-        if (!isActive) {
-          await context.connector.connectTo(id, supportedChains)
-        } else {
-          context.disconnect(id)
-        }
+      try {
+        await context.connector.connectTo(id, supportedChains)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
       onSelect()
     }
   }, [
@@ -92,7 +73,6 @@ export function WalletProvider({
     supportedChains,
     onSelect,
     setLoading,
-    isActive,
     needInstall
   ])
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { ReactComponent as Checkmark } from '../../icons/Checkmark.svg'
 
 interface IProps {
@@ -9,18 +9,26 @@ interface IProps {
   value: string
   checked: boolean
   onClick: (value: string) => void
+  disabled?: boolean
 }
 
-export const ChainCard = ({ icon, label, checked, onClick, value }: IProps) => {
+export const ChainCard = ({
+  disabled,
+  icon,
+  label,
+  checked,
+  onClick,
+  value
+}: IProps) => {
   const handleClick = () => {
     onClick(value)
   }
 
   return (
-    <Container onClick={handleClick}>
+    <Container disabled={disabled} onClick={disabled ? undefined : handleClick}>
       <ChainImage>
         {icon}
-        {checked ? (
+        {checked || disabled ? (
           <CheckmarkWrapper>
             <Checkmark />
           </CheckmarkWrapper>
@@ -31,7 +39,7 @@ export const ChainCard = ({ icon, label, checked, onClick, value }: IProps) => {
   )
 }
 
-const Container = styled.div`
+const Container = styled.div<{ disabled?: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -39,6 +47,11 @@ const Container = styled.div`
   grid-gap: 8px;
   cursor: pointer;
   flex: 1 1 0;
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      opacity: ${0.4};
+    `}
 `
 const ChainName = styled.div`
   font-weight: 500;

@@ -1,16 +1,31 @@
-import React, { useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import styled, { css } from 'styled-components'
 
 import { useMediaQuery } from 'src/hooks/utils'
 import { CHAIN_OPTIONS, CHAIN_VALUES } from './SelectChainSection.constants'
 import { ChainCard } from '../ChainCard'
 import { PrimaryButton } from '../../PrimaryButton'
+import { canInject, IProviderUserOptions } from 'src/helpers'
+import { useConnectorActiveIds, useConnectorMultiChains } from 'src/hooks'
+import { WalletsContext } from 'src/manager'
 
 interface IProps {
   className?: string
+  provider?: IProviderUserOptions | null
+  onSelect: () => void
 }
 
-export const SelectChainSection = ({ className }: IProps) => {
+export const SelectChainSection = ({
+  className,
+  provider,
+  onSelect
+}: IProps) => {
   const isTablet = useMediaQuery('(max-width: 768px)')
   const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
   const handleClick = (value: string) => {
@@ -29,6 +44,104 @@ export const SelectChainSection = ({ className }: IProps) => {
     setSelectedChain([])
   }
 
+  const pids = useConnectorActiveIds()
+  const context = useContext(WalletsContext)
+
+  const needInstall = useMemo(() => {
+    return (
+      (provider?.installationLink && !canInject()) ||
+      (provider && !context?.isAvailableProvider(provider?.id))
+    )
+  }, [provider, context])
+
+  const disabledByWallet = useMemo(
+    () => context && provider && context.disabledByProvider(provider?.id),
+    [context, provider]
+  )
+
+  const [loading, setLoading] = useState(false)
+  const isActive = useMemo(() => {
+    return pids.some((i) => i === provider?.id)
+  }, [provider, pids])
+
+  const isAvailable = !disabledByWallet && !needInstall
+
+  const { injectedChains: injectedChainsPerProvider } =
+    useConnectorMultiChains()
+
+  const providerInjectedChains = useMemo(() => {
+    return injectedChainsPerProvider && provider
+      ? injectedChainsPerProvider[provider.id] || []
+      : []
+  }, [injectedChainsPerProvider, provider])
+
+  const handleConnectToProvider = useCallback(async () => {
+    try {
+      if (isAvailable && context && !needInstall && provider) {
+        setLoading(true)
+        if (isActive) {
+          if (context.connector.isSingleProviderEnabled) {
+            context.disconnect()
+          } else {
+            context.disconnect(provider?.id)
+          }
+        }
+        await context.connector.connectTo(provider?.id, [
+          ...providerInjectedChains,
+          ...selectedChains
+        ])
+        onSelect()
+      }
+    } catch (e) {
+      setLoading(false)
+      throw new Error(e?.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }, [
+    isAvailable,
+    context,
+    needInstall,
+    onSelect,
+    isActive,
+    provider,
+    providerInjectedChains,
+    selectedChains
+  ])
+
+  useEffect(() => {
+    if (isActive && !isAvailable && context) {
+      context?.disconnect()
+    }
+  }, [context, isActive, isAvailable])
+
+  const isChecked = useCallback(
+    (chain) =>
+      Boolean(selectedChains.some((chainName) => chain.value === chainName)),
+    [selectedChains]
+  )
+
+  const isDisabled = useCallback(
+    (chain) => {
+      return Boolean(
+        providerInjectedChains &&
+          providerInjectedChains.some((chainName) => chain.value === chainName)
+      )
+    },
+    [providerInjectedChains]
+  )
+
+  useEffect(() => {
+    if (providerInjectedChains) {
+      setSelectedChain((prev) => {
+        return prev.filter(
+          (item) =>
+            !providerInjectedChains.some((chainName) => item === chainName)
+        )
+      })
+    }
+  }, [providerInjectedChains])
+
   return (
     <Container className={className}>
       <Title>Select chains</Title>
@@ -40,9 +153,8 @@ export const SelectChainSection = ({ className }: IProps) => {
               icon={chain.icon}
               label={chain.label}
               value={chain.value}
-              checked={Boolean(
-                selectedChains.find((chainName) => chain.value === chainName)
-              )}
+              checked={isChecked(chain)}
+              disabled={isDisabled(chain)}
               onClick={handleClick}
             />
           ))}
@@ -50,58 +162,71 @@ export const SelectChainSection = ({ className }: IProps) => {
       ) : (
         <React.Fragment>
           <ChainContainer padding='0 30px'>
-            {CHAIN_OPTIONS.slice(0, 5).map((chain) => (
+            {CHAIN_OPTIONS.slice(0, 4).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
           </ChainContainer>
-          <ChainContainer padding='0 40px'>
-            {CHAIN_OPTIONS.slice(5, 10).map((chain) => (
+          <ChainContainer padding='0 30px'>
+            {CHAIN_OPTIONS.slice(4, 8).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
+                onClick={handleClick}
+              />
+            ))}
+          </ChainContainer>
+          <ChainContainer padding='0 30px'>
+            {CHAIN_OPTIONS.slice(8, 12).map((chain) => (
+              <ChainCard
+                key={chain.value}
+                icon={chain.icon}
+                label={chain.label}
+                value={chain.value}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
           </ChainContainer>
           <ChainContainer padding='0 90px'>
-            {CHAIN_OPTIONS.slice(10).map((chain) => (
+            {CHAIN_OPTIONS.slice(12).map((chain) => (
               <ChainCard
                 key={chain.value}
                 icon={chain.icon}
                 label={chain.label}
                 value={chain.value}
-                checked={Boolean(
-                  selectedChains.find((chainName) => chain.value === chainName)
-                )}
+                checked={isChecked(chain)}
+                disabled={isDisabled(chain)}
                 onClick={handleClick}
               />
             ))}
           </ChainContainer>
         </React.Fragment>
       )}
-      <DeselectAllWrapper onClick={handleDeselectAllChain}>
-        Deselect All
-      </DeselectAllWrapper>
+      {selectedChains.length > 0 && (
+        <DeselectAllWrapper onClick={handleDeselectAllChain}>
+          Deselect All
+        </DeselectAllWrapper>
+      )}
       <ButtonWrapper>
         <PrimaryButton
           label='Connect wallet'
           fullWidth
-          disabled={!selectedChains.length}
-          loading={false}
+          disabled={!selectedChains.length || loading}
+          loading={loading}
+          onClick={handleConnectToProvider}
         />
       </ButtonWrapper>
       <DescriptionWrapper>

@@ -21,7 +21,6 @@ const MultiAccounts = () => {
       {keys.map((key) => {
         const chains = providers[key]
 
-        console.log('key', key, chains)
         return (
           <SBlock key={key}>
             <SProvider>Provider: {key}</SProvider>

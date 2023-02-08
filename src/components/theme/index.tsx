@@ -84,7 +84,7 @@ export default function ThemeProvider({
   isDark = false,
   themeBuilder
 }: {
-  children: any
+  children?: any
   isDark?: boolean
   themeBuilder?: (isDark: boolean) => DefaultTheme
 }) {

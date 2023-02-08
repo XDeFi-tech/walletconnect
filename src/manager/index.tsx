@@ -21,17 +21,16 @@ export const NetworkManager = ({
   const [c, setWalletsConnector] = useState<WalletsConnector | null>(null)
 
   useEffect(() => {
-    setWalletsConnector(
-      new WalletsConnector(
-        options,
-        network,
-        cacheEnabled,
-        isSingleProviderEnabled
-      )
+    const newConnector = new WalletsConnector(
+      options,
+      network,
+      cacheEnabled,
+      isSingleProviderEnabled
     )
+    setWalletsConnector(newConnector)
 
     return () => {
-      c && c.dispose()
+      newConnector.dispose()
     }
   }, [options, isSingleProviderEnabled, network, cacheEnabled])
 

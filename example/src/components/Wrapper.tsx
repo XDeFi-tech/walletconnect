@@ -26,7 +26,7 @@ const SWrapper = styled.div<IWrapperStyleProps>`
 `
 
 interface IWrapperProps extends IWrapperStyleProps {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const Wrapper = (props: IWrapperProps) => {

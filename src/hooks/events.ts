@@ -35,14 +35,16 @@ export const useConnectorActiveIds = () => {
   }, [context, setConfigs])
 
   useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, setConfigs)
+    if (!context) {
+      return
     }
 
+    const listUns = context.on(
+      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
+      setConfigs
+    )
     return () => {
-      if (context) {
-        context.off(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, setConfigs)
-      }
+      listUns && listUns()
     }
   }, [context, setConfigs])
 
@@ -77,14 +79,16 @@ export const useConnectorMultiConfigs = () => {
   }, [context, setConfigs])
 
   useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
+    if (!context) {
+      return
     }
+    const connectInfoUns = context.on(
+      WALLETS_EVENTS.CONNECTION_INFO,
+      setConfigs
+    )
 
     return () => {
-      if (context) {
-        context.off(WALLETS_EVENTS.CONNECTION_INFO, setConfigs)
-      }
+      connectInfoUns && connectInfoUns()
     }
   }, [context, setConfigs])
 
@@ -130,14 +134,16 @@ export const useConnectorMultiProviders = () => {
   }, [context?.currentProviders, setProviderHandler])
 
   useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
+    if (!context) {
+      return
     }
+    const provUns = context.on(
+      WALLETS_EVENTS.CURRENT_PROVIDER,
+      setProviderHandler
+    )
 
     return () => {
-      if (context) {
-        context.off(WALLETS_EVENTS.CURRENT_PROVIDER, setProviderHandler)
-      }
+      provUns && provUns()
     }
   }, [context, setProviderHandler])
 
@@ -175,14 +181,16 @@ export const useConnectorMultiChains = () => {
   }, [context, setChainsHandler])
 
   useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
+    if (!context) {
+      return
     }
 
+    const chainsUns = context.on(
+      WALLETS_EVENTS.CONNECTED_CHAINS,
+      setChainsHandler
+    )
     return () => {
-      if (context) {
-        context.off(WALLETS_EVENTS.CONNECTED_CHAINS, setChainsHandler)
-      }
+      chainsUns && chainsUns()
     }
   }, [context, setChainsHandler])
 
@@ -223,14 +231,13 @@ export const useConnectedMultiAccounts = () => {
   }, [context, setAccountsHandler])
 
   useEffect(() => {
-    if (context) {
-      context.on(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
+    if (!context) {
+      return
     }
+    const accUns = context.on(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
 
     return () => {
-      if (context) {
-        context.off(WALLETS_EVENTS.ACCOUNTS, setAccountsHandler)
-      }
+      accUns && accUns()
     }
   }, [context, setAccountsHandler])
 
@@ -245,17 +252,21 @@ export const useWalletEvents = (
   const context = useContext(WalletsContext)
 
   useEffect(() => {
-    if (context) {
-      onConnect && context.on(WALLETS_EVENTS.CONNECT, onConnect)
-      onClose && context.on(WALLETS_EVENTS.DISCONNECTED, onClose)
-      onError && context.on(WALLETS_EVENTS.ERROR, onError)
+    if (!context) {
+      return
     }
+    const connectUnsubscrive =
+      onConnect && context.on(WALLETS_EVENTS.CONNECT, onConnect)
+    const closeUnsubscribe =
+      onClose && context.on(WALLETS_EVENTS.DISCONNECTED, onClose)
+    const errorUnsubscribe =
+      onError && context.on(WALLETS_EVENTS.ERROR, onError)
 
     return () => {
       if (context) {
-        context.off(WALLETS_EVENTS.CONNECT, onConnect)
-        context.off(WALLETS_EVENTS.DISCONNECTED, onClose)
-        context.off(WALLETS_EVENTS.ERROR, onError)
+        connectUnsubscrive && connectUnsubscrive()
+        closeUnsubscribe && closeUnsubscribe()
+        errorUnsubscribe && errorUnsubscribe()
       }
     }
   }, [context, onConnect, onClose, onError])

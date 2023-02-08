@@ -1,5 +1,5 @@
 import { ICoreOptions, IProviderUserOptions, SimpleFunction } from '../helpers'
-import { IChainType, WALLETS_EVENTS } from '../constants'
+import { WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
@@ -94,31 +94,21 @@ export class WalletConnect {
   public getEthereumProvider = (providerId: string) =>
     this.providerController.getEthereumProvider(providerId)
 
-  public loadAccounts(providerId: string) {
-    return this.providerController.connectToChains(providerId)
+  public loadProviderAccounts = async (providerId: string) => {
+    return await this.providerController.connectToChains(providerId)
   }
 
   // --------------- PUBLIC METHODS --------------- //
 
-  public connect = (): Promise<any> =>
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, () => reject('Closed by user'))
-
-      await this.toggle()
+  public initFirstConnection = (): Promise<any> =>
+    new Promise((resolve, reject) => {
+      this.subscribeToWalletEvents(resolve, reject)
+      this.providerController.connectToCachedProviders()
     })
 
-  public connectTo = (
-    id: string,
-    chains: string[] = [IChainType.ethereum]
-  ): Promise<any> =>
-    new Promise(async (resolve, reject) => {
-      this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-      this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-      this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
-        reject(`Closed by user ${providerId}`)
-      )
+  public connectTo = (id: string, chains: string[]): Promise<any> =>
+    new Promise((resolve, reject) => {
+      this.subscribeToWalletEvents(resolve, reject)
       const provider = this.providerController.getProvider(id)
       if (!provider) {
         return reject(
@@ -127,26 +117,33 @@ export class WalletConnect {
           )
         )
       }
-      await this.providerController.connectTo(
-        provider.id,
-        provider.connector,
-        chains
-      )
+      this.providerController.connectTo(provider.id, provider.connector, chains)
     })
 
-  public async toggle(): Promise<void> {
-    if (this.cachedProviders && this.cachedProviders.length > 0) {
-      await this.providerController.connectToCachedProviders()
-      return
-    }
-    if (
-      this.userOptions &&
-      this.userOptions.length === 1 &&
-      this.userOptions[0].name
-    ) {
-      await this.userOptions[0].onClick()
-      return
-    }
+  public connectToChains = (id: string, chains: string[]): Promise<any> =>
+    new Promise((resolve, reject) => {
+      this.subscribeToConnection(id, resolve, reject)
+      this.providerController.connectToChains(id, chains)
+    })
+
+  private subscribeToConnection = (
+    id: string,
+    resolve: (value: any) => void,
+    reject: (reason: any) => void
+  ) => {
+    this.subscribeToWalletEvents(resolve, reject)
+  }
+
+  private subscribeToWalletEvents = (
+    resolve: (value: any) => void,
+    reject: (reason: any) => void
+  ) => {
+    this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
+    this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
+    this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject(`Closed by user ${providerId}`)
+    )
   }
 
   public on(event: string, callback: SimpleFunction): SimpleFunction {
@@ -164,7 +161,7 @@ export class WalletConnect {
   }
 
   public off(event: string, callback?: SimpleFunction): void {
-    this.eventController.off({
+    return this.eventController.off({
       event,
       callback
     })

@@ -9,7 +9,7 @@ interface IColumnStyleProps {
 }
 
 interface IColumnProps extends IColumnStyleProps {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const SColumn = styled.div<IColumnStyleProps>`

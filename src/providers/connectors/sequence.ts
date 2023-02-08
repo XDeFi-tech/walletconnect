@@ -10,11 +10,9 @@ const ConnectToSequence = async (
   opts?: ISequenceConnectorOptions
 ) => {
   let provider
-  // @ts-ignore
   if (window?.ethereum?.isSequence) {
     provider = window.ethereum
     try {
-      // @ts-ignore
       await provider.request({ method: 'eth_requestAccounts' })
       return provider
     } catch (error) {
@@ -27,7 +25,7 @@ const ConnectToSequence = async (
   if (!wallet.isConnected()) {
     const connectDetails = await wallet.connect({
       app: opts?.appName,
-      authorize: true,
+      authorize: true
     })
 
     if (!connectDetails.connected) {

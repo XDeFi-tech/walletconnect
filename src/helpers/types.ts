@@ -28,7 +28,7 @@ export interface ISupportedChain {
   methods: {
     signTransaction?: (data: any) => Promise<any>
     sendTransaction?: (txData: any) => Promise<any>
-    getAccounts: () => Promise<any>
+    getAccounts: (provider?: any) => Promise<any>
     request?: (type: string, data: any) => Promise<any>
   }
 }
@@ -59,11 +59,9 @@ export interface IProviderInfo extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
-  supportedEvmChains?: IChainType[]
   installationLink?: string
   getEthereumProvider?: () => any
   disabledByWalletFunc?: () => string | undefined
-  needPrioritiseFunc?: () => boolean
 }
 
 export type RequiredOption = string | string[]
@@ -98,7 +96,6 @@ export interface IProviderDisplayWithConnector extends IProviderDisplay {
   chains?: {
     [name: string]: ISupportedChain
   }
-  supportedEvmChains?: IChainType[]
   disabledByWalletFunc?: () => string | undefined
 }
 
@@ -113,9 +110,8 @@ export interface IProviderUserOptions {
   }
   installationLink?: string
   disabledByWalletFunc?: () => string | undefined
-  needPrioritiseFunc?: () => boolean
-  supportedEvmChains?: IChainType[]
   label?: string
+  pids?: any
 }
 
 export type SimpleFunction = (input?: any) => void

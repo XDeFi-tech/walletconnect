@@ -18,7 +18,6 @@ const ConnectToInjected = async (
 
   if (provider) {
     try {
-      // @ts-ignore
       await provider.request({ method: 'eth_requestAccounts' })
     } catch (error) {
       throw Error('User Rejected')

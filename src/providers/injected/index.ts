@@ -24,13 +24,13 @@ import { ReactComponent as RabbyLogo } from '../logos/rabby.svg'
 
 declare global {
   interface Window {
-    // @ts-ignore
     ethereum: any
     BinanceChain: any
     web3: any
     celo: any
     xfi: any
     terraWallets: any[]
+    keplr: any
   }
 }
 export const FALLBACK: IProviderInfo = {
@@ -39,17 +39,6 @@ export const FALLBACK: IProviderInfo = {
   logo: Wallet,
   type: 'injected',
   check: 'isWeb3'
-}
-
-export const disabledDefault = (providerId: string) => {
-  if (providerId !== WALLETS.xdefi && window.xfi && window.xfi.ethereum) {
-    const { isXDEFI } = window.xfi.ethereum
-    if (!isXDEFI) {
-      return 'XDEFI'
-    }
-  }
-
-  return undefined
 }
 
 export const METAMASK: IProviderInfo = {
@@ -148,6 +137,31 @@ export const RWALLET: IProviderInfo = {
   check: 'isRWallet'
 }
 
+const EVM_TEMPLATE = {
+  methods: {
+    getAccounts: (provider: any = window.xfi.ethereum) => {
+      return provider.request({
+        method: 'eth_requestAccounts',
+        params: []
+      })
+    },
+    request: (method: string, data: any) => {
+      return new Promise((resolve, reject) => {
+        window.xfi.ethereum.request(
+          { method: method, params: data },
+          (error: any, result: any) => {
+            if (error) {
+              reject(error)
+            }
+
+            resolve(result)
+          }
+        )
+      })
+    }
+  }
+}
+
 export const XDEFI: IProviderInfo = {
   id: WALLETS.xdefi,
   name: 'XDEFI',
@@ -158,24 +172,7 @@ export const XDEFI: IProviderInfo = {
   getEthereumProvider: () => {
     return window.xfi ? window.xfi.ethereum : undefined
   },
-  needPrioritiseFunc: () => {
-    /* if (window.xfi && window.xfi.info) {
-      const {
-        lastConfigChanges: { ethereumProvider }
-      } = window.xfi.info
-      const { inject, pretendMetamask } = ethereumProvider
-      return inject && !pretendMetamask
-    }
-    */
-    return false
-  },
-  supportedEvmChains: [
-    IChainType.avalanche,
-    IChainType.binancesmartchain,
-    IChainType.polygon,
-    IChainType.fantom,
-    IChainType.arbitrum
-  ],
+
   chains: {
     [IChainType.bitcoin]: {
       methods: {
@@ -280,6 +277,86 @@ export const XDEFI: IProviderInfo = {
                 return reject(e)
               })
           })
+        }
+      }
+    },
+    [IChainType.near]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            return window.xfi.near
+              .request('connect', [])
+              .then((accounts: any) => {
+                resolve(accounts)
+              })
+              .catch((e: any) => {
+                return reject(e)
+              })
+          })
+        },
+        request: (method: string, data: any) => {
+          return new Promise((resolve, reject) => {
+            return window.xfi.near
+              .request(method, data)
+              .then((result: any) => {
+                resolve(result)
+              })
+              .catch((e: any) => {
+                return reject(e)
+              })
+          })
+        }
+      }
+    },
+    [IChainType.cosmos]: {
+      methods: {
+        getAccounts: () => {
+          return new Promise((resolve, reject) => {
+            const chainId = 'cosmoshub-4'
+            return window.keplr
+              .enable(chainId)
+              .then(() => {
+                return window.keplr.getOfflineSigner(chainId).getAccounts()
+              })
+              .then((accounts: any) => {
+                resolve(accounts.map((addressItem: any) => addressItem.address))
+              })
+              .catch((e: any) => {
+                return reject(e)
+              })
+          })
+        },
+
+        request: (method: string, data: any) => {
+          if (method === 'getKey') {
+            return new Promise((resolve, reject) => {
+              return window.keplr
+                .getKey(data)
+                .then((result: any) => {
+                  resolve(result)
+                })
+                .catch((e: any) => {
+                  return reject(e)
+                })
+            })
+          }
+
+          if (method === 'getSigner') {
+            const chainId = 'cosmoshub-4'
+            return new Promise((resolve, reject) => {
+              return window.keplr
+                .then(() => {
+                  return window.keplr.getOfflineSigner(chainId)
+                })
+                .then((result: any) => {
+                  resolve(result)
+                })
+                .catch((e: any) => {
+                  return reject(e)
+                })
+            })
+          }
+          return new Promise(() => null)
         }
       }
     },
@@ -430,43 +507,6 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.ethereum]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.xfi.ethereum) {
-              resolve([])
-              return
-            }
-
-            window.xfi.ethereum.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.ethereum.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
-
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
     [IChainType.terra]: {
       methods: {
         getAccounts: () => {
@@ -522,7 +562,14 @@ export const XDEFI: IProviderInfo = {
           })
         }
       }
-    }
+    },
+    [IChainType.ethereum]: EVM_TEMPLATE,
+    [IChainType.binancesmartchain]: EVM_TEMPLATE,
+    [IChainType.arbitrum]: EVM_TEMPLATE,
+    [IChainType.aurora]: EVM_TEMPLATE,
+    [IChainType.avalanche]: EVM_TEMPLATE,
+    [IChainType.polygon]: EVM_TEMPLATE,
+    [IChainType.fantom]: EVM_TEMPLATE
   }
 }
 
