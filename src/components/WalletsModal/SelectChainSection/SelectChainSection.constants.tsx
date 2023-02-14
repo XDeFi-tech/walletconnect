@@ -62,7 +62,7 @@ export const CHAIN_OPTIONS = [
   {
     icon: <BinanceChain />,
     value: IChainType.binance,
-    label: 'Binance Beacon Chain'
+    label: 'BNB Chain'
   },
   {
     icon: <Thor />,
