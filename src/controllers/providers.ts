@@ -70,7 +70,7 @@ export class ProviderController {
         const displayProps = this.getInjectedById(id)
         if (typeof displayProps !== 'undefined') {
           this.providers.push({
-            ...list.providers.FALLBACK,
+            ...list.providers.INJECTED,
             connector: options.connector || list.connectors.injected,
             ...displayProps,
             ...options.display,
@@ -86,7 +86,7 @@ export class ProviderController {
           let providerInfo: IProviderInfo
           if (id === INJECTED_PROVIDER_ID) {
             providerInfo =
-              this.getProviderOption(id)?.display || list.providers.FALLBACK
+              this.getProviderOption(id)?.display || list.providers.INJECTED
           } else {
             providerInfo = getProviderInfoById(id)
           }
@@ -143,17 +143,19 @@ export class ProviderController {
       (pid) => this.getInjectedById(pid) && this.isAvailableProvider(pid)
     )
 
-    const injectedList = defaultProviderList.filter(
-      (pid) => this.getInjectedById(pid) && pid !== 'xdefi'
-    )
+    const injectedList = defaultProviderList.filter((pid) => {
+      const target = this.getInjectedById(pid)
+      return target && pid !== 'xdefi'
+    })
 
     const browserInjectedList = availableInjectedList.filter(
       (provider) => provider !== 'xdefi'
     )
 
     const displayInjected =
-      (!this.disableInjectedProvider && browserInjectedList.length === 0) ||
-      canInject() === undefined
+      !this.disableInjectedProvider &&
+      browserInjectedList.length === 0 &&
+      canInject()
 
     const providerList: string[] = []
 
@@ -203,11 +205,9 @@ export class ProviderController {
           ...providersWithoutInjected.slice(1)
         ]
       }
-
-      return providersWithoutInjected
-    } else {
-      return providersWithoutInjected
     }
+
+    return providersWithoutInjected
   }
 
   public connectToChains = async (

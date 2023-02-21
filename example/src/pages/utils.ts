@@ -12,7 +12,7 @@ export const getProviderOptions = (): IProviderOptions => {
     xdefi: {},
     injected: {
       display: {
-        ...injected.FALLBACK
+        ...injected.INJECTED
       }
     },
     metamask: {},
