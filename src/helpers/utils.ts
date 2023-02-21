@@ -34,7 +34,7 @@ export function checkInjectedProviders(): IInjectedProvidersMap {
     }
 
     if (fallbackProvider) {
-      result[injected.FALLBACK.check] = true
+      result[injected.INJECTED.check] = true
     }
   }
 
@@ -69,7 +69,7 @@ export function getInjectedProviderName(): string | null {
 }
 
 export function getProviderInfo(provider: any): IProviderInfo {
-  if (!provider) return providers.FALLBACK
+  if (!provider) return providers.INJECTED
   const checks = Object.values(providers)
     .filter((x) => provider[x.check])
     .map((x) => x.check)
@@ -159,13 +159,13 @@ export function filterProviders(
   param: string,
   value: string | null
 ): IProviderInfo {
-  if (!value) return providers.FALLBACK
+  if (!value) return providers.INJECTED
   const match = filterMatches<IProviderInfo>(
     Object.values(providers),
     (x) => x[param] === value,
-    providers.FALLBACK
+    providers.INJECTED
   )
-  return match || providers.FALLBACK
+  return match || providers.INJECTED
 }
 
 export function filterProviderChecks(checks: string[]): string {
@@ -181,7 +181,7 @@ export function filterProviderChecks(checks: string[]): string {
     }
     return checks[0]
   }
-  return providers.FALLBACK.check
+  return providers.INJECTED.check
 }
 
 export function findMatchingRequiredOptions(

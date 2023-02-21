@@ -1,3 +1,4 @@
+import packageJson from './../../package.json'
 import { isLocalStorageAvailable } from './utils'
 
 export let local: Storage
@@ -6,10 +7,12 @@ if (isLocalStorageAvailable()) {
   local = window.localStorage
 }
 
+const buildKey = (key: string) => `${packageJson.version}_${key}`
+
 export const setLocal = (key: string, data: any) => {
   const jsonData = JSON.stringify(data)
   if (local) {
-    local.setItem(key, jsonData)
+    local.setItem(buildKey(key), jsonData)
   }
 }
 
@@ -17,7 +20,7 @@ export const getLocal = (key: string) => {
   let data = null
   let raw = null
   if (local) {
-    raw = local.getItem(key)
+    raw = local.getItem(buildKey(key))
   }
   if (raw && typeof raw === 'string') {
     try {
@@ -31,7 +34,7 @@ export const getLocal = (key: string) => {
 
 export const removeLocal = (key: string) => {
   if (local) {
-    local.removeItem(key)
+    local.removeItem(buildKey(key))
   }
 }
 

@@ -16,8 +16,7 @@
   - [Hooks for multichain methods](#hooks-for-multichain-methods)
   - [Custom Theme](#custom-theme)
   - [Provider Options](#provider-options)
-  - [Adding a new provider](#adding-a-new-provider)
-        - [Add new injected provider](#add-new-injected-provider)
+  - [Adding a new provider](#adding-a-new-provider) - [Add new injected provider](#add-new-injected-provider)
 - [Contributions](#contributions)
   - [License](#license)
 
@@ -51,7 +50,7 @@ const getProviderOptions = (): IProviderOptions => {
     xdefi: {},
     injected: {
       display: {
-        ...injected.FALLBACK,
+        ...injected.INJECTED,
         logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
       }
     },

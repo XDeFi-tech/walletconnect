@@ -33,7 +33,7 @@ declare global {
     keplr: any
   }
 }
-export const FALLBACK: IProviderInfo = {
+export const INJECTED: IProviderInfo = {
   id: 'injected',
   name: 'Browser Wallet',
   logo: Wallet,
