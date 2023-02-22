@@ -35,6 +35,7 @@ const SCard = styled.div<IModalCardStyleProps>`
 
 const DisconnectBtnStyled = styled(DisconnectBtn)`
   margin-top: 24px;
+  cursor: pointer;
 `
 
 const ModalStyled = styled(Modal)`
