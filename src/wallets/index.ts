@@ -172,8 +172,6 @@ export class WalletsConnector {
       return
     }
 
-    this.setAccounts(providerId, null)
-
     const { connectedList: accounts } =
       await this.connector.loadProviderAccounts(providerId)
 
@@ -205,9 +203,11 @@ export class WalletsConnector {
 
   private setAccounts = (providerId: string, map: IChainWithAccount | null) => {
     if (map) {
-      this.accounts[providerId] = map
+      this.accounts = { ...this.accounts, [providerId]: map }
     } else {
-      delete this.accounts[providerId]
+      const accountsTemp = { ...this.accounts }
+      delete accountsTemp[providerId]
+      this.accounts = accountsTemp
     }
     console.log('setAccounts', providerId, map)
     this.connector.trigger(WALLETS_EVENTS.ACCOUNTS, this.accounts)
