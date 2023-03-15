@@ -146,18 +146,9 @@ const EVM_TEMPLATE = {
       })
     },
     request: (method: string, data: any) => {
-      return new Promise((resolve, reject) => {
-        window.xfi.ethereum.request(
-          { method: method, params: data },
-          (error: any, result: any) => {
-            if (error) {
-              reject(error)
-            }
-
-            resolve(result)
-          }
-        )
-      })
+      return window.xfi.ethereum.request(
+        { method: method, params: data }
+      )
     }
   }
 }
