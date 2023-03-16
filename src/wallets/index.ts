@@ -140,15 +140,9 @@ export class WalletsConnector {
   public disposeFor = (providerId: string) => {
     const ethereum = this.getSavedEthereumProvider(providerId)
     if (isValidProvider(ethereum)) {
-      ethereum.removeListener('accountsChanged', () => {
-        this.loadProviderAccounts(providerId)
-      })
-      ethereum.removeListener('disconnect', () => {
-        this.disconnect(providerId)
-      })
-      ethereum.removeListener('chainChanged', (chainId: string) =>
-        this.setActiveChain(providerId, chainId)
-      )
+      ethereum.removeAllListeners('accountsChanged')
+      ethereum.removeAllListeners('disconnect')
+      ethereum.removeAllListeners('chainChanged')
     }
   }
 
