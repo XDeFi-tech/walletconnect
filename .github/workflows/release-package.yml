@@ -2,23 +2,11 @@ name: Node.js Package
 
 on:
   release:
-    types: [created]
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-#       - run: yarn test
-
   publish-gpr:
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -28,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          registry-url: https://npm.pkg.github.com/
+          registry-url: 'https://registry.npmjs.org'
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: npm publish
