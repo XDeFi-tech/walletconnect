@@ -257,6 +257,10 @@ export class ProviderController {
           } catch (e) {
             hasError = true
             console.error(e)
+
+            if (e?.code === 4001) {
+              throw new Error(e.code)
+            }
           }
         }
       }

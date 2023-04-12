@@ -166,8 +166,19 @@ export class WalletsConnector {
       return
     }
 
-    const { connectedList: accounts } =
-      await this.connector.loadProviderAccounts(providerId)
+    let accounts = [] as {
+      chain: IChainType
+      accounts: string[]
+    }[]
+
+    try {
+      const { connectedList } = await this.connector.loadProviderAccounts(
+        providerId
+      )
+      accounts = connectedList
+    } catch (e) {
+      console.error(e)
+    }
 
     this.setConfigs(providerId, c || this.configs)
 
