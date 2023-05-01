@@ -120,6 +120,12 @@ export class WalletsConnector {
     return this.currentProviders[providerId]
   }
 
+  private removeSavedEthereumProvider = (providerId: string) => {
+    const temp = { ...this.currentProviders }
+    delete temp[providerId]
+    this.currentProviders = temp
+  }
+
   private initFirstConnection = async () => {
     try {
       await this.connector
@@ -147,6 +153,7 @@ export class WalletsConnector {
       ethereum.removeAllListeners('accountsChanged')
       ethereum.removeAllListeners('disconnect')
       ethereum.removeAllListeners('chainChanged')
+      this.removeSavedEthereumProvider(providerId)
     }
   }
 
