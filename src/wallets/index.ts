@@ -64,8 +64,12 @@ export class WalletsConnector {
       if (providerId) {
         const ethereum = this.getSavedEthereumProvider(providerId)
         if (isValidProvider(ethereum)) {
-          ethereum.on('accountsChanged', () => {
-            this.loadProviderAccounts(providerId)
+          ethereum.on('accountsChanged', (accounts: string[]) => {
+            if (accounts.length === 0) {
+              this.disconnect(providerId)
+            } else {
+              this.loadProviderAccounts(providerId)
+            }
           })
           ethereum.on('disconnect', () => {
             this.disconnect(providerId)
