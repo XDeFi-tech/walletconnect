@@ -146,9 +146,7 @@ const EVM_TEMPLATE = {
       })
     },
     request: (method: string, data: any) => {
-      return window.xfi.ethereum.request(
-        { method: method, params: data }
-      )
+      return window.xfi.ethereum.request({ method: method, params: data })
     }
   }
 }
@@ -259,6 +257,16 @@ export const XDEFI: IProviderInfo = {
         },
         request: (method: string, data: any) => {
           return new Promise((resolve, reject) => {
+            if (method === 'signTransaction') {
+              return window.xfi.solana
+                .signTransaction(...data)
+                .then((result: any) => {
+                  resolve(result)
+                })
+                .catch((e: any) => {
+                  return reject(e)
+                })
+            }
             return window.xfi.solana
               .request(method, data)
               .then((result: any) => {
