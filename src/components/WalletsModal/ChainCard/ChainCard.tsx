@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { ReactComponent as Checkmark } from '../../icons/Checkmark.svg'
+import { IChainType } from 'src/constants'
 
 interface IProps {
   className?: string
@@ -25,10 +26,14 @@ export const ChainCard = ({
   }
 
   return (
-    <Container disabled={disabled} onClick={disabled ? undefined : handleClick}>
+    <Container
+      disabled={disabled}
+      onClick={disabled ? undefined : handleClick}
+      title={value === IChainType.bitcoin ? 'Temporary disabled' : undefined}
+    >
       <ChainImage>
         {icon}
-        {checked || disabled ? (
+        {checked ? (
           <CheckmarkWrapper>
             <Checkmark />
           </CheckmarkWrapper>
