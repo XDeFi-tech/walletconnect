@@ -14,7 +14,6 @@ import { PrimaryButton } from '../../PrimaryButton'
 import { canInject, IProviderUserOptions } from 'src/helpers'
 import { useConnectorActiveIds, useConnectorMultiChains } from 'src/hooks'
 import { WalletsContext } from 'src/manager'
-import { IChainType } from 'src/constants'
 
 interface IProps {
   className?: string
@@ -28,9 +27,7 @@ export const SelectChainSection = ({
   onSelect
 }: IProps) => {
   const isTablet = useMediaQuery('(max-width: 768px)')
-  const [selectedChains, setSelectedChain] = useState<string[]>(
-    CHAIN_VALUES.filter((x) => x !== IChainType.bitcoin)
-  )
+  const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
 
   const handleClick = (value: string) => {
     const isExist = selectedChains.find((chainName) => chainName === value)
@@ -127,10 +124,6 @@ export const SelectChainSection = ({
 
   const isDisabled = useCallback(
     (chain) => {
-      if (chain.value === IChainType.bitcoin) {
-        // TODO Remove when fixed
-        return true
-      }
       return Boolean(
         providerInjectedChains &&
           providerInjectedChains.some((chainName) => chain.value === chainName)

@@ -72,7 +72,7 @@ export class WalletsConnector {
             }
           })
           ethereum.on('disconnect', () => {
-            this.disconnect(providerId)
+            console.log('Ethereum provider is disconnected')
           })
           ethereum.on('chainChanged', (chainId: string) =>
             this.setActiveChain(providerId, chainId)
@@ -166,7 +166,7 @@ export class WalletsConnector {
         ...getChainData(parseInt(chainId, 16))
       }
     }
-    this.loadProviderAccounts(providerId, c)
+    this.setConfigs(providerId, c)
   }
 
   private loadProviderAccounts = async (
