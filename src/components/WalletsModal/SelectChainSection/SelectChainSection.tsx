@@ -296,7 +296,9 @@ const DescriptionWrapper = styled.div`
 `
 
 const DescTitle = styled.div`
-  font-weight: 700;
+  font-weight: 900;
+  font-size: 13px;
+  color: white;
 `
 
 const DescText = styled.div`
