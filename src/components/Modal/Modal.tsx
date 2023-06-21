@@ -171,7 +171,6 @@ const BackdropStyled = styled(motion.div)`
 `
 
 const BodyStyled = styled(motion.div)`
-  width: 100%;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -179,11 +178,16 @@ const BodyStyled = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 517px;
   max-height: 720px;
+  max-width: 605px;
   opacity: 1;
   background: ${({ theme }) => theme.modal.bg};
   border-radius: 8px;
+
+  ${({ theme }) => theme.mediaWidth.upToTablet`
+    width: 100%;
+    max-width: unset;
+  `}
 `
 
 const ModalHeaderWrapper = styled.div`

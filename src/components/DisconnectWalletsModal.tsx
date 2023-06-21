@@ -40,7 +40,7 @@ const DisconnectBtnStyled = styled(DisconnectBtn)`
 
 const ModalStyled = styled(Modal)`
   .xdeficonnector-modal-body {
-    max-width: 432px;
+    width: 432px;
     padding: 16px;
   }
 `

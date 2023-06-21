@@ -14,8 +14,19 @@ export enum IChainType {
   arbitrum = 'arbitrum',
   solana = 'solana',
   near = 'near',
+  aurora = 'aurora',
   cosmos = 'cosmos',
-  aurora = 'aurora'
+  osmosis = 'osmosis',
+  axelar = 'axelar',
+  juno = 'juno',
+  crescent = 'crescent',
+  kava = 'kava',
+  stargaze = 'stargaze',
+  akash = 'akashnet',
+  cronos = 'cronos',
+  kujira = 'kujira',
+  stride = 'stride',
+  mars = 'mars'
 }
 
 export enum WALLETS {

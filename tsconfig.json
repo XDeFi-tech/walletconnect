@@ -19,6 +19,6 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "include": ["src"],
+  "include": ["src", "window.d.ts"],
   "exclude": ["node_modules", "dist", "example"]
 }

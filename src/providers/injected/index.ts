@@ -151,6 +151,61 @@ const EVM_TEMPLATE = {
   }
 }
 
+const getCosmosTemplate = (chainId: string) => ({
+  methods: {
+    getAccounts: () => {
+      return new Promise((resolve, reject) => {
+        return window.keplr
+          .enable(chainId)
+          .then(() => {
+            return window.keplr.getOfflineSigner(chainId).getAccounts()
+          })
+          .then((accounts: any) => {
+            resolve(accounts.map((addressItem: any) => addressItem.address))
+          })
+          .catch((e: any) => {
+            return reject(e)
+          })
+      })
+    },
+
+    request: (method: string, data: any) => {
+      if (method === 'getKey') {
+        return new Promise((resolve, reject) => {
+          return window.keplr
+            .getKey(data)
+            .then((result: any) => {
+              resolve(result)
+            })
+            .catch((e: any) => {
+              return reject(e)
+            })
+        })
+      }
+
+      if (method === 'getSigner') {
+        return new Promise((resolve, reject) => {
+          const signer = window.getOfflineSigner?.(chainId)
+          if (signer) {
+            resolve(signer)
+          } else {
+            reject(new Error('keplr is not enabled'))
+          }
+        })
+      }
+      if (method === 'sendTx') {
+        return new Promise((resolve, reject) => {
+          window.keplr
+            .sendTx?.(chainId, data.tx, data.mode)
+            .then(resolve)
+            .catch(reject)
+        })
+      }
+      return new Promise(() => null)
+    }
+  }
+})
+
 export const XDEFI: IProviderInfo = {
   id: WALLETS.xdefi,
   name: 'XDEFI',
@@ -307,58 +362,18 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.cosmos]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            const chainId = 'cosmoshub-4'
-            return window.keplr
-              .enable(chainId)
-              .then(() => {
-                return window.keplr.getOfflineSigner(chainId).getAccounts()
-              })
-              .then((accounts: any) => {
-                resolve(accounts.map((addressItem: any) => addressItem.address))
-              })
-              .catch((e: any) => {
-                return reject(e)
-              })
-          })
-        },
-
-        request: (method: string, data: any) => {
-          if (method === 'getKey') {
-            return new Promise((resolve, reject) => {
-              return window.keplr
-                .getKey(data)
-                .then((result: any) => {
-                  resolve(result)
-                })
-                .catch((e: any) => {
-                  return reject(e)
-                })
-            })
-          }
-
-          if (method === 'getSigner') {
-            const chainId = 'cosmoshub-4'
-            return new Promise((resolve, reject) => {
-              return window.keplr
-                .then(() => {
-                  return window.keplr.getOfflineSigner(chainId)
-                })
-                .then((result: any) => {
-                  resolve(result)
-                })
-                .catch((e: any) => {
-                  return reject(e)
-                })
-            })
-          }
-          return new Promise(() => null)
-        }
-      }
-    },
+    [IChainType.cosmos]: getCosmosTemplate('cosmoshub-4'),
+    [IChainType.osmosis]: getCosmosTemplate('osmosis-1'),
+    [IChainType.axelar]: getCosmosTemplate('axelar-dojo-1'),
+    [IChainType.juno]: getCosmosTemplate('juno-1'),
+    [IChainType.crescent]: getCosmosTemplate('crescent-1'),
+    [IChainType.kava]: getCosmosTemplate('kava_2222-10'),
+    [IChainType.stargaze]: getCosmosTemplate('stargaze-1'),
+    [IChainType.akash]: getCosmosTemplate('akashnet-2'),
+    [IChainType.cronos]: getCosmosTemplate('crypto-org-chain-mainnet-1'),
+    [IChainType.kujira]: getCosmosTemplate('kaiyo-1'),
+    [IChainType.stride]: getCosmosTemplate('stride-1'),
+    [IChainType.mars]: getCosmosTemplate('mars-1'),
     [IChainType.binance]: {
       methods: {
         getAccounts: () => {
@@ -511,7 +526,7 @@ export const XDEFI: IProviderInfo = {
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             if (!window.terraWallets) {
-              reject('No terra connector')
+              reject(new Error('No terra connector'))
             }
 
             const terraWalletXdefi = window.terraWallets.find(
@@ -519,7 +534,7 @@ export const XDEFI: IProviderInfo = {
             )
 
             if (!terraWalletXdefi) {
-              reject('No terra connector')
+              reject(new Error('No terra connector'))
             }
 
             const connector = terraWalletXdefi.connector()
@@ -547,7 +562,7 @@ export const XDEFI: IProviderInfo = {
             )
 
             if (!terraWalletXdefi) {
-              reject('No terra connector')
+              reject(new Error('No terra connector'))
             }
 
             const connector = terraWalletXdefi.connector()
