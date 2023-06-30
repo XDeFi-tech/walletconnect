@@ -22,7 +22,7 @@ export enum IChainType {
   crescent = 'crescent',
   kava = 'kava',
   stargaze = 'stargaze',
-  akash = 'akashnet',
+  akash = 'akash',
   cronos = 'cronos',
   kujira = 'kujira',
   stride = 'stride',
