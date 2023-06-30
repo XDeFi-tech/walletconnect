@@ -97,6 +97,7 @@ const SRow = styled.div`
   flex-direction: column;
   padding: 16px;
   width: 100%;
+  width: 517px;
 `
 
 const CustomHeader = styled.div`

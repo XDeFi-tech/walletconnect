@@ -5,9 +5,7 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import styled, { css } from 'styled-components'
-
-import { useMediaQuery } from 'src/hooks/utils'
+import styled from 'styled-components'
 import { CHAIN_OPTIONS, CHAIN_VALUES } from './SelectChainSection.constants'
 import { ChainCard } from '../ChainCard'
 import { PrimaryButton } from '../../PrimaryButton'
@@ -26,7 +24,6 @@ export const SelectChainSection = ({
   provider,
   onSelect
 }: IProps) => {
-  const isTablet = useMediaQuery('(max-width: 768px)')
   const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
 
   const handleClick = (value: string) => {
@@ -146,76 +143,19 @@ export const SelectChainSection = ({
   return (
     <Container className={className}>
       <Title>Select chains</Title>
-      {isTablet ? (
-        <ChainContainer padding='0'>
-          {CHAIN_OPTIONS.map((chain) => (
-            <ChainCard
-              key={chain.value}
-              icon={chain.icon}
-              label={chain.label}
-              value={chain.value}
-              checked={isChecked(chain)}
-              disabled={isDisabled(chain)}
-              onClick={handleClick}
-            />
-          ))}
-        </ChainContainer>
-      ) : (
-        <React.Fragment>
-          <ChainContainer padding='0 30px'>
-            {CHAIN_OPTIONS.slice(0, 4).map((chain) => (
-              <ChainCard
-                key={chain.value}
-                icon={chain.icon}
-                label={chain.label}
-                value={chain.value}
-                checked={isChecked(chain)}
-                disabled={isDisabled(chain)}
-                onClick={handleClick}
-              />
-            ))}
-          </ChainContainer>
-          <ChainContainer padding='0 30px'>
-            {CHAIN_OPTIONS.slice(4, 8).map((chain) => (
-              <ChainCard
-                key={chain.value}
-                icon={chain.icon}
-                label={chain.label}
-                value={chain.value}
-                checked={isChecked(chain)}
-                disabled={isDisabled(chain)}
-                onClick={handleClick}
-              />
-            ))}
-          </ChainContainer>
-          <ChainContainer padding='0 30px'>
-            {CHAIN_OPTIONS.slice(8, 12).map((chain) => (
-              <ChainCard
-                key={chain.value}
-                icon={chain.icon}
-                label={chain.label}
-                value={chain.value}
-                checked={isChecked(chain)}
-                disabled={isDisabled(chain)}
-                onClick={handleClick}
-              />
-            ))}
-          </ChainContainer>
-          <ChainContainer padding='0 90px'>
-            {CHAIN_OPTIONS.slice(12).map((chain) => (
-              <ChainCard
-                key={chain.value}
-                icon={chain.icon}
-                label={chain.label}
-                value={chain.value}
-                checked={isChecked(chain)}
-                disabled={isDisabled(chain)}
-                onClick={handleClick}
-              />
-            ))}
-          </ChainContainer>
-        </React.Fragment>
-      )}
+      <ChainContainer>
+        {CHAIN_OPTIONS.map((chain) => (
+          <ChainCard
+            key={chain.value}
+            icon={chain.icon}
+            label={chain.label}
+            value={chain.value}
+            checked={isChecked(chain)}
+            disabled={isDisabled(chain)}
+            onClick={handleClick}
+          />
+        ))}
+      </ChainContainer>
       {selectedChains.length > 0 && (
         <DeselectAllWrapper onClick={handleDeselectAllChain}>
           Deselect All
@@ -255,23 +195,6 @@ const Title = styled.div`
   color: ${({ theme }) => theme.selectChain.title};
 `
 
-const ChainContainer = styled.div<{ padding?: string }>`
-  display: flex;
-  grid-gap: 40px;
-  margin-top: 24px;
-
-  ${({ padding }) =>
-    padding &&
-    css`
-      padding: ${padding};
-    `}
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    flex-wrap: wrap;
-    grid-gap: unset;
-  `}
-`
-
 const DeselectAllWrapper = styled.div`
   width: 100%;
   margin-top: 16px;
@@ -285,6 +208,17 @@ const DeselectAllWrapper = styled.div`
 const ButtonWrapper = styled.div`
   margin-top: 24px;
   width: 100%;
+`
+const ChainContainer = styled.div`
+  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+
+  ${({ theme }) => theme.mediaWidth.upToTablet`
+    padding: 0px;
+  `};
 `
 
 const DescriptionWrapper = styled.div`

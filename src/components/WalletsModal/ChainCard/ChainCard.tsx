@@ -45,8 +45,9 @@ const Container = styled.div<{ disabled?: boolean }>`
   align-items: center;
   flex-direction: column;
   grid-gap: 8px;
+  flex-basis: 75px;
   cursor: pointer;
-  flex: 1 1 0;
+
   ${({ disabled }) =>
     disabled &&
     css`
@@ -59,6 +60,7 @@ const ChainName = styled.div`
   line-height: 16px;
   text-align: center;
   color: #fff;
+  white-space: nowrap;
 `
 
 const ChainImage = styled.div`
@@ -69,6 +71,11 @@ const ChainImage = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+
+  > svg {
+    height: 40px;
+    width: 40px;
+  }
 `
 
 const CheckmarkWrapper = styled.div`
