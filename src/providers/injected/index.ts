@@ -367,13 +367,13 @@ export const XDEFI: IProviderInfo = {
     [IChainType.axelar]: getCosmosTemplate('axelar-dojo-1'),
     [IChainType.juno]: getCosmosTemplate('juno-1'),
     [IChainType.crescent]: getCosmosTemplate('crescent-1'),
-    [IChainType.kava]: getCosmosTemplate('kava_2222-10'),
     [IChainType.stargaze]: getCosmosTemplate('stargaze-1'),
-    [IChainType.akash]: getCosmosTemplate('akashnet-2'),
-    [IChainType.cronos]: getCosmosTemplate('crypto-org-chain-mainnet-1'),
     [IChainType.kujira]: getCosmosTemplate('kaiyo-1'),
-    [IChainType.stride]: getCosmosTemplate('stride-1'),
-    [IChainType.mars]: getCosmosTemplate('mars-1'),
+    // [IChainType.kava]: getCosmosTemplate('kava_2222-10'),
+    // [IChainType.akash]: getCosmosTemplate('akashnet-2'),
+    // [IChainType.cronos]: getCosmosTemplate('crypto-org-chain-mainnet-1'),
+    // [IChainType.stride]: getCosmosTemplate('stride-1'),
+    // [IChainType.mars]: getCosmosTemplate('mars-1'),
     [IChainType.binance]: {
       methods: {
         getAccounts: () => {
@@ -583,7 +583,8 @@ export const XDEFI: IProviderInfo = {
     [IChainType.aurora]: EVM_TEMPLATE,
     [IChainType.avalanche]: EVM_TEMPLATE,
     [IChainType.polygon]: EVM_TEMPLATE,
-    [IChainType.fantom]: EVM_TEMPLATE
+    [IChainType.fantom]: EVM_TEMPLATE,
+    [IChainType.optimism]: EVM_TEMPLATE
   }
 }
 
