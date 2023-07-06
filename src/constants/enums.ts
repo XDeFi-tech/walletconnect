@@ -4,6 +4,7 @@ export enum IChainType {
   binance = 'binance',
   binancesmartchain = 'binancesmartchain',
   polygon = 'polygon',
+  optimism = 'optimism',
   bitcoin = 'bitcoin',
   litecoin = 'litecoin',
   bitcoincash = 'bitcoincash',
@@ -20,13 +21,13 @@ export enum IChainType {
   axelar = 'axelar',
   juno = 'juno',
   crescent = 'crescent',
-  kava = 'kava',
+  // kava = 'kava',
   stargaze = 'stargaze',
-  akash = 'akash',
-  cronos = 'cronos',
-  kujira = 'kujira',
-  stride = 'stride',
-  mars = 'mars'
+  // akash = 'akash',
+  // cronos = 'cronos',
+  kujira = 'kujira'
+  // stride = 'stride',
+  // mars = 'mars'
 }
 
 export enum WALLETS {
