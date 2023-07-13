@@ -9,7 +9,6 @@ export interface IProviderControllerOptions {
   cacheProviders: boolean
   providerOptions: IProviderOptions
   network: string
-  isSingleProviderEnabled?: boolean
 }
 
 export interface IInjectedProvidersMap {

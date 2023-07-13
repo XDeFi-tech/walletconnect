@@ -1,9 +1,6 @@
-/* eslint import/namespace: ['error', { allowComputed: true }] */
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
-  CACHED_PROVIDER_KEY,
-  CACHED_PROVIDER_CHAINS_KEY,
   WALLETS_EVENTS,
   CACHED_MULTI_PROVIDERS_KEY,
   CACHED_PROVIDERS_CHAINS_KEY,
@@ -36,7 +33,6 @@ export class ProviderController {
   public cachedProviders: string[] = []
   public shouldCacheProviders = false
   public disableInjectedProvider = false
-  public isSingleProviderEnabled: Boolean | undefined
 
   private eventController: EventController = new EventController()
   public injectedChains: {
@@ -52,7 +48,6 @@ export class ProviderController {
     this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
     this.network = opts.network
-    this.isSingleProviderEnabled = opts.isSingleProviderEnabled
   }
 
   public getInjectedById = (providerId: string) => {
@@ -354,11 +349,7 @@ export class ProviderController {
   }
 
   private updateCachedProviders(providers: string[]) {
-    this.cachedProviders = (
-      this.isSingleProviderEnabled && providers.length > 0
-        ? providers.slice(0, 1)
-        : providers
-    ).filter(this.isAvailableProvider)
+    this.cachedProviders = providers.filter(this.isAvailableProvider)
     setLocal(this.cachedProvidersKey, this.cachedProviders)
 
     this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
@@ -372,15 +363,11 @@ export class ProviderController {
   }
 
   get cachedProvidersKey() {
-    return this.isSingleProviderEnabled
-      ? CACHED_PROVIDER_KEY
-      : CACHED_MULTI_PROVIDERS_KEY
+    return CACHED_MULTI_PROVIDERS_KEY
   }
 
   get cachedProviderChainsKey() {
-    return this.isSingleProviderEnabled
-      ? CACHED_PROVIDER_CHAINS_KEY
-      : CACHED_PROVIDERS_CHAINS_KEY
+    return CACHED_PROVIDERS_CHAINS_KEY
   }
 
   public setInjectedChains(providerId: string, chains: string[]) {

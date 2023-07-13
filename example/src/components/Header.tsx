@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import {
   WalletsModal,
-  useWalletEvents,
-  DisconnectWalletsModal
+  DisconnectWalletsModal,
+  WalletsContext,
+  WALLETS_EVENTS
 } from '@xdefi/wallets-connector'
-
 import { transitions } from '../styles'
 
 import Banner from './Banner'
@@ -77,6 +77,7 @@ const WalletsModalStyled = styled(WalletsModal)`
 
 const Header = () => {
   const [isConnected, setIsConnected] = useState(false)
+  const context: any = useContext(WalletsContext as any)
 
   const onConnectHandler = useCallback(() => {
     setIsConnected(true)
@@ -88,9 +89,26 @@ const Header = () => {
     setIsConnected(false)
   }, [setIsConnected])
 
-  useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
+  useEffect(() => {
+    if (context) {
+      context.on(WALLETS_EVENTS.CONNECT, onConnectHandler)
+      context.on(WALLETS_EVENTS.DISCONNECTED, onCloseHandler)
+      context.on(WALLETS_EVENTS.ERROR, onErrorHandler)
+    }
 
-  console.log('isConnected', isConnected)
+    return () => {
+      context?.off(WALLETS_EVENTS.CONNECT, onConnectHandler)
+      context?.off(WALLETS_EVENTS.DISCONNECTED, onCloseHandler)
+      context?.off(WALLETS_EVENTS.ERROR, onErrorHandler)
+    }
+  }, [
+    context,
+    onCloseHandler,
+    onConnectHandler,
+    onErrorHandler,
+    setIsConnected
+  ])
+
   return (
     <SHeader>
       {isConnected ? <SActiveChain>Connected</SActiveChain> : <Banner />}

@@ -1,18 +1,27 @@
-import React from 'react'
-import {
-  useConnectedMultiAccounts,
-  useConnectorMultiConfigs
-} from '@xdefi/wallets-connector'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { WalletsContext, WALLETS_EVENTS } from '@xdefi/wallets-connector'
 import AccountsBlock from 'src/components/AccountsBlock'
 import { useMemo } from 'react'
 import { SBlock, SContent, SProvider } from 'src/pages/styleds'
 
 const MultiAccounts = () => {
-  const providers = useConnectedMultiAccounts()
+  const [providers, setProviders] = useState({} as any)
+  const context: any = useContext(WalletsContext as any)
 
-  const configs = useConnectorMultiConfigs()
+  const handleAccounts = useCallback((accounts: any) => {
+    setProviders(accounts)
+  }, [])
 
-  console.log('<--- DATA --->: ', configs, providers, Object.keys(providers))
+  useEffect(() => {
+    const ctx = context
+    if (ctx) {
+      context.on(WALLETS_EVENTS.ACCOUNTS, handleAccounts)
+    }
+
+    return () => {
+      ctx.off(WALLETS_EVENTS.ACCOUNTS, handleAccounts)
+    }
+  }, [context, handleAccounts])
 
   const keys = useMemo(() => Object.keys(providers), [providers])
 

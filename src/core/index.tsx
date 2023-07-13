@@ -24,8 +24,7 @@ export class WalletConnect {
       disableInjectedProvider: options.disableInjectedProvider,
       cacheProviders: options.cacheProviders,
       providerOptions: options.providerOptions,
-      network: options.network,
-      isSingleProviderEnabled: options.isSingleProviderEnabled
+      network: options.network
     })
 
     this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
@@ -81,10 +80,6 @@ export class WalletConnect {
 
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
-  }
-
-  get isSingleProviderEnabled() {
-    return this.providerController.isSingleProviderEnabled
   }
 
   injectedChains(providerId: string): string[] {

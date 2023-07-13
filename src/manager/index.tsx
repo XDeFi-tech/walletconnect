@@ -9,30 +9,23 @@ export const NetworkManager = ({
   children,
   options,
   network,
-  cacheEnabled,
-  isSingleProviderEnabled = true
+  cacheEnabled
 }: {
   children: JSX.Element
   options: IProviderOptions
   network?: string
   cacheEnabled?: boolean
-  isSingleProviderEnabled?: boolean
 }) => {
   const [c, setWalletsConnector] = useState<WalletsConnector | null>(null)
 
   useEffect(() => {
-    const newConnector = new WalletsConnector(
-      options,
-      network,
-      cacheEnabled,
-      isSingleProviderEnabled
-    )
+    const newConnector = new WalletsConnector(options, network, cacheEnabled)
     setWalletsConnector(newConnector)
 
     return () => {
       newConnector.dispose()
     }
-  }, [options, isSingleProviderEnabled, network, cacheEnabled])
+  }, [options, network, cacheEnabled])
 
   return (
     <WalletsContext.Provider value={c}>
