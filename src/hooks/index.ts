@@ -10,13 +10,15 @@ import { IChainType } from '../constants'
 
 export const useConnectorActiveIds = () => {
   const context = useContext(WalletsContext)
-  const [pids, setPids] = useState<string[]>(() => context?.providers || [])
+  const [pids, setPids] = useState<string[]>(
+    () => context?.cachedProviders || []
+  )
 
   useEffect(() => {
-    if (context?.providers) {
-      setPids([...context?.providers])
+    if (context?.cachedProviders) {
+      setPids([...context?.cachedProviders])
     }
-  }, [context?.providers, setPids])
+  }, [context?.cachedProviders, setPids])
 
   const setConfigs = useCallback(
     (c: string[] = []) => {
@@ -27,7 +29,7 @@ export const useConnectorActiveIds = () => {
 
   useEffect(() => {
     if (context) {
-      setConfigs(context?.providers)
+      setConfigs(context?.cachedProviders)
     }
   }, [context, setConfigs])
 
@@ -189,16 +191,8 @@ export const useWalletsOptions = () => {
     return context ? context.connector.getUserOptions() : []
   }, [context])
 
-  const onDisconnect = useCallback(
-    (providerId?: string) => {
-      return context?.disconnect(providerId)
-    },
-    [context]
-  )
-
   return {
-    providers,
-    onDisconnect
+    providers
   }
 }
 

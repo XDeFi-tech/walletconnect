@@ -374,30 +374,11 @@ export const CHAIN_DATA_LIST: ChainDataList = {
 
 export function getChainId(network: string): number {
   const chains: ChainData[] = Object.values(CHAIN_DATA_LIST)
-  const match = filterMatches<ChainData>(
-    chains,
-    (x) => x.network === network,
-    undefined
-  )
+  const match = chains.find((x) => x.network === network)
   if (!match) {
     throw new Error(`No chainId found match ${network}`)
   }
   return match.chainId
-}
-
-function filterMatches<T>(
-  array: T[],
-  condition: (x: T) => boolean,
-  fallback: T | undefined
-): T | undefined {
-  let result = fallback
-  const matches = array.filter(condition)
-
-  if (!!matches && matches.length) {
-    result = matches[0]
-  }
-
-  return result
 }
 
 export function convertToCommonChain(network?: string): IChainType {

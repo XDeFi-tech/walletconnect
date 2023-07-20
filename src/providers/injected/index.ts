@@ -1,4 +1,4 @@
-import { getInjectedProviderName, IProviderInfo } from '../../helpers'
+import { IProviderInfo } from '../../helpers'
 import { IChainType, WALLETS } from '../../constants'
 import { ReactComponent as Wallet } from '../../components/icons/Wallet.svg'
 import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
@@ -22,17 +22,6 @@ import { ReactComponent as SequenceLogo } from '../logos/sequence.svg'
 import { ReactComponent as BraveLogo } from '../logos/brave.svg'
 import { ReactComponent as RabbyLogo } from '../logos/rabby.svg'
 
-declare global {
-  interface Window {
-    ethereum: any
-    BinanceChain: any
-    web3: any
-    celo: any
-    xfi: any
-    terraWallets: any[]
-    keplr: any
-  }
-}
 export const INJECTED: IProviderInfo = {
   id: 'injected',
   name: 'Browser Wallet',
@@ -47,14 +36,7 @@ export const METAMASK: IProviderInfo = {
   logo: MetaMaskLogo,
   type: 'injected',
   check: 'isMetaMask',
-  installationLink: 'https://metamask.io',
-  disabledByWalletFunc: () => {
-    if (window.ethereum && !window.ethereum.isMetaMask) {
-      return getInjectedProviderName() || 'Browser'
-    }
-
-    return undefined
-  }
+  installationLink: 'https://metamask.io'
 }
 
 export const SAFE: IProviderInfo = {
@@ -139,8 +121,9 @@ export const RWALLET: IProviderInfo = {
 
 const EVM_TEMPLATE = {
   methods: {
-    getAccounts: (provider: any = window.xfi.ethereum) => {
-      return provider.request({
+    getProvider: () => window.xfi.ethereum,
+    getAccounts: () => {
+      return window.xfi.ethereum.request({
         method: 'eth_requestAccounts',
         params: []
       })
@@ -220,6 +203,7 @@ export const XDEFI: IProviderInfo = {
   chains: {
     [IChainType.bitcoin]: {
       methods: {
+        getProvider: () => window.xfi.bitcoin,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             window.xfi.bitcoin.request(
@@ -266,6 +250,7 @@ export const XDEFI: IProviderInfo = {
     },
     [IChainType.thorchain]: {
       methods: {
+        getProvider: () => window.xfi.thorchain,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             window.xfi.thorchain.request(
@@ -376,6 +361,7 @@ export const XDEFI: IProviderInfo = {
     [IChainType.mars]: getCosmosTemplate('mars-1'),
     [IChainType.binance]: {
       methods: {
+        getProvider: () => window.xfi.binance,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             window.xfi.binance.request(
@@ -422,6 +408,7 @@ export const XDEFI: IProviderInfo = {
     },
     [IChainType.litecoin]: {
       methods: {
+        getProvider: () => window.xfi.litecoin,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             window.xfi.litecoin.request(
@@ -454,6 +441,7 @@ export const XDEFI: IProviderInfo = {
     },
     [IChainType.bitcoincash]: {
       methods: {
+        getProvider: () => window.xfi.bitcoincash,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             window.xfi.bitcoincash.request(
@@ -486,6 +474,7 @@ export const XDEFI: IProviderInfo = {
     },
     [IChainType.dogecoin]: {
       methods: {
+        getProvider: () => window.xfi.dogecoin,
         getAccounts: () => {
           return new Promise((resolve, reject) => {
             if (!window.xfi.dogecoin) {

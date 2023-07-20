@@ -53,7 +53,7 @@ export const SelectChainSection = ({
   }, [provider, context])
 
   const disabledByWallet = useMemo(
-    () => context && provider && context.disabledByProvider(provider?.id),
+    () => context && provider && !context?.isAvailableProvider(provider?.id),
     [context, provider]
   )
 
@@ -80,10 +80,7 @@ export const SelectChainSection = ({
         if (isActive) {
           context.disconnect(provider?.id)
         }
-        await context.connector.connectTo(provider?.id, [
-          ...providerInjectedChains,
-          ...selectedChains
-        ])
+        await context.connectTo(provider?.id, selectedChains)
         onSelect()
       }
     } catch (e) {
@@ -99,7 +96,6 @@ export const SelectChainSection = ({
     onSelect,
     isActive,
     provider,
-    providerInjectedChains,
     selectedChains
   ])
 

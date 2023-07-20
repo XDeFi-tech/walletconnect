@@ -6,7 +6,6 @@ import {
   Routes,
   Route,
   Link,
-  Navigate,
   useLocation
 } from 'react-router-dom'
 
@@ -55,8 +54,7 @@ function App() {
         <Navigation />
 
         <Routes>
-          <Route path={PATHS.multi} element={<MultiProvidersPage />} />
-          <Route path='*' element={<Navigate to={PATHS.single} />} />
+          <Route path='*' element={<MultiProvidersPage />} />
         </Routes>
       </div>
     </Router>

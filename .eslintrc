@@ -1,12 +1,12 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react-hooks", "import-helpers"],
+  "plugins": ["@typescript-eslint", "import-helpers"],
   "extends": [
     "eslint:recommended",
     "plugin:prettier/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
   ],
   "env": {
     "browser": true,

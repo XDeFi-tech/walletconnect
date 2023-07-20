@@ -19,7 +19,7 @@ const MultiAccounts = () => {
     }
 
     return () => {
-      ctx.off(WALLETS_EVENTS.ACCOUNTS, handleAccounts)
+      ctx?.off(WALLETS_EVENTS.ACCOUNTS, handleAccounts)
     }
   }, [context, handleAccounts])
 

@@ -12,9 +12,9 @@ import { DefaultTheme } from 'styled-components/macro'
 
 import { ReactComponent as LinkOutSvg } from './icons/linkOut.svg'
 import { ReactComponent as ArrowSvg } from './icons/Arrow.svg'
-import { ReactComponent as WalletSvg } from './icons/Wallet.svg'
 import { canInject, IProviderUserOptions } from '../helpers'
 import { CircleSpinner } from './Spinner'
+import { IChainType } from 'src/constants'
 
 interface IProviderProps {
   provider: IProviderUserOptions
@@ -32,7 +32,7 @@ export function WalletProvider({
   const pids = useConnectorActiveIds()
   const context = useContext(WalletsContext)
   const supportedChains = useMemo(() => {
-    return chains ? Object.keys(chains) : []
+    return chains ? (Object.keys(chains) as IChainType[]) : []
   }, [chains])
 
   const needInstall = useMemo(() => {
@@ -42,7 +42,7 @@ export function WalletProvider({
   }, [installationLink, context, id])
 
   const disabledByWallet = useMemo(
-    () => context && context.disabledByProvider(id),
+    () => context && !context?.isAvailableProvider(id),
     [context, id]
   )
 
@@ -60,7 +60,7 @@ export function WalletProvider({
     if (isAvailable && context && !needInstall) {
       setLoading(true)
       try {
-        await context.connector.connectTo(id, supportedChains)
+        await context.connectTo(id, supportedChains)
       } finally {
         setLoading(false)
       }
@@ -94,11 +94,7 @@ export function WalletProvider({
 
   const rightPart = useMemo(() => {
     if (isConnected) {
-      return provider?.label === 'Browser Wallet' ? (
-        <ConnectedText>{name} connected</ConnectedText>
-      ) : (
-        <ConnectedText>Connected</ConnectedText>
-      )
+      return <ConnectedText>Connected</ConnectedText>
     }
 
     if (disabledByWallet) {
@@ -142,8 +138,7 @@ export function WalletProvider({
     installationLink,
     name,
     needInstall,
-    loading,
-    provider?.label
+    loading
   ])
 
   return (
@@ -154,18 +149,14 @@ export function WalletProvider({
       active={isActive}
     >
       <NameWrapper>
-        {provider?.label === 'Browser Wallet' ? (
-          <WalletSvg />
-        ) : (
-          <SIcon>
-            {typeof El !== 'string' ? (
-              <El style={{ flexShrink: 0 }} />
-            ) : (
-              <img src={El} />
-            )}
-          </SIcon>
-        )}
-        <SName>{provider?.label ? provider?.label : name}</SName>
+        <SIcon>
+          {typeof El !== 'string' ? (
+            <El style={{ flexShrink: 0 }} />
+          ) : (
+            <img src={El} />
+          )}
+        </SIcon>
+        <SName>{name}</SName>
       </NameWrapper>
       {rightPart}
     </SProviderWrapper>
