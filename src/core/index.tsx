@@ -76,9 +76,6 @@ export class WalletConnect {
     return this.providerController.injectedChains[providerId]
   }
 
-  public getEthereumProvider = (providerId: string) =>
-    this.providerController.getEthereumProvider(providerId)
-
   public loadProviderAccounts = async (providerId: string) => {
     return await this.providerController.connectToChains(providerId)
   }

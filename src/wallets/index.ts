@@ -37,8 +37,6 @@ export class WalletsConnector {
     this.connector.on(WALLETS_EVENTS.CONNECT, (data: IConnectEventPayload) => {
       const { provider, id: providerId } = data
 
-      let isEvmProviderSubscribed = false
-
       const connectedChains = this.connector.injectedChains(providerId)
       connectedChains.forEach((chain) => {
         const isEvmChain = [
@@ -51,7 +49,7 @@ export class WalletsConnector {
           IChainType.fantom
         ].includes(chain)
 
-        if (isEvmChain && isEvmProviderSubscribed) {
+        if (isEvmChain) {
           return
         }
 
@@ -61,13 +59,15 @@ export class WalletsConnector {
         chainProvider?.on?.('accountsChanged', () =>
           this.loadProviderAccounts(providerId)
         )
+      })
 
-        if (isEvmChain) {
-          chainProvider?.on?.('chainChanged', (chainId: string) => {
-            this.setConfigs(providerId, chainId)
-          })
-          isEvmProviderSubscribed = true
-        }
+      provider?.on?.('accountsChanged', () =>
+        this.loadProviderAccounts(providerId)
+      )
+
+      provider?.on?.('chainChanged', (chainId: string) => {
+        console.log('chainChanged', providerId, chainId)
+        this.setConfigs(providerId, chainId)
       })
 
       this.fireConfigs(providerId, provider)
@@ -123,7 +123,6 @@ export class WalletsConnector {
   }
 
   public connectTo = async (id: string, chains: IChainType[]) => {
-    console.log('connectTo id', id)
     const { id: providerId, connectedList } = await this.connector.connectTo(
       id,
       chains
@@ -144,8 +143,12 @@ export class WalletsConnector {
       const chainMethods = this.getChainMethods(providerId, chain)
       const chainProvider = chainMethods?.methods?.getProvider?.()
       chainProvider?.removeAllListeners?.('accountsChanged')
-      chainProvider?.removeAllListeners?.('chainChanged')
     })
+
+    const provider = this.getSavedEthereumProvider(providerId)
+
+    provider?.removeAllListeners?.('accountsChanged')
+    provider?.removeAllListeners?.('chainChanged')
 
     this.removeSavedEthereumProvider(providerId)
   }

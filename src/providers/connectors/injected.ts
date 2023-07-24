@@ -1,19 +1,10 @@
 import { findAvailableEthereumProvider } from 'src'
 
-const ConnectToInjected = async (
-  providerPackage: any,
-  opts: any,
-  chains?: string[],
-  getProvider?: () => any
-) => {
-  let provider = getProvider ? getProvider() : undefined
+const ConnectToInjected = async () => {
+  const provider = findAvailableEthereumProvider()
 
   if (!provider) {
-    provider = findAvailableEthereumProvider()
-
-    if (!provider) {
-      throw Error('No Web3 Provider found')
-    }
+    throw Error('No Web3 Provider found')
   }
 
   if (provider) {

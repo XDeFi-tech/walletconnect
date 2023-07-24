@@ -32,8 +32,7 @@ const ConnectToMewConnect = (
         alert('disconnect!')
       })
       try {
-        const address = await mewConnect.enable()
-        console.log(address) // todo remove dev item
+        await mewConnect.enable()
         resolve(provider)
       } catch (e) {
         reject(e)

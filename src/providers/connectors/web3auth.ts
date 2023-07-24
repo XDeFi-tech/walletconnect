@@ -11,7 +11,7 @@ const connectToweb3auth = async (
   Web3Auth: any,
   opts: IWeb3AuthConnectorOptions
 ) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       const options = opts || {}
       const chainID = options.chainId || '0x1'
@@ -27,16 +27,16 @@ const connectToweb3auth = async (
         clientId: clientID
       })
 
-      console.log(web3auth)
-
-      await web3auth.initModal()
-
-      await web3auth.connect()
-      const provider = web3auth.provider
-      provider.web3auth = web3auth
-      resolve(provider)
+      web3auth
+        .initModal()
+        .then(() => web3auth.connect())
+        .then(() => {
+          const provider = web3auth.provider
+          provider.web3auth = web3auth
+          resolve(provider)
+        })
+        .catch(reject)
     } catch (e) {
-      console.log(e)
       reject(e)
     }
   })

@@ -131,14 +131,14 @@ export interface ITorusConnectorOptions extends IAbstractConnectorOptions {
 
 // Supports Torus package versions 0.2.*
 const ConnectToTorus = async (Torus: any, opts: ITorusConnectorOptions) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
       // defaults
       const buttonPosition = 'bottom-left'
       const apiKey = 'torus-default'
       const modalZIndex = 9999999
       let network: NetworkParams = { host: 'mainnet' }
-      let defaultVerifier = undefined
+      const defaultVerifier = opts?.loginParams?.verifier
 
       // parsing to Torus interfaces
       network =
@@ -151,19 +151,20 @@ const ConnectToTorus = async (Torus: any, opts: ITorusConnectorOptions) => {
         apiKey: opts.config?.apiKey || apiKey,
         modalZIndex: opts.config?.modalZIndex || modalZIndex
       })
-      await torus.init({
-        showTorusButton: false,
-        ...opts.config,
-        network
-      })
 
-      if (opts.loginParams) {
-        defaultVerifier = opts.loginParams.verifier
-      }
-      await torus.login({ verifier: defaultVerifier })
-      const provider = torus.provider
-      provider.torus = torus
-      resolve(provider)
+      torus
+        .init({
+          showTorusButton: false,
+          ...opts.config,
+          network
+        })
+        .then(() => torus.login({ verifier: defaultVerifier }))
+        .then(() => {
+          const provider = torus.provider
+          provider.torus = torus
+          resolve(provider)
+        })
+        .catch(reject)
     } catch (err) {
       reject(err)
     }

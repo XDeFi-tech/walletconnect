@@ -67,7 +67,6 @@ export const DisconnectWalletsModal = ({
     return userOptions.filter((item) => pids.indexOf(item.id) !== -1)
   }, [userOptions, pids])
 
-  console.log('connected', pids)
   useEffect(() => {
     if (connected.length === 0) {
       onClose()

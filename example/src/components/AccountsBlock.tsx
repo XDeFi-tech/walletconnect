@@ -3,8 +3,6 @@ import React from 'react'
 import styled from 'styled-components'
 import Column from 'src/components/Column'
 
-export const SLanding = styled(Column)``
-
 export const SChain = styled.div`
   font-size: 24px;
   padding-bottom: 12px;
@@ -16,16 +14,18 @@ export const SAccounts = styled.div`
 `
 
 export const SList = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 1;
   color: green;
 `
 
-export const SBalances = styled(SLanding)`
-  width: 100%;
+export const SBalances = styled(Column)`
   display: flex;
   border-radius: 16px;
-  width: 100%;
   border: 1px solid black;
   padding: 12px;
+  overflow: hidden;
 
   & h3 {
     padding-top: 30px;

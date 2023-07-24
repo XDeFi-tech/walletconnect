@@ -83,43 +83,37 @@ export class ProviderController {
     chains: string[] = []
   ) => {
     const options = this.findProviderFromOptions(providerId)
+
+    const results: IChainToAccounts[] = []
+
+    const providerHasChains = options?.chains
     const providerOption = this.getProviderOption(providerId)
-    const providerPackage = providerOption?.package
+
     const opts = {
       network: this.network || undefined,
       ...providerOption.options
     }
 
-    const providerTemplate = options?.getEthereumProvider
+    const providerPackage = providerOption?.package
+
+    const ethereumProvider = options?.getEthereumProvider
       ? options?.getEthereumProvider()
-      : undefined
+      : await options?.connector(providerPackage, opts)
 
-    const results: IChainToAccounts[] = []
+    if (providerHasChains) {
+      const cachedChains = this.injectedChains[providerId]
+      const connectList = cachedChains?.length ? cachedChains : chains
 
-    const currentProviderChains = options?.chains
-
-    let hasError = false
-    if (currentProviderChains) {
-      const targetList = (
-        this.injectedChains &&
-        this.injectedChains[providerId] &&
-        this.injectedChains[providerId].length > 0
-          ? this.injectedChains[providerId]
-          : chains
-      ).filter((chain) => !!currentProviderChains[chain])
-
-      for (let i = 0; i < targetList.length; i++) {
-        const chain = targetList[i]
-        const target = currentProviderChains[chain]
-        if (target) {
+      for (const chain of connectList) {
+        const providerChain = providerHasChains[chain]
+        if (providerChain) {
           try {
-            const accounts = await target.methods.getAccounts()
+            const accounts = await providerChain.methods.getAccounts()
             results.push({
               chain: chain as IChainType,
               accounts: accounts
             })
           } catch (e) {
-            hasError = true
             console.error(e)
 
             if (e?.code === 4001) {
@@ -128,36 +122,25 @@ export class ProviderController {
           }
         }
       }
-    }
-
-    const hasCustomAccountsLoading = results.length > 0 && providerTemplate
-
-    const provider = hasCustomAccountsLoading
-      ? providerTemplate
-      : await options?.connector(
-          providerPackage,
-          opts,
-          chains,
-          options?.getEthereumProvider
-        )
-
-    if (!hasCustomAccountsLoading && !hasError) {
+    } else {
       let ethAccounts: string[] = []
 
       let chain = IChainType.ethereum
       try {
-        const chainId = await provider.request({
+        const chainId = await ethereumProvider.request({
           method: 'eth_chainId'
         })
 
         const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
         chain = convertToCommonChain(chainUnformatted)
 
-        ethAccounts = await provider.request({
+        ethAccounts = await ethereumProvider.request({
           method: 'eth_requestAccounts'
         })
       } catch (e) {
-        ethAccounts = Array.isArray(provider.accounts) ? provider.accounts : []
+        ethAccounts = Array.isArray(ethereumProvider.accounts)
+          ? ethereumProvider.accounts
+          : []
       }
 
       results.push({
@@ -168,7 +151,7 @@ export class ProviderController {
 
     return {
       connectedList: results,
-      provider
+      provider: ethereumProvider
     }
   }
 
@@ -262,7 +245,7 @@ export class ProviderController {
         id
       })
 
-      return { provider, connectedList, id }
+      return { connectedList, id }
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
       throw error

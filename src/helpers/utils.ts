@@ -33,8 +33,6 @@ export const findAvailableEthereumProvider = () => {
     return window.ethereum
   } else if (window.web3) {
     return window.web3.currentProvider
-  } else if (window.xfi && window.xfi.ethereum) {
-    return window.xfi.ethereum
   } else if (window.celo) {
     return window.celo
   }

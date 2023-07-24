@@ -13,7 +13,7 @@ const ConnectToWalletConnect = (
   WalletConnectProvider: any,
   opts: IWalletConnectConnectorOptions
 ): Promise<any> => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let bridge = 'https://bridge.walletconnect.org'
     let qrcode = true
     let infuraId = ''
@@ -41,8 +41,12 @@ const ConnectToWalletConnect = (
     })
 
     try {
-      await provider.enable()
-      resolve(provider)
+      provider
+        .enable()
+        .then(() => {
+          resolve(provider)
+        })
+        .catch(reject)
     } catch (e) {
       reject(e)
     }

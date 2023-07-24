@@ -14,7 +14,7 @@ const ConnectToCoinbaseWalletSdk = (
   CoinbaseWalletSdk: any,
   opts: ICoinbaseWalletSdkConnectorOptions
 ) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const options = opts || {}
     const infuraId = options.infuraId || ''
     const chainId = options.chainId || 1
@@ -30,13 +30,15 @@ const ConnectToCoinbaseWalletSdk = (
     const coinbaseWalletSdk = new CoinbaseWalletSdk({
       appName,
       appLogoUrl,
-      darkMode,
+      darkMode
     })
 
     try {
       const provider = coinbaseWalletSdk.makeWeb3Provider(rpc, chainId)
-      await provider.send('eth_requestAccounts')
-      resolve(provider)
+      provider
+        .send('eth_requestAccounts')
+        .then(() => resolve(provider))
+        .catch(reject)
     } catch (e) {
       reject(e)
     }

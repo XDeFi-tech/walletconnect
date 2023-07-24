@@ -1,4 +1,4 @@
-import { IProviderInfo } from '../../helpers'
+import { IProviderInfo, findAvailableEthereumProvider } from '../../helpers'
 import { IChainType, WALLETS } from '../../constants'
 import { ReactComponent as Wallet } from '../../components/icons/Wallet.svg'
 import { ReactComponent as MetaMaskLogo } from '../logos/metamask.svg'
@@ -27,7 +27,10 @@ export const INJECTED: IProviderInfo = {
   name: 'Browser Wallet',
   logo: Wallet,
   type: 'injected',
-  check: 'isWeb3'
+  check: 'isWeb3',
+  getEthereumProvider: () => {
+    return findAvailableEthereumProvider()
+  }
 }
 
 export const METAMASK: IProviderInfo = {
