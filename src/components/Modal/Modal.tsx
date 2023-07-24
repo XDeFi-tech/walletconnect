@@ -179,14 +179,17 @@ const BodyStyled = styled(motion.div)`
   align-items: center;
   justify-content: center;
   max-height: 720px;
+  width: 100%;
   max-width: 605px;
   opacity: 1;
+  overflow: hidden;
   background: ${({ theme }) => theme.modal.bg};
   border-radius: 8px;
 
-  ${({ theme }) => theme.mediaWidth.upToTablet`
-    width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     max-width: unset;
+    max-height: 100vh;
+    width: 100%;
   `}
 `
 
@@ -195,7 +198,12 @@ const ModalHeaderWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  max-width: 517px;
   padding: 16px;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      max-width: unset;
+  `}
 `
 const HeaderTitle = styled.div`
   font-weight: 700;
