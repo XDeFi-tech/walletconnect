@@ -1,4 +1,5 @@
-import WalletConnect from '@walletconnect/web3-provider'
+// import WalletConnect from '@walletconnect/web3-provider'
+import { EthereumProvider } from '@walletconnect/ethereum-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import Torus from '@toruslabs/torus-embed'
 import { Web3Auth } from '@web3auth/web3auth'
@@ -27,9 +28,17 @@ export const getProviderOptions = (): IProviderOptions => {
       }
     },
     walletconnect: {
-      package: WalletConnect,
+      package: EthereumProvider,
       options: {
-        infuraId
+        projectId: '1950467c55f321300fc23ac1c0860041',
+        chains: [1],
+        showQrModal: true,
+        metadata: {
+          name: 'XDEFI Swap & Bridge',
+          description: 'XDEFI Swap & Bridge',
+          url: 'https://app.xdefi.io',
+          icons: ['https://app.xdefi.io/logo192.png']
+        }
       }
     },
     torus: {
