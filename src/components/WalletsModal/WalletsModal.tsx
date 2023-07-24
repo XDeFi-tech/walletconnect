@@ -86,10 +86,6 @@ export const WalletsModal = ({
 
 const StyledModal = styled(Modal)`
   padding: 20px 0;
-
-  .xdeficonnector-modal-body {
-    overflow: auto;
-  }
 `
 
 const SRow = styled.div`
@@ -97,7 +93,11 @@ const SRow = styled.div`
   flex-direction: column;
   padding: 16px;
   width: 100%;
-  width: 517px;
+  max-width: 517px;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      max-width: unset;
+  `}
 `
 
 const CustomHeader = styled.div`

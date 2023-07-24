@@ -21,7 +21,7 @@ export const WALLETCONNECT: IProviderInfo = {
   type: 'qrcode',
   check: 'isWalletConnect',
   package: {
-    required: [['infuraId', 'rpc']]
+    required: [['projectId', 'chains', 'showQrModal']]
   }
 }
 

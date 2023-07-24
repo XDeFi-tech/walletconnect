@@ -186,6 +186,10 @@ const Container = styled.div`
   flex-direction: column;
   padding: 0 16px 16px 16px;
   width: 100%;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      overflow: auto;
+  `}
 `
 const Title = styled.div`
   text-align: center;
@@ -212,6 +216,7 @@ const ButtonWrapper = styled.div`
 const ChainContainer = styled.div`
   gap: 16px;
   display: flex;
+  overflow: auto;
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 20px;
