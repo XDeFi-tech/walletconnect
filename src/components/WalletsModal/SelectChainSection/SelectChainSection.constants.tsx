@@ -167,4 +167,6 @@ export const CHAIN_OPTIONS = [
   }
 ]
 
-export const CHAIN_VALUES = CHAIN_OPTIONS.map((item) => item.value)
+export const CHAIN_VALUES = CHAIN_OPTIONS.map(
+  (item) => item.value
+) as IChainType[]

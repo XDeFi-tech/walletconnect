@@ -18,7 +18,6 @@ export type ICoreOptions = IProviderControllerOptions
 export interface IProviderControllerOptions {
   cacheProviders: boolean
   providerOptions: IProviderOptions
-  network: string
 }
 
 export interface ISupportedChain {

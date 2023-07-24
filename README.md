@@ -207,7 +207,6 @@ const providerOptions = {
 
 const connector = new WalletsConnector(
         options, // from getProviderOptions
-        network, // 'mainnet'
         cacheEnabled, // true
       );
 

@@ -19,7 +19,7 @@ export const NetworkManager = ({
   const [c, setWalletsConnector] = useState<WalletsConnector | null>(null)
 
   useEffect(() => {
-    const newConnector = new WalletsConnector(options, network, cacheEnabled)
+    const newConnector = new WalletsConnector(options, cacheEnabled)
     setWalletsConnector(newConnector)
 
     return () => {

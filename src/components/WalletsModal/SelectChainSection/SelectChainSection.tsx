@@ -12,6 +12,7 @@ import { PrimaryButton } from '../../PrimaryButton'
 import { canInject, IProviderUserOptions } from 'src/helpers'
 import { useConnectorActiveIds, useConnectorMultiChains } from 'src/hooks'
 import { WalletsContext } from 'src/manager'
+import { IChainType } from 'src/constants'
 
 interface IProps {
   className?: string
@@ -24,9 +25,10 @@ export const SelectChainSection = ({
   provider,
   onSelect
 }: IProps) => {
-  const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
+  const [selectedChains, setSelectedChain] =
+    useState<IChainType[]>(CHAIN_VALUES)
 
-  const handleClick = (value: string) => {
+  const handleClick = (value: IChainType) => {
     const isExist = selectedChains.find((chainName) => chainName === value)
 
     if (isExist) {

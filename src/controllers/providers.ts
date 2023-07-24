@@ -33,12 +33,10 @@ export class ProviderController {
 
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
-  private network = ''
 
   constructor(opts: IProviderControllerOptions) {
     this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
-    this.network = opts.network
   }
 
   public getInjectedById = (providerId: string) => {
@@ -89,16 +87,12 @@ export class ProviderController {
     const providerHasChains = options?.chains
     const providerOption = this.getProviderOption(providerId)
 
-    const opts = {
-      network: this.network || undefined,
-      ...providerOption.options
-    }
-
-    const providerPackage = providerOption?.package
-
     const ethereumProvider = options?.getEthereumProvider
       ? options?.getEthereumProvider()
-      : await options?.connector(providerPackage, opts)
+      : await options?.connector(
+          providerOption?.package,
+          providerOption.options
+        )
 
     if (providerHasChains) {
       const cachedChains = this.injectedChains[providerId]

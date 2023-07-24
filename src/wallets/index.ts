@@ -22,13 +22,8 @@ export class WalletsConnector {
 
   private accounts: IProviderWithAccounts = {}
 
-  constructor(
-    providerOptions: IProviderOptions,
-    network = 'mainnet',
-    cacheProviders = true
-  ) {
+  constructor(providerOptions: IProviderOptions, cacheProviders = true) {
     const connector = new WalletConnect({
-      network,
       cacheProviders,
       providerOptions
     })

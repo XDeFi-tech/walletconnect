@@ -9,8 +9,7 @@ import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
   cacheProviders: false,
-  providerOptions: {},
-  network: ''
+  providerOptions: {}
 }
 
 export class WalletConnect {
@@ -26,8 +25,7 @@ export class WalletConnect {
 
     this.providerController = new ProviderController({
       cacheProviders: options.cacheProviders,
-      providerOptions: options.providerOptions,
-      network: options.network
+      providerOptions: options.providerOptions
     })
 
     this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
