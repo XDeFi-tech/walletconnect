@@ -14,7 +14,7 @@ const ConnectToWalletConnect = async (
     provider.events
   )
 
-  if (!provider.connected) {
+  if (!provider.session) {
     await provider.connect()
   }
 
