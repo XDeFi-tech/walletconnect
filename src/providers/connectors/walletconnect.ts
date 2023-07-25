@@ -4,20 +4,21 @@ export interface IWalletConnectConnectorOptions {
   showQrModal: boolean
 }
 
-const ConnectToWalletConnect = (
+const ConnectToWalletConnect = async (
   WalletConnectProvider: any,
   opts: IWalletConnectConnectorOptions
-): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    WalletConnectProvider.init(opts)
-      .then((provider: any) => {
-        provider.removeAllListeners = provider.events.removeAllListeners.bind(
-          provider.events
-        )
-        return resolve(provider)
-      })
-      .catch(reject)
-  })
+) => {
+  const provider = await WalletConnectProvider.init(opts)
+
+  provider.removeAllListeners = provider.events.removeAllListeners.bind(
+    provider.events
+  )
+
+  if (!provider.connected) {
+    await provider.connect()
+  }
+
+  return provider
 }
 
 export default ConnectToWalletConnect
