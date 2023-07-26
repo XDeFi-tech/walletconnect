@@ -153,6 +153,9 @@ export class WalletsConnector {
       ethereum.removeAllListeners('accountsChanged')
       ethereum.removeAllListeners('disconnect')
       ethereum.removeAllListeners('chainChanged')
+      if (providerId === 'walletconnect') {
+        ethereum?.disconnect()
+      }
       this.removeSavedEthereumProvider(providerId)
     }
   }
