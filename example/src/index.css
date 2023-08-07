@@ -190,6 +190,10 @@ iframe {
   pointer-events: none;
 }
 
+#torusIframe {
+  pointer-events: unset;
+}
+
 #root {
   display: flex;
   flex-grow: 1;

@@ -65,15 +65,15 @@ export class ProviderController {
   }
 
   public getUserOptions = () => {
-    return this.providers
-      .filter((x) => this.isAvailableProvider(x.id))
-      .map(({ id, name, logo, chains, installationLink }) => ({
+    return this.providers.map(
+      ({ id, name, logo, chains, installationLink }) => ({
         id,
         name,
         logo,
         chains,
         installationLink
-      }))
+      })
+    )
   }
 
   public connectToChains = async (
@@ -103,6 +103,12 @@ export class ProviderController {
         if (providerChain) {
           try {
             const accounts = await providerChain.methods.getAccounts()
+            if (!accounts.length) {
+              throw new Error(
+                `Provider ${providerId} returned empty accounts for chain: ${chain}`
+              )
+            }
+
             results.push({
               chain: chain as IChainType,
               accounts: accounts
@@ -110,6 +116,12 @@ export class ProviderController {
           } catch (e) {
             console.error(e)
 
+            if (
+              e.message ===
+              `Provider ${providerId} returned empty accounts for chain: ${chain}`
+            ) {
+              throw new Error(e.message)
+            }
             if (e?.code === 4001) {
               throw new Error(e.code)
             }
@@ -120,22 +132,18 @@ export class ProviderController {
       let ethAccounts: string[] = []
 
       let chain = IChainType.ethereum
-      try {
-        const chainId = await ethereumProvider.request({
-          method: 'eth_chainId'
-        })
+      const chainId = await ethereumProvider.request({
+        method: 'eth_chainId'
+      })
 
-        const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
-        chain = convertToCommonChain(chainUnformatted)
+      const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
+      chain = convertToCommonChain(chainUnformatted)
 
-        ethAccounts = await ethereumProvider.request({
-          method: 'eth_requestAccounts'
-        })
-      } catch (e) {
-        ethAccounts = Array.isArray(ethereumProvider.accounts)
-          ? ethereumProvider.accounts
-          : []
-      }
+      ethAccounts = ethereumProvider.enable
+        ? await ethereumProvider.enable()
+        : await ethereumProvider.request({
+            method: 'eth_accounts'
+          })
 
       results.push({
         chain: chain,

@@ -178,7 +178,6 @@ const BodyStyled = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-height: 720px;
   width: 100%;
   max-width: 605px;
   opacity: 1;
@@ -198,12 +197,7 @@ const ModalHeaderWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 517px;
   padding: 16px;
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      max-width: unset;
-  `}
 `
 const HeaderTitle = styled.div`
   font-weight: 700;

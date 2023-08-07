@@ -1,6 +1,5 @@
 import {
-  convertToCommonChain,
-  getChainData,
+  CHAIN_DATA_LIST,
   IChainToAccounts,
   IChainWithAccount,
   IConnectEventPayload,
@@ -13,6 +12,7 @@ import {
 } from '../helpers'
 import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
+import { providers } from 'src/providers'
 
 export class WalletsConnector {
   public configs: IProviderConfigs = {}
@@ -56,12 +56,14 @@ export class WalletsConnector {
         )
       })
 
-      provider?.on?.('accountsChanged', () =>
+      provider?.on?.('accountsChanged', (accounts: string[]) => {
+        if (!accounts.length) {
+          return this.disconnect(providerId)
+        }
         this.loadProviderAccounts(providerId)
-      )
+      })
 
       provider?.on?.('chainChanged', (chainId: string) => {
-        console.log('chainChanged', providerId, chainId)
         this.setConfigs(providerId, chainId)
       })
 
@@ -108,11 +110,13 @@ export class WalletsConnector {
   private initFirstConnection = async () => {
     const results = await this.connector.initFirstConnection()
 
-    results.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        const { id, connectedList } = result.value
-
+    this.cachedProviders.map((providerId, providerIndex) => {
+      const cachedProviderConnect = results[providerIndex]
+      if (cachedProviderConnect.status === 'fulfilled') {
+        const { id, connectedList } = cachedProviderConnect.value
         this.setAccounts(id, connectedList)
+      } else {
+        this.disconnect(providerId)
       }
     })
   }
@@ -144,7 +148,15 @@ export class WalletsConnector {
 
     provider?.removeAllListeners?.('accountsChanged')
     provider?.removeAllListeners?.('chainChanged')
-
+    if (
+      [
+        providers.WALLETCONNECT.id,
+        providers.WEB3AUTH.id,
+        providers.TORUS.id
+      ].includes(providerId)
+    ) {
+      provider?.disconnect?.()
+    }
     this.removeSavedEthereumProvider(providerId)
   }
 
@@ -167,15 +179,11 @@ export class WalletsConnector {
     const chainIdNumber =
       typeof chainId === 'string' ? parseInt(chainId, 16) : chainId
 
-    const chainData = getChainData(chainIdNumber)
-
     this.configs = {
       ...this.configs,
       [providerId]: {
-        ...this.configs[providerId],
-        name: 'unknown',
-        ...chainData,
-        network: convertToCommonChain(chainData.network)
+        network: CHAIN_DATA_LIST[chainIdNumber]?.network ?? 'unknown',
+        chainId: chainIdNumber
       }
     }
 
@@ -287,6 +295,10 @@ export class WalletsConnector {
       provider: provider
     })
 
-    this.setConfigs(providerId, provider.chainId)
+    const chainId = provider.chainId
+      ? provider.chainId
+      : await provider?.getChainId?.()
+
+    this.setConfigs(providerId, chainId)
   }
 }

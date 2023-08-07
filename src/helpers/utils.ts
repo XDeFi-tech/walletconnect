@@ -30,6 +30,13 @@ export function isLocalStorageAvailable() {
 
 export const findAvailableEthereumProvider = () => {
   if (typeof window.ethereum !== 'undefined') {
+    if (window.ethereum?.providers?.length) {
+      const provider = window.ethereum.providers.find(
+        (x: any) => !x.isCoinbaseWallet
+      )
+
+      return provider
+    }
     return window.ethereum
   } else if (window.web3) {
     return window.web3.currentProvider

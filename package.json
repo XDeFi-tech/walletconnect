@@ -1,6 +1,6 @@
 {
   "name": "@xdefi/wallets-connector",
-  "version": "1.5.14",
+  "version": "2.0.0",
   "description": "Cross chain wallets connector with react hooks",
   "author": "garageinc",
   "license": "MIT",
@@ -82,6 +82,7 @@
   ],
   "dependencies": {
     "@keplr-wallet/types": "^0.12.11",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "viem": "^1.4.2"
   }
 }

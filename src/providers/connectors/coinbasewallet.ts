@@ -10,39 +10,31 @@ export interface ICoinbaseWalletSdkConnectorOptions
   darkMode?: boolean
 }
 
-const ConnectToCoinbaseWalletSdk = (
+const ConnectToCoinbaseWalletSdk = async (
   CoinbaseWalletSdk: any,
   opts: ICoinbaseWalletSdkConnectorOptions
 ) => {
-  return new Promise((resolve, reject) => {
-    const options = opts || {}
-    const infuraId = options.infuraId || ''
-    const chainId = options.chainId || 1
-    const appName = options.appName || ''
-    const appLogoUrl = options.appLogoUrl
-    const darkMode = options.darkMode || false
+  const options = opts || {}
+  const infuraId = options.infuraId || ''
+  const chainId = options.chainId || 1
+  const appName = options.appName || ''
+  const appLogoUrl = options.appLogoUrl
+  const darkMode = options.darkMode || false
 
-    let rpc = options.rpc || undefined
-    if (options.infuraId && !options.rpc) {
-      rpc = `https://mainnet.infura.io/v3/${infuraId}`
-    }
+  let rpc = options.rpc || undefined
+  if (options.infuraId && !options.rpc) {
+    rpc = `https://mainnet.infura.io/v3/${infuraId}`
+  }
 
-    const coinbaseWalletSdk = new CoinbaseWalletSdk({
-      appName,
-      appLogoUrl,
-      darkMode
-    })
-
-    try {
-      const provider = coinbaseWalletSdk.makeWeb3Provider(rpc, chainId)
-      provider
-        .send('eth_requestAccounts')
-        .then(() => resolve(provider))
-        .catch(reject)
-    } catch (e) {
-      reject(e)
-    }
+  const coinbaseWalletSdk = new CoinbaseWalletSdk({
+    appName,
+    appLogoUrl,
+    darkMode
   })
+
+  const provider = coinbaseWalletSdk.makeWeb3Provider(rpc, chainId)
+  await provider.enable()
+  return provider
 }
 
 export default ConnectToCoinbaseWalletSdk

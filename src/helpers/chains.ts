@@ -352,6 +352,18 @@ export const CHAIN_DATA_LIST: ChainDataList = {
     network: 'newchain-mainnet',
     networkId: 1012
   },
+  7700: {
+    chainId: 7700,
+    chain: 'Canto',
+    network: 'canto',
+    networkId: 7700
+  },
+  8217: {
+    chainId: 8217,
+    chain: 'Klaytn Mainnet Cypress',
+    network: 'klaytn',
+    networkId: 8217
+  },
   421611: {
     chainId: 421611,
     chain: 'ETH',
@@ -398,12 +410,4 @@ export function convertToCommonChain(network?: string): IChainType {
   }
 
   return network as IChainType
-}
-
-export function getChainData(chainId: number): ChainData {
-  const chain: ChainData = CHAIN_DATA_LIST[chainId]
-  if (!chain) {
-    throw new Error(`No chainId found match ${chainId}`)
-  }
-  return chain
 }

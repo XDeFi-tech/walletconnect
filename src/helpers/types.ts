@@ -1,5 +1,4 @@
 import { IChainType } from 'src/constants'
-import { ChainData } from '.'
 
 export type Network = {
   name: string
@@ -41,11 +40,11 @@ export interface IChainToAccounts {
   accounts: string[]
 }
 
-export type IWalletConnectorConfigs = Network &
-  ChainData & { activeAddress?: string }
-
 export interface IProviderConfigs {
-  [providerId: string]: IWalletConnectorConfigs
+  [providerId: string]: {
+    network: string
+    chainId: number
+  }
 }
 
 export type RequiredOption = string | string[]

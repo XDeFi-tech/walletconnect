@@ -15,33 +15,28 @@ interface IModalCardStyleProps {
 const SCard = styled.div<IModalCardStyleProps>`
   position: relative;
   width: 100%;
-  border-radius: 12px;
   padding: 0;
   display: flex;
   min-width: fit-content;
   max-height: 100%;
   overflow: auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: 24px;
-  margin-top: 36px;
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    grid-gap: 16px;
-    grid-template-columns: 1fr;
-    margin-top: 16px;
-  `};
+  display: flex;
+  gap: 8px;
 `
 
 const DisconnectBtnStyled = styled(DisconnectBtn)`
-  margin-top: 24px;
   cursor: pointer;
 `
 
 const ModalStyled = styled(Modal)`
   .xdeficonnector-modal-body {
-    width: 432px;
+    max-width: 432px;
     padding: 16px;
+    gap: 16px;
+  }
+
+  .xdeficonnector-modal-header {
+    padding: 16px 0;
   }
 `
 
