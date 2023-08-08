@@ -38,7 +38,7 @@ module.exports = function override(config, env) {
         buffer: 'buffer',
         console: 'console-browserify',
         constants: 'constants-browserify',
-        crypto: 'crypto-browserify',
+        crypto: require.resolve('crypto-browserify'),
         domain: 'domain-browser',
         events: 'events',
         fs: false,

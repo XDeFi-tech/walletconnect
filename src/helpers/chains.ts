@@ -352,6 +352,18 @@ export const CHAIN_DATA_LIST: ChainDataList = {
     network: 'newchain-mainnet',
     networkId: 1012
   },
+  7700: {
+    chainId: 7700,
+    chain: 'Canto',
+    network: 'canto',
+    networkId: 7700
+  },
+  8217: {
+    chainId: 8217,
+    chain: 'Klaytn Mainnet Cypress',
+    network: 'klaytn',
+    networkId: 8217
+  },
   421611: {
     chainId: 421611,
     chain: 'ETH',
@@ -374,30 +386,11 @@ export const CHAIN_DATA_LIST: ChainDataList = {
 
 export function getChainId(network: string): number {
   const chains: ChainData[] = Object.values(CHAIN_DATA_LIST)
-  const match = filterMatches<ChainData>(
-    chains,
-    (x) => x.network === network,
-    undefined
-  )
+  const match = chains.find((x) => x.network === network)
   if (!match) {
     throw new Error(`No chainId found match ${network}`)
   }
   return match.chainId
-}
-
-function filterMatches<T>(
-  array: T[],
-  condition: (x: T) => boolean,
-  fallback: T | undefined
-): T | undefined {
-  let result = fallback
-  const matches = array.filter(condition)
-
-  if (!!matches && matches.length) {
-    result = matches[0]
-  }
-
-  return result
 }
 
 export function convertToCommonChain(network?: string): IChainType {
@@ -417,12 +410,4 @@ export function convertToCommonChain(network?: string): IChainType {
   }
 
   return network as IChainType
-}
-
-export function getChainData(chainId: number): ChainData {
-  const chain: ChainData = CHAIN_DATA_LIST[chainId]
-  if (!chain) {
-    throw new Error(`No chainId found match ${chainId}`)
-  }
-  return chain
 }

@@ -12,21 +12,18 @@ import { PrimaryButton } from '../../PrimaryButton'
 import { canInject, IProviderUserOptions } from 'src/helpers'
 import { useConnectorActiveIds, useConnectorMultiChains } from 'src/hooks'
 import { WalletsContext } from 'src/manager'
+import { IChainType } from 'src/constants'
 
 interface IProps {
-  className?: string
   provider?: IProviderUserOptions | null
   onSelect: () => void
 }
 
-export const SelectChainSection = ({
-  className,
-  provider,
-  onSelect
-}: IProps) => {
-  const [selectedChains, setSelectedChain] = useState<string[]>(CHAIN_VALUES)
+export const SelectChainSection = ({ provider, onSelect }: IProps) => {
+  const [selectedChains, setSelectedChain] =
+    useState<IChainType[]>(CHAIN_VALUES)
 
-  const handleClick = (value: string) => {
+  const handleClick = (value: IChainType) => {
     const isExist = selectedChains.find((chainName) => chainName === value)
 
     if (isExist) {
@@ -52,17 +49,13 @@ export const SelectChainSection = ({
     )
   }, [provider, context])
 
-  const disabledByWallet = useMemo(
-    () => context && provider && context.disabledByProvider(provider?.id),
-    [context, provider]
-  )
-
   const [loading, setLoading] = useState(false)
   const isActive = useMemo(() => {
     return pids.some((i) => i === provider?.id)
   }, [provider, pids])
 
-  const isAvailable = !disabledByWallet && !needInstall
+  const isAvailable =
+    provider && context?.isAvailableProvider(provider?.id) && !needInstall
 
   const { injectedChains: injectedChainsPerProvider } =
     useConnectorMultiChains()
@@ -78,16 +71,9 @@ export const SelectChainSection = ({
       if (isAvailable && context && !needInstall && provider) {
         setLoading(true)
         if (isActive) {
-          if (context.connector.isSingleProviderEnabled) {
-            context.disconnect()
-          } else {
-            context.disconnect(provider?.id)
-          }
+          context.disconnect(provider?.id)
         }
-        await context.connector.connectTo(provider?.id, [
-          ...providerInjectedChains,
-          ...selectedChains
-        ])
+        await context.connectTo(provider?.id, selectedChains)
         onSelect()
       }
     } catch (e) {
@@ -103,7 +89,6 @@ export const SelectChainSection = ({
     onSelect,
     isActive,
     provider,
-    providerInjectedChains,
     selectedChains
   ])
 
@@ -141,8 +126,7 @@ export const SelectChainSection = ({
   }, [providerInjectedChains])
 
   return (
-    <Container className={className}>
-      <Title>Select chains</Title>
+    <Container>
       <ChainContainer>
         {CHAIN_OPTIONS.map((chain) => (
           <ChainCard
@@ -184,19 +168,11 @@ export const SelectChainSection = ({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 16px 16px 16px;
   width: 100%;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
       overflow: auto;
   `}
-`
-const Title = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 24px;
-  color: ${({ theme }) => theme.selectChain.title};
 `
 
 const DeselectAllWrapper = styled.div`
@@ -219,11 +195,6 @@ const ChainContainer = styled.div`
   overflow: auto;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
-
-  ${({ theme }) => theme.mediaWidth.upToTablet`
-    padding: 0px;
-  `};
 `
 
 const DescriptionWrapper = styled.div`

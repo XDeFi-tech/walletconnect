@@ -1,27 +1,22 @@
-import { Network } from '@ethersproject/providers'
 import { IChainType } from 'src/constants'
-import { ChainData } from '.'
+
+export type Network = {
+  name: string
+  chainId: number
+  ensAddress?: string
+  _defaultProvider?: (providers: any, options?: any) => any
+}
+
+export interface IConnectEventPayload {
+  provider: any
+  id: string
+}
 
 export type ICoreOptions = IProviderControllerOptions
 
 export interface IProviderControllerOptions {
-  disableInjectedProvider: boolean
   cacheProviders: boolean
   providerOptions: IProviderOptions
-  network: string
-  isSingleProviderEnabled?: boolean
-}
-
-export interface IInjectedProvidersMap {
-  injectedAvailable: boolean | undefined
-  [isProviderName: string]: boolean | undefined
-}
-
-export interface IProviderDisplay {
-  name: string
-  logo: any
-  description?: string
-  getEthereumProvider?: () => any
 }
 
 export interface ISupportedChain {
@@ -30,6 +25,7 @@ export interface ISupportedChain {
     sendTransaction?: (txData: any) => Promise<any>
     getAccounts: (provider?: any) => Promise<any>
     request?: (type: string, data: any) => Promise<any>
+    getProvider?: () => any
   }
 }
 
@@ -40,28 +36,15 @@ export type IProviderWithAccounts = {
 }
 
 export interface IChainToAccounts {
-  chain: string
+  chain: IChainType
   accounts: string[]
 }
 
-export type IWalletConnectorConfigs = Network &
-  ChainData & { activeAddress?: string }
-
 export interface IProviderConfigs {
-  [providerId: string]: IWalletConnectorConfigs
-}
-
-export interface IProviderInfo extends IProviderDisplay {
-  id: string
-  type: string
-  check: string
-  package?: IProviderPackageOptions
-  chains?: {
-    [name: string]: ISupportedChain
+  [providerId: string]: {
+    network: string
+    chainId: number
   }
-  installationLink?: string
-  getEthereumProvider?: () => any
-  disabledByWalletFunc?: () => string | undefined
 }
 
 export type RequiredOption = string | string[]
@@ -82,36 +65,40 @@ export interface IProviderOptions {
 }
 
 export interface IProviderWithChains {
-  [key: string]: string[]
+  [key: string]: IChainType[]
 }
 
 export interface IWeb3Providers {
   [key: string]: any
 }
 
-export interface IProviderDisplayWithConnector extends IProviderDisplay {
+export interface IProviderInfo {
+  name: string
+  logo: any
+  description?: string
   id: string
-  connector: any
+  type: string
+  check: string
   package?: IProviderPackageOptions
   chains?: {
     [name: string]: ISupportedChain
   }
-  disabledByWalletFunc?: () => string | undefined
+  installationLink?: string
+  getEthereumProvider?: () => any
+}
+
+export interface IProviderDisplayWithConnector extends IProviderInfo {
+  connector: any
 }
 
 export interface IProviderUserOptions {
   id: string
   name: string
   logo: any
-  description: string
-  onClick: (chains?: string[]) => Promise<void>
   chains?: {
     [name: string]: ISupportedChain
   }
   installationLink?: string
-  disabledByWalletFunc?: () => string | undefined
-  label?: string
-  pids?: any
 }
 
 export type SimpleFunction = (input?: any) => void
@@ -122,18 +109,3 @@ export interface IEventCallback {
 }
 
 export type Connector = (provider?: any, opts?: any) => Promise<any>
-
-export interface IConnectorsMap {
-  [id: string]: Connector
-}
-
-export enum SupportedChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  MATIC = 137,
-  MATIC_TESTNET = 80001,
-  LOCAL_TESTNET = 31337,
-  BSC = 56,
-  FANTOM = 250,
-  AVALANCHE = 0xa86a
-}

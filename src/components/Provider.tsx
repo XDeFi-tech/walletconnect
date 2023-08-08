@@ -12,9 +12,10 @@ import { DefaultTheme } from 'styled-components/macro'
 
 import { ReactComponent as LinkOutSvg } from './icons/linkOut.svg'
 import { ReactComponent as ArrowSvg } from './icons/Arrow.svg'
-import { ReactComponent as WalletSvg } from './icons/Wallet.svg'
 import { canInject, IProviderUserOptions } from '../helpers'
 import { CircleSpinner } from './Spinner'
+import { IChainType } from 'src/constants'
+import { providers } from 'src/providers'
 
 interface IProviderProps {
   provider: IProviderUserOptions
@@ -32,7 +33,7 @@ export function WalletProvider({
   const pids = useConnectorActiveIds()
   const context = useContext(WalletsContext)
   const supportedChains = useMemo(() => {
-    return chains ? Object.keys(chains) : []
+    return chains ? (Object.keys(chains) as IChainType[]) : []
   }, [chains])
 
   const needInstall = useMemo(() => {
@@ -41,8 +42,8 @@ export function WalletProvider({
     )
   }, [installationLink, context, id])
 
-  const disabledByWallet = useMemo(
-    () => context && context.disabledByProvider(id),
+  const isDisabledByPrioritiseXdefi = useMemo(
+    () => window?.ethereum?.isXDEFI && provider.id === providers.INJECTED.id,
     [context, id]
   )
 
@@ -52,7 +53,10 @@ export function WalletProvider({
     return pids.some((i) => i === id)
   }, [pids, id])
 
-  const isAvailable = !disabledByWallet && !needInstall
+  const isAvailable =
+    !isDisabledByPrioritiseXdefi &&
+    !!context?.isAvailableProvider(id) &&
+    !needInstall
 
   const isConnected = !!pids.find((providerId) => providerId === id)
 
@@ -60,7 +64,7 @@ export function WalletProvider({
     if (isAvailable && context && !needInstall) {
       setLoading(true)
       try {
-        await context.connector.connectTo(id, supportedChains)
+        await context.connectTo(id, supportedChains)
       } finally {
         setLoading(false)
       }
@@ -79,6 +83,8 @@ export function WalletProvider({
   const isRecommended = id === 'xdefi'
 
   const handleClickProvider = () => {
+    if (isConnected || needInstall) return
+
     if (isRecommended) {
       onShowChainSelector?.()
       return
@@ -94,14 +100,10 @@ export function WalletProvider({
 
   const rightPart = useMemo(() => {
     if (isConnected) {
-      return provider?.label === 'Browser Wallet' ? (
-        <ConnectedText>{name} connected</ConnectedText>
-      ) : (
-        <ConnectedText>Connected</ConnectedText>
-      )
+      return <ConnectedText>Connected</ConnectedText>
     }
 
-    if (disabledByWallet) {
+    if (isDisabledByPrioritiseXdefi) {
       return (
         <DisabledText>
           To connect with Browser Wallet, please turn off “Prioritise XDEFI” in
@@ -110,7 +112,7 @@ export function WalletProvider({
       )
     }
 
-    if (needInstall && !disabledByWallet) {
+    if (needInstall) {
       return installationLink ? (
         <SLink href={installationLink} target='_blank'>
           <span>Please install {name}</span>
@@ -136,14 +138,13 @@ export function WalletProvider({
 
     return null
   }, [
-    disabledByWallet,
+    isDisabledByPrioritiseXdefi,
     isConnected,
     isRecommended,
     installationLink,
     name,
     needInstall,
-    loading,
-    provider?.label
+    loading
   ])
 
   return (
@@ -154,18 +155,14 @@ export function WalletProvider({
       active={isActive}
     >
       <NameWrapper>
-        {provider?.label === 'Browser Wallet' ? (
-          <WalletSvg />
-        ) : (
-          <SIcon>
-            {typeof El !== 'string' ? (
-              <El style={{ flexShrink: 0 }} />
-            ) : (
-              <img src={El} />
-            )}
-          </SIcon>
-        )}
-        <SName>{provider?.label ? provider?.label : name}</SName>
+        <SIcon>
+          {typeof El !== 'string' ? (
+            <El style={{ flexShrink: 0 }} />
+          ) : (
+            <img src={El} />
+          )}
+        </SIcon>
+        <SName>{name}</SName>
       </NameWrapper>
       {rightPart}
     </SProviderWrapper>
@@ -194,8 +191,10 @@ export function DisconnectWalletProvider({
 
 const CircleSpinnerStyled = styled(CircleSpinner)`
   position: absolute;
-  right: 12px;
-  top: 12px;
+  bottom: 0;
+  top: 0;
+  right: 16px;
+  margin: auto;
 `
 
 const SIcon = styled.div`
@@ -217,11 +216,6 @@ const SIcon = styled.div`
     width: 28px;
     height: 28px;
   }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 32px;
-    height: 32px;
-  `};
 `
 
 const SProviderWrapper = styled.div<{
@@ -232,16 +226,11 @@ const SProviderWrapper = styled.div<{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 52px;
-  padding: 0 16px;
+  padding: 16px;
   grid-gap: 12px;
   opacity: ${({ available }) => (available ? 1 : 0.4)};
   border-radius: 8px;
   cursor: ${({ available }) => (available ? 'pointer' : 'unset')};
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    padding: 0 8px;
-  `}
 
   &:hover {
     background-color: #111314;
@@ -263,8 +252,6 @@ const SProviderDisconnectWrapper = styled.div<{
   position: relative;
   flex-direction: row;
   width: 100%;
-  min-height: 60px;
-  height: auto;
 `
 
 const STYLES = (theme: DefaultTheme) => `
@@ -284,7 +271,7 @@ const SNameDisconnect = styled.div`
   ${({ theme }) => STYLES(theme)}
   margin-top: 0;
   text-align: left;
-  margin-left: 44px;
+  margin-left: 16px;
 `
 
 const linkStyles = css`
@@ -314,7 +301,7 @@ const NameWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  grid-gap: 12px;
+  gap: 16px;
 `
 
 const DisabledText = styled.div`
@@ -324,6 +311,7 @@ const DisabledText = styled.div`
   line-height: 16px;
   text-align: right;
 `
+
 const RecommendedWrapper = styled.div`
   display: flex;
   align-items: center;

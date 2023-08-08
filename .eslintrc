@@ -1,16 +1,16 @@
 {
+  "root": true,
   "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "import-helpers"],
   "extends": [
-    "standard",
-    "standard-react",
+    "eslint:recommended",
     "plugin:prettier/recommended",
-    "prettier/standard",
-    "prettier/react",
-    "plugin:@typescript-eslint/eslint-recommended",
-    // "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
   ],
   "env": {
+    "browser": true,
+    "es6": true,
     "node": true
   },
   "parserOptions": {
@@ -25,13 +25,27 @@
       "version": "16"
     }
   },
-  // "plugins": ["unused-imports"], // "simple-import-sort",
   "rules": {
     "space-before-function-paren": 0,
     "react/prop-types": 0,
     "react/jsx-handler-names": 0,
     "react/jsx-fragments": 0,
     "react/no-unused-prop-types": 0,
-    "import/export": 0
+    "import/export": 0,
+    "@typescript-eslint/interface-name-prefix": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "none",
+          "requireLast": false
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ]
   }
 }

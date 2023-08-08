@@ -1,9 +1,6 @@
-/* eslint import/namespace: ['error', { allowComputed: true }] */
 import * as list from '../providers'
 import {
   INJECTED_PROVIDER_ID,
-  CACHED_PROVIDER_KEY,
-  CACHED_PROVIDER_CHAINS_KEY,
   WALLETS_EVENTS,
   CACHED_MULTI_PROVIDERS_KEY,
   CACHED_PROVIDERS_CHAINS_KEY,
@@ -12,11 +9,6 @@ import {
 import {
   getLocal,
   setLocal,
-  getProviderInfoById,
-  getProviderDescription,
-  filterMatches,
-  findMatchingRequiredOptions,
-  canInject,
   findAvailableEthereumProvider,
   isCurrentProviderActive,
   IProviderControllerOptions,
@@ -25,189 +17,63 @@ import {
   convertToCommonChain,
   IProviderDisplayWithConnector,
   IProviderOptions,
-  IProviderInfo,
-  IProviderUserOptions
+  IChainToAccounts
 } from '../helpers'
 
 import { EventController } from './events'
-import { disabledDefault } from 'src/providers/injected/utils'
 
 export class ProviderController {
   public cachedProviders: string[] = []
   public shouldCacheProviders = false
-  public disableInjectedProvider = false
-  public isSingleProviderEnabled: Boolean | undefined
 
   private eventController: EventController = new EventController()
   public injectedChains: {
-    [providerId: string]: string[]
+    [providerId: string]: IChainType[]
   } = {}
 
   private providers: IProviderDisplayWithConnector[] = []
   private providerOptions: IProviderOptions
-  private network = ''
 
   constructor(opts: IProviderControllerOptions) {
-    this.disableInjectedProvider = opts.disableInjectedProvider
     this.shouldCacheProviders = opts.cacheProviders
     this.providerOptions = opts.providerOptions
-    this.network = opts.network
-    this.isSingleProviderEnabled = opts.isSingleProviderEnabled
   }
 
   public getInjectedById = (providerId: string) => {
     return list.injected[providerId.toUpperCase()]
   }
 
+  public getProviderById = (providerId: string) => {
+    return list.providers[providerId.toUpperCase()]
+  }
+
   public init() {
     this.updateCachedProviders(getLocal(this.cachedProvidersKey) || [])
     this.injectedChains = getLocal(this.cachedProviderChainsKey) || {}
     this.providers = []
-    // parse custom providers
-    Object.keys(this.providerOptions).map((id) => {
-      if (id && this.providerOptions[id]) {
-        const options = this.providerOptions[id]
-        const displayProps = this.getInjectedById(id)
-        if (typeof displayProps !== 'undefined') {
-          this.providers.push({
-            ...list.providers.INJECTED,
-            connector: options.connector || list.connectors.injected,
-            ...displayProps,
-            ...options.display,
-            id
-          })
-        }
-      }
+
+    Object.entries(this.providerOptions).map(([id, optionProvider]) => {
+      const systemProvider = this.getProviderById(id)
+      const connector = optionProvider.connector || list.connectors[id]
+      this.providers.push({
+        ...systemProvider,
+        ...optionProvider.display,
+        connector,
+        id
+      })
     })
-    this.providers.push(
-      ...Object.keys(list.connectors)
-        .filter((id: string) => !!this.providerOptions[id])
-        .map((id: string) => {
-          let providerInfo: IProviderInfo
-          if (id === INJECTED_PROVIDER_ID) {
-            providerInfo =
-              this.getProviderOption(id)?.display || list.providers.INJECTED
-          } else {
-            providerInfo = getProviderInfoById(id)
-          }
-          // parse custom display options
-          if (this.providerOptions[id]) {
-            providerInfo = {
-              ...providerInfo,
-              ...this.providerOptions[id].display
-            }
-          }
-          return {
-            ...providerInfo,
-            connector: list.connectors[id],
-            package: providerInfo.package
-          }
-        })
-    )
-  }
-
-  public shouldDisplayProvider(id: string) {
-    const provider = this.getProvider(id)
-    if (typeof provider !== 'undefined') {
-      const providerPackageOptions = this.providerOptions[id]
-      if (providerPackageOptions) {
-        const requiredOptions = provider.package
-          ? provider.package.required
-          : undefined
-
-        if (requiredOptions && requiredOptions.length) {
-          const providedOptions = providerPackageOptions.options
-          if (providedOptions && Object.keys(providedOptions).length) {
-            const matches = findMatchingRequiredOptions(
-              requiredOptions,
-              providedOptions
-            )
-            if (requiredOptions.length === matches.length) {
-              return true
-            }
-          }
-        } else {
-          return true
-        }
-      }
-    }
-    return false
   }
 
   public getUserOptions = () => {
-    const defaultProviderList = Array.from(
-      new Set(this.providers.map(({ id }) => id))
+    return this.providers.map(
+      ({ id, name, logo, chains, installationLink }) => ({
+        id,
+        name,
+        logo,
+        chains,
+        installationLink
+      })
     )
-
-    const availableInjectedList = defaultProviderList.filter(
-      (pid) => this.getInjectedById(pid) && this.isAvailableProvider(pid)
-    )
-
-    const injectedList = defaultProviderList.filter((pid) => {
-      const target = this.getInjectedById(pid)
-      return target && pid !== 'xdefi'
-    })
-
-    const browserInjectedList = availableInjectedList.filter(
-      (provider) => provider !== 'xdefi'
-    )
-
-    const displayInjected =
-      !this.disableInjectedProvider &&
-      browserInjectedList.length === 0 &&
-      canInject()
-
-    const providerList: string[] = []
-
-    defaultProviderList.forEach((id: string) => {
-      if (id !== INJECTED_PROVIDER_ID) {
-        const result = this.shouldDisplayProvider(id)
-        if (result) {
-          providerList.push(id)
-        }
-      } else if (displayInjected) {
-        providerList.push(INJECTED_PROVIDER_ID)
-      }
-    })
-
-    const userOptions: IProviderUserOptions[] = []
-
-    providerList.forEach((id: string) => {
-      const provider = this.getProvider(id)
-      if (typeof provider !== 'undefined') {
-        const { id, name, logo, connector, ...rest } = provider
-
-        userOptions.push({
-          id,
-          name,
-          logo,
-          description: getProviderDescription(provider),
-          onClick: (chains: string[] = []) =>
-            this.connectTo(id, connector, chains),
-          ...rest
-        })
-      }
-    })
-
-    const providersWithoutInjected = userOptions.filter(
-      (provider) => !injectedList.find((id) => id === provider.id)
-    )
-
-    if (browserInjectedList.length) {
-      const wallet = userOptions.find(
-        (option) => option.id === browserInjectedList[0]
-      )
-
-      if (wallet) {
-        return [
-          providersWithoutInjected[0],
-          { ...wallet, label: 'Browser Wallet' },
-          ...providersWithoutInjected.slice(1)
-        ]
-      }
-    }
-
-    return providersWithoutInjected
   }
 
   public connectToChains = async (
@@ -215,86 +81,69 @@ export class ProviderController {
     chains: string[] = []
   ) => {
     const options = this.findProviderFromOptions(providerId)
+
+    const results: IChainToAccounts[] = []
+
+    const providerHasChains = options?.chains
     const providerOption = this.getProviderOption(providerId)
-    const providerPackage = providerOption?.package
-    const opts = {
-      network: this.network || undefined,
-      ...providerOption.options
-    }
 
-    const providerTemplate = options?.getEthereumProvider
+    const ethereumProvider = options?.getEthereumProvider
       ? options?.getEthereumProvider()
-      : undefined
+      : await options?.connector(
+          providerOption?.package,
+          providerOption.options
+        )
 
-    const results: { chain: IChainType; accounts: string[] }[] = []
+    if (providerHasChains) {
+      const cachedChains = this.injectedChains[providerId]
+      const connectList = cachedChains?.length ? cachedChains : chains
 
-    const currentProviderChains = options?.chains
-
-    let hasError = false
-    if (currentProviderChains) {
-      const targetList = (
-        this.injectedChains &&
-        this.injectedChains[providerId] &&
-        this.injectedChains[providerId].length > 0
-          ? this.injectedChains[providerId]
-          : chains
-      ).filter((chain) => !!currentProviderChains[chain])
-
-      for (let i = 0; i < targetList.length; i++) {
-        const chain = targetList[i]
-        const target = currentProviderChains[chain]
-        if (target) {
+      for (const chain of connectList) {
+        const providerChain = providerHasChains[chain]
+        if (providerChain) {
           try {
-            const accounts = await target.methods.getAccounts(
-              options?.getEthereumProvider
-                ? options.getEthereumProvider()
-                : undefined
-            )
+            const accounts = await providerChain.methods.getAccounts()
+            if (!accounts.length) {
+              throw new Error(
+                `Provider ${providerId} returned empty accounts for chain: ${chain}`
+              )
+            }
+
             results.push({
               chain: chain as IChainType,
               accounts: accounts
             })
           } catch (e) {
-            hasError = true
             console.error(e)
 
+            if (
+              e.message ===
+              `Provider ${providerId} returned empty accounts for chain: ${chain}`
+            ) {
+              throw new Error(e.message)
+            }
             if (e?.code === 4001) {
               throw new Error(e.code)
             }
           }
         }
       }
-    }
-
-    const hasCustomAccountsLoading = results.length > 0 && providerTemplate
-
-    const provider = hasCustomAccountsLoading
-      ? providerTemplate
-      : await options?.connector(
-          providerPackage,
-          opts,
-          chains,
-          options?.getEthereumProvider
-        )
-
-    if (!hasCustomAccountsLoading && !hasError) {
+    } else {
       let ethAccounts: string[] = []
 
       let chain = IChainType.ethereum
-      try {
-        const chainId = await provider.request({
-          method: 'eth_chainId'
-        })
+      const chainId = await ethereumProvider.request({
+        method: 'eth_chainId'
+      })
 
-        const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
-        chain = convertToCommonChain(chainUnformatted)
+      const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
+      chain = convertToCommonChain(chainUnformatted)
 
-        ethAccounts = await provider.request({
-          method: 'eth_requestAccounts'
-        })
-      } catch (e) {
-        ethAccounts = Array.isArray(provider.accounts) ? provider.accounts : []
-      }
+      ethAccounts = ethereumProvider.enable
+        ? await ethereumProvider.enable()
+        : await ethereumProvider.request({
+            method: 'eth_accounts'
+          })
 
       results.push({
         chain: chain,
@@ -302,25 +151,14 @@ export class ProviderController {
       })
     }
 
-    // const rejected = results
-    //   .filter((result) => result.status === 'rejected')
-    //   .map((result) => result.reason)
-    // if (rejected.length > 0) {
-    //   throw new Error(rejected[0])
-    // }
-
     return {
       connectedList: results,
-      provider
+      provider: ethereumProvider
     }
   }
 
   public getProvider(id: string) {
-    return filterMatches<IProviderDisplayWithConnector>(
-      this.providers,
-      (x) => x.id === id,
-      undefined
-    )
+    return this.providers.find((x) => x.id === id)
   }
 
   public getProviderOption(id: string): IProviderOption {
@@ -354,17 +192,13 @@ export class ProviderController {
   }
 
   private updateCachedProviders(providers: string[]) {
-    this.cachedProviders = (
-      this.isSingleProviderEnabled && providers.length > 0
-        ? providers.slice(0, 1)
-        : providers
-    ).filter(this.isAvailableProvider)
+    this.cachedProviders = providers.filter(this.isAvailableProvider)
     setLocal(this.cachedProvidersKey, this.cachedProviders)
 
     this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, this.cachedProviders)
   }
 
-  public setCachedProvider(id: string, chains: string[]) {
+  public setCachedProvider(id: string, chains: IChainType[]) {
     const unique = new Set([...this.cachedProviders, id])
     this.updateCachedProviders(Array.from(unique))
 
@@ -372,18 +206,14 @@ export class ProviderController {
   }
 
   get cachedProvidersKey() {
-    return this.isSingleProviderEnabled
-      ? CACHED_PROVIDER_KEY
-      : CACHED_MULTI_PROVIDERS_KEY
+    return CACHED_MULTI_PROVIDERS_KEY
   }
 
   get cachedProviderChainsKey() {
-    return this.isSingleProviderEnabled
-      ? CACHED_PROVIDER_CHAINS_KEY
-      : CACHED_PROVIDERS_CHAINS_KEY
+    return CACHED_PROVIDERS_CHAINS_KEY
   }
 
-  public setInjectedChains(providerId: string, chains: string[]) {
+  public setInjectedChains(providerId: string, chains: IChainType[]) {
     this.injectedChains[providerId] = chains
     setLocal(this.cachedProviderChainsKey, this.injectedChains)
   }
@@ -402,49 +232,33 @@ export class ProviderController {
       : findAvailableEthereumProvider()
   }
 
-  public connectTo = async (
-    id: string,
-    connector: (
-      providerPackage: any,
-      opts: any,
-      chains?: string[],
-      getProvider?: () => any
-    ) => Promise<any>,
-    chains: string[]
-  ) => {
+  public connectTo = async (id: string, chains: IChainType[]) => {
     try {
       this.trigger(WALLETS_EVENTS.SELECT, id)
 
-      const { provider } = await this.connectToChains(id, chains)
+      const { provider, connectedList } = await this.connectToChains(id, chains)
+
+      if (this.shouldCacheProviders) {
+        this.setCachedProvider(id, chains)
+      }
 
       this.trigger(WALLETS_EVENTS.CONNECT, {
         provider,
         id
       })
 
-      if (this.shouldCacheProviders) {
-        this.setCachedProvider(id, chains)
-      }
+      return { connectedList, id }
     } catch (error) {
       this.trigger(WALLETS_EVENTS.ERROR, error)
+      throw error
     }
   }
 
   public async connectToCachedProviders() {
     return Promise.allSettled(
-      (this.cachedProviders || [])
-        .filter(this.isAvailableProvider)
-        .map((pid: string) => {
-          const provider = this.getProvider(pid)
-          if (provider) {
-            return this.connectTo(
-              provider.id,
-              provider.connector,
-              this.injectedChains[provider.id]
-            )
-          }
-          return null
-        })
+      (this.cachedProviders || []).map((pid: string) =>
+        this.connectTo(pid, this.injectedChains[pid])
+      )
     )
   }
 
@@ -455,36 +269,15 @@ export class ProviderController {
       return true // Provider is not defined at list of injected and we do not controll this provider
     }
 
-    if (this.disabledByProvider(providerId)) {
-      return false
-    }
     const provider = this.getEthereumProvider(providerId)
+
+    if (providerId === INJECTED_PROVIDER_ID && provider) {
+      return true
+    }
+
     const isActive = isCurrentProviderActive(provider, injected)
 
     return isActive
-  }
-
-  public disabledByProvider = (providerId: string) => {
-    if (!this.getInjectedById(providerId)) {
-      return undefined // Provider is not defined at list of injected and we do not controll this provider
-    }
-
-    const options = this.findProviderFromOptions(providerId)
-
-    const defaultDisabledByProvider = disabledDefault(providerId)
-    if (defaultDisabledByProvider) {
-      return defaultDisabledByProvider
-    }
-
-    if (
-      options &&
-      options.disabledByWalletFunc &&
-      options.disabledByWalletFunc()
-    ) {
-      return options.disabledByWalletFunc()
-    }
-
-    return undefined
   }
 
   public on(event: string, callback: (result: any) => void): () => void {

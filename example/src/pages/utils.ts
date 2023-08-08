@@ -1,10 +1,7 @@
-// import WalletConnect from '@walletconnect/web3-provider'
 import { EthereumProvider } from '@walletconnect/ethereum-provider'
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
 import Torus from '@toruslabs/torus-embed'
-import Ledger from '@web3modal/ledger-provider'
-import Trezor from '@web3modal/trezor-provider'
-import { Web3Auth } from '@web3auth/web3auth'
+import { Web3Auth } from '@web3auth/modal'
 import { IProviderOptions, injected } from '@xdefi/wallets-connector'
 
 export const getProviderOptions = (): IProviderOptions => {
@@ -16,11 +13,6 @@ export const getProviderOptions = (): IProviderOptions => {
         ...injected.INJECTED
       }
     },
-    metamask: {},
-    opera: {},
-    safe: {},
-    cipher: {},
-
     coinbasewallet: {
       package: CoinbaseWalletSDK,
       options: {
@@ -31,7 +23,8 @@ export const getProviderOptions = (): IProviderOptions => {
     web3auth: {
       package: Web3Auth,
       options: {
-        infuraId
+        clientId:
+          'BDT32AJMVtrs4yu6EgghO5HilnZIhw-gYS67FDKe6fVMrkVRNwA4KtaLqvaF0t-j4US3UGCorGJnk-e_a77OhPE'
       }
     },
     walletconnect: {
@@ -50,12 +43,6 @@ export const getProviderOptions = (): IProviderOptions => {
     },
     torus: {
       package: Torus
-    },
-    ledger: {
-      package: Ledger
-    },
-    trezor: {
-      package: Trezor
     }
   }
   return providerOptions

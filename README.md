@@ -9,10 +9,9 @@
   - [Using in vanilla JavaScript](#using-in-vanilla-javascript)
 - [Events](#events)
   - [Provider Events](#provider-events)
-  - [Connector events (at `src/constants/events` and usage at `src/hooks/events` )](#connector-events-at-srcconstantsevents-and-usage-at-srchooksevents-)
     - [React example of usage with custom hooks (but we recommend to use this Hooks)](#react-example-of-usage-with-custom-hooks-but-we-recommend-to-use-this-hooks)
 - [Hooks](#hooks)
-  - [Hooks for multi/single connections (library allows to connect more then 1 provider per session)](#hooks-for-multisingle-connections-library-allows-to-connect-more-then-1-provider-per-session)
+  - [Hooks for multi connections (library allows to connect more then 1 provider per session)](#hooks-for-multi-connections-library-allows-to-connect-more-then-1-provider-per-session)
   - [Hooks for multichain methods](#hooks-for-multichain-methods)
   - [Custom Theme](#custom-theme)
   - [Provider Options](#provider-options)
@@ -20,7 +19,7 @@
 - [Contributions](#contributions)
   - [License](#license)
 
-Example: https://xdefi-tech.github.io/walletconnect/
+Example: <https://xdefi-tech.github.io/walletconnect/>
 
 Please, look at the example application in folder `example`
 
@@ -91,8 +90,6 @@ function App() {
 import { ethers } from "ethers";
 
 ...
-
-const provider = useConnectorSingleProvider();
 
 const walletRequest = useWalletRequest();
 
@@ -210,9 +207,7 @@ const providerOptions = {
 
 const connector = new WalletsConnector(
         options, // from getProviderOptions
-        network, // 'mainnet'
         cacheEnabled, // true
-        isSingleProviderEnabled // true
       );
 
 await connector.connect();
@@ -250,7 +245,7 @@ provider.on('disconnect', (error: { code: number; message: string }) => {
 })
 ```
 
-## Connector events (at `src/constants/events` and usage at `src/hooks/events` )
+<!-- ## Connector events (at `src/constants/events` and usage at `src/hooks/events` ) -->
 
 ### React example of usage with custom hooks (but we recommend to use this [Hooks](#hooks))
 
@@ -271,28 +266,21 @@ useEffect(() => {
 
 # Hooks
 
-## Hooks for multi/single connections (library allows to connect more then 1 provider per session)
+## Hooks for multi connections (library allows to connect more then 1 provider per session)
 
 | Hooks                      | Description                                                                         |
-| -------------------------- | ----------------------------------------------------------------------------------- |
+| -------------------------- | ----------------------------------------------------------------------------------- | --- | --- |
 | useConnectorActiveIds      | Returns list of connected providers (Metamask, XDeFi, WalletConnect, etc)           |
-| useConnectorMultiConfigs   | Return configs per provider (chain, network, address - just for web3/EVM providers) |
-| useConnectorSingleConfigs  | Same, just for one connected provider (for single connection mode)                  |
+| useConnectorMultiConfigs   | Return configs per provider (chain, network, address - just for web3/EVM providers) |     | --> |
 | useConnectorMultiProviders | Returns list of providers for using with `Web3` or `Ether.js` library               |
-| useConnectorSingleProvider | Same, just for one connected provider (for single connection mode)                  |
 | useConnectorMultiChains    | Returns list of connected chains per provider                                       |
-| useConnectorSingleChains   | Same, just for one connected provider (for single connection mode)                  |
-| useConnectedMultiAccounts  | Returns list of connected accounts with providers                                   |
-| useConnectedSingleAccounts | Same, just for one connected provider (for single connection mode)                  |
-| useWalletEvents            | Hook tracks connection/error/disconnection events                                   |
 | useWalletsOptions          | Returns list of providers (provided by user application) and method to disconnect   |
 
 ## Hooks for multichain methods
 
-| Hooks                  | Description                                                                                                                                                                                                                                      |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| useWalletRequest       | Allows to send custom txs/request into connected wallet                                                                                                                                                                                          |
-| useRequestAvailability | Just for multichain providers. It checks availability for request/method usage in wallet (check [this example](#adding-a-new-provider) with fields 'methods' for different requests. For example XDEFI has `getAccounts` and `request` methods ) |
+| Hooks            | Description                                             |
+| ---------------- | ------------------------------------------------------- |
+| useWalletRequest | Allows to send custom txs/request into connected wallet |
 
 ```tsx
 const accounts = useConnectedAccounts()
@@ -309,8 +297,6 @@ const onErrorHandler = useCallback(() => {
 const onCloseHandler = useCallback(() => {
   setIsConnected(false)
 }, [setIsConnected])
-
-useWalletEvents(onConnectHandler, onCloseHandler, onErrorHandler)
 ```
 
 ## Custom Theme
@@ -338,7 +324,6 @@ const CUSTOM_THEME_BUILDER = (darkMode: boolean): any => ({
 <WalletsModal
   themeBuilder={CUSTOM_THEME_BUILDER}
   isDark={true} // true/false
-  isSingleProviderEnabled={false} // true/false
   trigger={(props: any) => (
     <BtnOpen {...props}>Connect Styled Modal</BtnOpen>
   )}

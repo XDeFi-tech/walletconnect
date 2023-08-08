@@ -56,14 +56,18 @@ export const WalletsModal = ({
             ? () => (
                 <CustomHeader>
                   <SBackArrowSvg onClick={handleHideChainSelector} />
-                  <CloseModalSvg onClick={onClose} />
+                  <Title>Select chains</Title>
+                  <CloseModalSvg onClick={handleCloseModal} />
                 </CustomHeader>
               )
             : undefined
         }
       >
         {isChainSelectorVisible ? (
-          <SelectChainSection provider={xdefiProvider} onSelect={onClose} />
+          <SelectChainSection
+            provider={xdefiProvider}
+            onSelect={handleCloseModal}
+          />
         ) : (
           <SRow>
             {userOptions.map((provider: any) =>
@@ -85,19 +89,28 @@ export const WalletsModal = ({
 }
 
 const StyledModal = styled(Modal)`
-  padding: 20px 0;
+  .xdeficonnector-modal-body {
+    max-width: 530px;
+    padding: 16px;
+    gap: 16px;
+
+    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      max-width: unset;
+    `}
+  }
+`
+
+const Title = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  color: #f2f1f1;
 `
 
 const SRow = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 16px;
   width: 100%;
-  max-width: 517px;
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      max-width: unset;
-  `}
 `
 
 const CustomHeader = styled.div`
@@ -105,9 +118,11 @@ const CustomHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 20px 20px 0;
+  padding: 16px 0;
 `
 
 const SBackArrowSvg = styled(BackArrowSvg)`
   cursor: pointer;
+  width: 20px;
+  height: 20px;
 `

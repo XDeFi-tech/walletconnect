@@ -1,12 +1,15 @@
-import { ICoreOptions, IProviderUserOptions, SimpleFunction } from '../helpers'
-import { WALLETS_EVENTS } from '../constants'
+import {
+  IConnectEventPayload,
+  ICoreOptions,
+  IProviderUserOptions,
+  SimpleFunction
+} from '../helpers'
+import { IChainType, WALLETS_EVENTS } from '../constants'
 import { EventController, ProviderController } from '../controllers'
 
 const defaultOpts: ICoreOptions = {
   cacheProviders: false,
-  disableInjectedProvider: false,
-  providerOptions: {},
-  network: ''
+  providerOptions: {}
 }
 
 export class WalletConnect {
@@ -21,11 +24,8 @@ export class WalletConnect {
     }
 
     this.providerController = new ProviderController({
-      disableInjectedProvider: options.disableInjectedProvider,
       cacheProviders: options.cacheProviders,
-      providerOptions: options.providerOptions,
-      network: options.network,
-      isSingleProviderEnabled: options.isSingleProviderEnabled
+      providerOptions: options.providerOptions
     })
 
     this.providerController.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
@@ -40,13 +40,8 @@ export class WalletConnect {
     )
 
     this.providerController.on(
-      WALLETS_EVENTS.UPDATED_PROVIDERS_LIST,
-      (providers: string[]) =>
-        this.trigger(WALLETS_EVENTS.UPDATED_PROVIDERS_LIST, providers)
-    )
-
-    this.providerController.on(WALLETS_EVENTS.CONNECT, (provider) =>
-      this.onConnect(provider)
+      WALLETS_EVENTS.CONNECT,
+      (provider: IConnectEventPayload) => this.onConnect(provider)
     )
 
     this.providerController.on(WALLETS_EVENTS.ERROR, (error) =>
@@ -67,32 +62,17 @@ export class WalletConnect {
     return this.providerController.findProviderFromOptions(providerId)
   }
 
-  public getInjectedById = (providerId: string) => {
-    return this.providerController.getInjectedById(providerId)
-  }
-
   public isAvailableProvider = (providerId: string) => {
     return this.providerController.isAvailableProvider(providerId)
-  }
-
-  public disabledByProvider = (providerId: string) => {
-    return this.providerController.disabledByProvider(providerId)
   }
 
   get cachedProviders(): string[] {
     return this.providerController.cachedProviders
   }
 
-  get isSingleProviderEnabled() {
-    return this.providerController.isSingleProviderEnabled
-  }
-
-  injectedChains(providerId: string): string[] {
+  injectedChains(providerId: string): IChainType[] {
     return this.providerController.injectedChains[providerId]
   }
-
-  public getEthereumProvider = (providerId: string) =>
-    this.providerController.getEthereumProvider(providerId)
 
   public loadProviderAccounts = async (providerId: string) => {
     return await this.providerController.connectToChains(providerId)
@@ -100,51 +80,11 @@ export class WalletConnect {
 
   // --------------- PUBLIC METHODS --------------- //
 
-  public initFirstConnection = (): Promise<any> =>
-    new Promise((resolve, reject) => {
-      this.subscribeToWalletEvents(resolve, reject)
-      this.providerController.connectToCachedProviders()
-    })
+  public initFirstConnection = () =>
+    this.providerController.connectToCachedProviders()
 
-  public connectTo = (id: string, chains: string[]): Promise<any> =>
-    new Promise((resolve, reject) => {
-      this.subscribeToWalletEvents(resolve, reject)
-      const provider = this.providerController.getProvider(id)
-      if (!provider) {
-        return reject(
-          new Error(
-            `Cannot connect to provider (${id}), check provider options`
-          )
-        )
-      }
-      this.providerController.connectTo(provider.id, provider.connector, chains)
-    })
-
-  public connectToChains = (id: string, chains: string[]): Promise<any> =>
-    new Promise((resolve, reject) => {
-      this.subscribeToConnection(id, resolve, reject)
-      this.providerController.connectToChains(id, chains)
-    })
-
-  private subscribeToConnection = (
-    id: string,
-    resolve: (value: any) => void,
-    reject: (reason: any) => void
-  ) => {
-    this.subscribeToWalletEvents(resolve, reject)
-  }
-
-  private subscribeToWalletEvents = (
-    resolve: (value: any) => void,
-    reject: (reason: any) => void
-  ) => {
-    this.on(WALLETS_EVENTS.CONNECT, (provider) => resolve(provider))
-    this.on(WALLETS_EVENTS.ERROR, (error) => reject(error))
-    this.on(WALLETS_EVENTS.CLOSE, (providerId?: string) =>
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject(`Closed by user ${providerId}`)
-    )
-  }
+  public connectTo = (id: string, chains: IChainType[]) =>
+    this.providerController.connectTo(id, chains)
 
   public on(event: string, callback: SimpleFunction): SimpleFunction {
     this.eventController.on({
@@ -189,7 +129,7 @@ export class WalletConnect {
     this.trigger(WALLETS_EVENTS.SELECT, providerId)
   }
 
-  private onConnect = async (provider: any) => {
+  private onConnect = async (provider: IConnectEventPayload) => {
     this.trigger(WALLETS_EVENTS.CONNECT, provider)
   }
 }

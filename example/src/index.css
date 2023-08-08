@@ -95,6 +95,9 @@ video {
 }
 
 body {
+  display: flex;
+  flex-grow: 1;
+  min-height: 100vh;
   line-height: 1;
   font-family: Montserrat-Medium;
   font-weight: 500;
@@ -185,4 +188,13 @@ button {
 
 iframe {
   pointer-events: none;
+}
+
+#torusIframe {
+  pointer-events: unset;
+}
+
+#root {
+  display: flex;
+  flex-grow: 1;
 }
