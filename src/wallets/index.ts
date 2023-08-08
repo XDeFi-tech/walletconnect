@@ -47,14 +47,12 @@ export class WalletsConnector {
   constructor(
     providerOptions: IProviderOptions,
     network = 'mainnet',
-    cacheProviders = true,
-    isSingleProviderEnabled = true
+    cacheProviders = true
   ) {
     const connector = new WalletConnect({
       network,
       cacheProviders,
-      providerOptions,
-      isSingleProviderEnabled
+      providerOptions
     })
 
     this.connector = connector
@@ -259,21 +257,11 @@ export class WalletsConnector {
   }
 
   private validateSingleProvider = (providerId?: string): string => {
-    if (!this.connector.isSingleProviderEnabled) {
-      if (!providerId)
-        throw new Error(
-          'Multi providers were enabled, but target provider id was not provided'
-        )
-      return providerId
-    } else {
-      const target = this.providers[0]
-
-      if (!target) {
-        throw new Error('Not found provider for request')
-      }
-
-      return target
-    }
+    if (!providerId)
+      throw new Error(
+        'Multi providers were enabled, but target provider id was not provided'
+      )
+    return providerId
   }
 
   public request = async ({

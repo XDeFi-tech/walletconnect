@@ -10,7 +10,6 @@ import {
   useLocation
 } from 'react-router-dom'
 
-import SingleProviderPage from './pages/SingleProviderPage'
 import MultiProvidersPage from './pages/MultiProvidersPage'
 
 const Nav = styled.div`
@@ -45,12 +44,6 @@ const Navigation = () => {
       >
         Multi Wallets Connection
       </LinkStyled>
-      <LinkStyled
-        current={location.pathname === `/${PATHS.single}`}
-        to={PATHS.single}
-      >
-        Single Wallet Connection
-      </LinkStyled>
     </Nav>
   )
 }
@@ -63,7 +56,6 @@ function App() {
 
         <Routes>
           <Route path={PATHS.multi} element={<MultiProvidersPage />} />
-          <Route path={PATHS.single} element={<SingleProviderPage />} />
           <Route path='*' element={<Navigate to={PATHS.single} />} />
         </Routes>
       </div>

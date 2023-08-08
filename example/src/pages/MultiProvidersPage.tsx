@@ -5,14 +5,9 @@ import MyMultiProvidersApp from './MyMultiProvidersApp'
 
 function MultiProvidersPage() {
   const [options] = useState(() => getProviderOptions())
-  
+
   return (
-    <NetworkManager
-      options={options}
-      network='mainnet'
-      cacheEnabled={true}
-      isSingleProviderEnabled={false}
-    >
+    <NetworkManager options={options} network='mainnet' cacheEnabled={true}>
       <MyMultiProvidersApp />
     </NetworkManager>
   )
