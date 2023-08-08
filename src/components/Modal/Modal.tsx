@@ -197,7 +197,12 @@ const ModalHeaderWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  max-width: 517px;
   padding: 16px;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      max-width: unset;
+  `}
 `
 const HeaderTitle = styled.div`
   font-weight: 700;
