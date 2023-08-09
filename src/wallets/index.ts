@@ -56,10 +56,7 @@ export class WalletsConnector {
         )
       })
 
-      provider?.on?.('accountsChanged', (accounts: string[]) => {
-        if (!accounts.length) {
-          return this.disconnect(providerId)
-        }
+      provider?.on?.('accountsChanged', () => {
         this.loadProviderAccounts(providerId)
       })
 
