@@ -79,12 +79,12 @@ export const CHAIN_OPTIONS = [
   {
     icon: <BinanceChain />,
     value: IChainType.binance,
-    label: 'BNB Chain'
+    label: 'Binance'
   },
   {
     icon: <Thor />,
     value: IChainType.thorchain,
-    label: 'Thorchain'
+    label: 'THORChain'
   },
   {
     icon: <Litecoin />,
@@ -94,7 +94,7 @@ export const CHAIN_OPTIONS = [
   {
     icon: <Bitcoincash />,
     value: IChainType.bitcoincash,
-    label: 'Bitcoin Cash'
+    label: 'BCH'
   },
   {
     icon: <Doge />,
@@ -109,7 +109,7 @@ export const CHAIN_OPTIONS = [
   {
     icon: <Cosmos />,
     value: IChainType.cosmos,
-    label: 'Cosmos Hub'
+    label: 'Cosmos'
   },
   {
     icon: <Osmosis />,
