@@ -136,7 +136,8 @@ export class ProviderController {
         method: 'eth_chainId'
       })
 
-      const chainUnformatted = CHAIN_DATA_LIST[Number(chainId)].network
+      const chainUnformatted =
+        CHAIN_DATA_LIST[Number(chainId)]?.network ?? 'unknown'
       chain = convertToCommonChain(chainUnformatted)
 
       ethAccounts = ethereumProvider.enable
