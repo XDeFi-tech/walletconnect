@@ -80,8 +80,18 @@ export class WalletsConnector {
       }
     })
 
-    // GarageInc | 3.02.2022, handle for all subscription hooks in react app
-    setTimeout(() => this.init())
+    if (document?.readyState === 'complete') {
+      this.init()
+    }
+
+    const documentStateChange = async (event: Event) => {
+      if ((event?.target as Document)?.readyState === 'complete') {
+        this.init()
+        document?.removeEventListener('readystatechange', documentStateChange)
+      }
+    }
+
+    document?.addEventListener('readystatechange', documentStateChange)
   }
 
   private init() {

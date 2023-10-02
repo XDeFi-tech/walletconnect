@@ -97,35 +97,38 @@ export class ProviderController {
     if (providerHasChains) {
       const cachedChains = this.injectedChains[providerId]
       const connectList = cachedChains?.length ? cachedChains : chains
+      const providerChains = connectList.filter(
+        (chain) => providerHasChains[chain]
+      )
 
-      for (const chain of connectList) {
+      const promises = []
+      for (const chain of providerChains) {
         const providerChain = providerHasChains[chain]
-        if (providerChain) {
-          try {
-            const accounts = await providerChain.methods.getAccounts()
-            if (!accounts.length) {
-              throw new Error(
-                `Provider ${providerId} returned empty accounts for chain: ${chain}`
-              )
-            }
+        promises.push(providerChain.methods.getAccounts())
+      }
 
-            results.push({
-              chain: chain as IChainType,
-              accounts: accounts
-            })
-          } catch (e) {
-            console.error(e)
+      try {
+        const accounts = await Promise.all(promises)
 
-            if (
-              e.message ===
-              `Provider ${providerId} returned empty accounts for chain: ${chain}`
-            ) {
-              throw new Error(e.message)
-            }
-            if (e?.code === 4001) {
-              throw new Error(e.code)
-            }
+        accounts.forEach((accounts, index) => {
+          const chain = providerChains[index] as IChainType
+          if (!accounts.length) {
+            throw new Error(`Provider is not connected`)
           }
+
+          results.push({
+            chain,
+            accounts
+          })
+        })
+      } catch (e) {
+        console.error(e)
+
+        if (e.message === `Provider is not connected`) {
+          throw new Error(e.message)
+        }
+        if (e?.code === 4001) {
+          throw new Error(e.code)
         }
       }
     } else {
