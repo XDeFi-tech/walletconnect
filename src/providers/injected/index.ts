@@ -141,10 +141,10 @@ const getCosmosTemplate = (chainId: string) => ({
   methods: {
     getAccounts: () => {
       return new Promise((resolve, reject) => {
-        return window.keplr
+        return window.xfi.keplr
           .enable(chainId)
           .then(() => {
-            return window.keplr.getOfflineSigner(chainId).getAccounts()
+            return window.xfi.keplr.getOfflineSigner(chainId).getAccounts()
           })
           .then((accounts: any) => {
             resolve(accounts.map((addressItem: any) => addressItem.address))
@@ -158,7 +158,7 @@ const getCosmosTemplate = (chainId: string) => ({
     request: (method: string, data: any) => {
       if (method === 'getKey') {
         return new Promise((resolve, reject) => {
-          return window.keplr
+          return window.xfi.keplr
             .getKey(data)
             .then((result: any) => {
               resolve(result)
@@ -171,7 +171,7 @@ const getCosmosTemplate = (chainId: string) => ({
 
       if (method === 'getSigner') {
         return new Promise((resolve, reject) => {
-          const signer = window.getOfflineSigner?.(chainId)
+          const signer = window.xfi.keplr.getOfflineSigner?.(chainId)
           if (signer) {
             resolve(signer)
           } else {
@@ -181,7 +181,7 @@ const getCosmosTemplate = (chainId: string) => ({
       }
       if (method === 'sendTx') {
         return new Promise((resolve, reject) => {
-          window.keplr
+          window.xfi.keplr
             .sendTx?.(chainId, data.tx, data.mode)
             .then(resolve)
             .catch(reject)
