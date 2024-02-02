@@ -259,9 +259,21 @@ export class ProviderController {
   }
 
   public async connectToCachedProviders() {
+    const connectionTimeout = 600
     return Promise.allSettled(
       (this.cachedProviders || []).map((pid: string) =>
-        this.connectTo(pid, this.injectedChains[pid])
+        Promise.race([
+          this.connectTo(pid, this.injectedChains[pid]),
+          new Promise((_, reject) =>
+            setTimeout(() => {
+              reject(
+                new Error(
+                  'Connection to cached provider timed out: no response from wallet'
+                )
+              )
+            }, connectionTimeout)
+          )
+        ])
       )
     )
   }
