@@ -119,7 +119,10 @@ export class WalletsConnector {
 
     this.cachedProviders.map((providerId, providerIndex) => {
       const cachedProviderConnect = results[providerIndex]
-      if (cachedProviderConnect.status === 'fulfilled') {
+      if (
+        cachedProviderConnect.status === 'fulfilled' &&
+        cachedProviderConnect.value !== undefined
+      ) {
         const { id, connectedList } = cachedProviderConnect.value
         this.setAccounts(id, connectedList)
       } else {
