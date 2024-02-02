@@ -264,7 +264,7 @@ export class ProviderController {
       (this.cachedProviders || []).map((pid: string) =>
         Promise.race([
           this.connectTo(pid, this.injectedChains[pid]),
-          new Promise((_, reject) =>
+          new Promise<undefined>((_, reject) =>
             setTimeout(() => {
               reject(
                 new Error(
