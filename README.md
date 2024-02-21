@@ -44,7 +44,6 @@ It's possible to customize the display of each provider to change the name, desc
 
 ```tsx
 const getProviderOptions = (): IProviderOptions => {
-  const infuraId = 'your_infura_key'
   const providerOptions = {
     xdefi: {},
     injected: {
@@ -53,19 +52,14 @@ const getProviderOptions = (): IProviderOptions => {
         logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Circle-icons-gamecontroller.svg/2048px-Circle-icons-gamecontroller.svg.png'
       }
     },
-    metamask: {},
     walletconnect: {
-      package: WalletConnect,
+      package: EthereumProvider,
       options: {
-        infuraId
+        projectId: <projectId>,
       }
     },
     coinbasewallet: {
       package: CoinbaseWalletSDK,
-      options: {
-        appName: 'Coinbase App',
-        infuraId
-      }
     },
     torus: {
       package: Torus
@@ -336,10 +330,7 @@ These are all the providers available with library and how to configure their pr
 
 - [WalletConnect](./docs/providers/walletconnect.md)
 - [Coinbase Wallet](./docs/providers/coinbasewallet.md)
-- [Fortmatic](./docs/providers/fortmatic.md)
 - [Torus](./docs/providers/torus.md)
-- [Portis](./docs/providers/portis.md)
-- [Authereum](./docs/providers/authereum.md)
 - ...
 
 Full list is at `./docs/providers`
