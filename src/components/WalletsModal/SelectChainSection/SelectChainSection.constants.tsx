@@ -2,14 +2,12 @@ import React from 'react'
 import { IChainType } from '../../../constants/enums'
 
 import { ReactComponent as Arbitrum } from '../../icons/Arbitrum.svg'
-import { ReactComponent as Aurora } from '../../icons/Aurora.svg'
 import { ReactComponent as Avalanche } from '../../icons/Avalanche.svg'
 import { ReactComponent as BinanceSmartChain } from '../../icons/BinanceSmartChain.svg'
 import { ReactComponent as Bitcoin } from '../../icons/Bitcoin.svg'
 import { ReactComponent as Bitcoincash } from '../../icons/Bitcoincash.svg'
 import { ReactComponent as Doge } from '../../icons/DOGE.svg'
 import { ReactComponent as Solana } from '../../icons/solana.svg'
-import { ReactComponent as BinanceChain } from '../../icons/BinanceChain.svg'
 import { ReactComponent as Ethereum } from '../../icons/Ethereum.svg'
 import { ReactComponent as Fantom } from '../../icons/Fantom.svg'
 import { ReactComponent as Litecoin } from '../../icons/Litecoin.svg'
@@ -18,8 +16,6 @@ import { ReactComponent as Thor } from '../../icons/Thor.svg'
 import { ReactComponent as Osmosis } from '../../icons/Osmosis.svg'
 import { ReactComponent as Cosmos } from '../../icons/Cosmos.svg'
 import { ReactComponent as Axelar } from '../../icons/Axelar.svg'
-import { ReactComponent as Juno } from '../../icons/Juno.svg'
-import { ReactComponent as Crescent } from '../../icons/Crescent.svg'
 import { ReactComponent as Stargaze } from '../../icons/Stargaze.svg'
 import { ReactComponent as Kujira } from '../../icons/Kujira.svg'
 import { ReactComponent as Optimism } from '../../icons/Optimism.svg'
@@ -67,19 +63,9 @@ export const CHAIN_OPTIONS = [
     label: 'Optimism'
   },
   {
-    icon: <Aurora />,
-    value: 'aurora',
-    label: 'Aurora'
-  },
-  {
     icon: <BinanceSmartChain />,
     value: IChainType.binancesmartchain,
     label: 'BSC'
-  },
-  {
-    icon: <BinanceChain />,
-    value: IChainType.binance,
-    label: 'Binance'
   },
   {
     icon: <Thor />,
@@ -120,16 +106,6 @@ export const CHAIN_OPTIONS = [
     icon: <Axelar />,
     value: IChainType.axelar,
     label: 'Axelar'
-  },
-  {
-    icon: <Juno />,
-    value: IChainType.juno,
-    label: 'JUNO'
-  },
-  {
-    icon: <Crescent />,
-    value: IChainType.crescent,
-    label: 'Crescent'
   },
   {
     icon: <Stargaze />,
