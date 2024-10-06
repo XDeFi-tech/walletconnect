@@ -9,7 +9,7 @@ import { ReactComponent as Bitcoin } from '../../icons/Bitcoin.svg'
 import { ReactComponent as Bitcoincash } from '../../icons/Bitcoincash.svg'
 import { ReactComponent as Doge } from '../../icons/DOGE.svg'
 import { ReactComponent as Solana } from '../../icons/solana.svg'
-import { ReactComponent as BinanceChain } from '../../icons/BinanceChain.svg'
+// import { ReactComponent as BinanceChain } from '../../icons/BinanceChain.svg'
 import { ReactComponent as Ethereum } from '../../icons/Ethereum.svg'
 import { ReactComponent as Fantom } from '../../icons/Fantom.svg'
 import { ReactComponent as Litecoin } from '../../icons/Litecoin.svg'
@@ -19,7 +19,7 @@ import { ReactComponent as Osmosis } from '../../icons/Osmosis.svg'
 import { ReactComponent as Cosmos } from '../../icons/Cosmos.svg'
 import { ReactComponent as Axelar } from '../../icons/Axelar.svg'
 import { ReactComponent as Juno } from '../../icons/Juno.svg'
-import { ReactComponent as Crescent } from '../../icons/Crescent.svg'
+// import { ReactComponent as Crescent } from '../../icons/Crescent.svg'
 import { ReactComponent as Stargaze } from '../../icons/Stargaze.svg'
 import { ReactComponent as Kujira } from '../../icons/Kujira.svg'
 import { ReactComponent as Optimism } from '../../icons/Optimism.svg'
@@ -76,11 +76,11 @@ export const CHAIN_OPTIONS = [
     value: IChainType.binancesmartchain,
     label: 'BSC'
   },
-  {
-    icon: <BinanceChain />,
-    value: IChainType.binance,
-    label: 'Binance'
-  },
+  // {
+  //   icon: <BinanceChain />,
+  //   value: IChainType.binance,
+  //   label: 'Binance'
+  // },
   {
     icon: <Thor />,
     value: IChainType.thorchain,
@@ -126,11 +126,11 @@ export const CHAIN_OPTIONS = [
     value: IChainType.juno,
     label: 'JUNO'
   },
-  {
-    icon: <Crescent />,
-    value: IChainType.crescent,
-    label: 'Crescent'
-  },
+  // {
+  //   icon: <Crescent />,
+  //   value: IChainType.crescent,
+  //   label: 'Crescent'
+  // },
   {
     icon: <Stargaze />,
     value: IChainType.stargaze,

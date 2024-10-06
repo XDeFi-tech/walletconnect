@@ -322,39 +322,39 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.near]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            return window.xfi.near
-              .request('connect', [])
-              .then((accounts: any) => {
-                resolve(accounts)
-              })
-              .catch((e: any) => {
-                return reject(e)
-              })
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            return window.xfi.near
-              .request(method, data)
-              .then((result: any) => {
-                resolve(result)
-              })
-              .catch((e: any) => {
-                return reject(e)
-              })
-          })
-        }
-      }
-    },
+    // [IChainType.near]: {
+    //   methods: {
+    //     getAccounts: () => {
+    //       return new Promise((resolve, reject) => {
+    //         return window.xfi.near
+    //           .request('connect', [])
+    //           .then((accounts: any) => {
+    //             resolve(accounts)
+    //           })
+    //           .catch((e: any) => {
+    //             return reject(e)
+    //           })
+    //       })
+    //     },
+    //     request: (method: string, data: any) => {
+    //       return new Promise((resolve, reject) => {
+    //         return window.xfi.near
+    //           .request(method, data)
+    //           .then((result: any) => {
+    //             resolve(result)
+    //           })
+    //           .catch((e: any) => {
+    //             return reject(e)
+    //           })
+    //       })
+    //     }
+    //   }
+    // },
     [IChainType.cosmos]: getCosmosTemplate('cosmoshub-4'),
     [IChainType.osmosis]: getCosmosTemplate('osmosis-1'),
     [IChainType.axelar]: getCosmosTemplate('axelar-dojo-1'),
     [IChainType.juno]: getCosmosTemplate('juno-1'),
-    [IChainType.crescent]: getCosmosTemplate('crescent-1'),
+    // [IChainType.crescent]: getCosmosTemplate('crescent-1'),
     [IChainType.stargaze]: getCosmosTemplate('stargaze-1'),
     [IChainType.kujira]: getCosmosTemplate('kaiyo-1'),
     // [IChainType.kava]: getCosmosTemplate('kava_2222-10'),
@@ -362,53 +362,53 @@ export const XDEFI: IProviderInfo = {
     // [IChainType.cronos]: getCosmosTemplate('crypto-org-chain-mainnet-1'),
     // [IChainType.stride]: getCosmosTemplate('stride-1'),
     // [IChainType.mars]: getCosmosTemplate('mars-1'),
-    [IChainType.binance]: {
-      methods: {
-        getProvider: () => window.xfi.binance,
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            window.xfi.binance.request(
-              { method: 'request_accounts', params: [] },
-              (error: any, accounts: any) => {
-                if (error) {
-                  reject(error)
-                }
+    // [IChainType.binance]: {
+    //   methods: {
+    //     getProvider: () => window.xfi.binance,
+    //     getAccounts: () => {
+    //       return new Promise((resolve, reject) => {
+    //         window.xfi.binance.request(
+    //           { method: 'request_accounts', params: [] },
+    //           (error: any, accounts: any) => {
+    //             if (error) {
+    //               reject(error)
+    //             }
 
-                resolve(accounts)
-              }
-            )
-          })
-        },
-        signTransaction: (hash: string) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.binance.request(
-              { method: 'sign_transaction', params: [hash] },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
+    //             resolve(accounts)
+    //           }
+    //         )
+    //       })
+    //     },
+    //     signTransaction: (hash: string) => {
+    //       return new Promise((resolve, reject) => {
+    //         window.xfi.binance.request(
+    //           { method: 'sign_transaction', params: [hash] },
+    //           (error: any, result: any) => {
+    //             if (error) {
+    //               reject(error)
+    //             }
 
-                resolve(result)
-              }
-            )
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            window.xfi.binance.request(
-              { method: method, params: data },
-              (error: any, result: any) => {
-                if (error) {
-                  reject(error)
-                }
+    //             resolve(result)
+    //           }
+    //         )
+    //       })
+    //     },
+    //     request: (method: string, data: any) => {
+    //       return new Promise((resolve, reject) => {
+    //         window.xfi.binance.request(
+    //           { method: method, params: data },
+    //           (error: any, result: any) => {
+    //             if (error) {
+    //               reject(error)
+    //             }
 
-                resolve(result)
-              }
-            )
-          })
-        }
-      }
-    },
+    //             resolve(result)
+    //           }
+    //         )
+    //       })
+    //     }
+    //   }
+    // },
     [IChainType.litecoin]: {
       methods: {
         getProvider: () => window.xfi.litecoin,
@@ -513,62 +513,62 @@ export const XDEFI: IProviderInfo = {
         }
       }
     },
-    [IChainType.terra]: {
-      methods: {
-        getAccounts: () => {
-          return new Promise((resolve, reject) => {
-            if (!window.terraWallets) {
-              reject(new Error('No terra connector'))
-            }
+    // [IChainType.terra]: {
+    //   methods: {
+    //     getAccounts: () => {
+    //       return new Promise((resolve, reject) => {
+    //         if (!window.terraWallets) {
+    //           reject(new Error('No terra connector'))
+    //         }
 
-            const terraWalletXdefi = window.terraWallets.find(
-              (w) => w.identifier === 'xdefi-wallet'
-            )
+    //         const terraWalletXdefi = window.terraWallets.find(
+    //           (w) => w.identifier === 'xdefi-wallet'
+    //         )
 
-            if (!terraWalletXdefi) {
-              reject(new Error('No terra connector'))
-            }
+    //         if (!terraWalletXdefi) {
+    //           reject(new Error('No terra connector'))
+    //         }
 
-            const connector = terraWalletXdefi.connector()
+    //         const connector = terraWalletXdefi.connector()
 
-            const { states: stream } = connector
+    //         const { states: stream } = connector
 
-            stream.subscribe(
-              (x: any) => {
-                if (x.wallets) {
-                  resolve(x.wallets.map((w: any) => w.terraAddress))
-                }
-              },
-              (err: any) => {
-                console.error('something wrong occurred: ' + err)
-              }
-            )
+    //         stream.subscribe(
+    //           (x: any) => {
+    //             if (x.wallets) {
+    //               resolve(x.wallets.map((w: any) => w.terraAddress))
+    //             }
+    //           },
+    //           (err: any) => {
+    //             console.error('something wrong occurred: ' + err)
+    //           }
+    //         )
 
-            connector.refetchStates()
-          })
-        },
-        request: (method: string, data: any) => {
-          return new Promise((resolve, reject) => {
-            const terraWalletXdefi = window.terraWallets.find(
-              (w) => w.identifier === 'xdefi-wallet'
-            )
+    //         connector.refetchStates()
+    //       })
+    //     },
+    //     request: (method: string, data: any) => {
+    //       return new Promise((resolve, reject) => {
+    //         const terraWalletXdefi = window.terraWallets.find(
+    //           (w) => w.identifier === 'xdefi-wallet'
+    //         )
 
-            if (!terraWalletXdefi) {
-              reject(new Error('No terra connector'))
-            }
+    //         if (!terraWalletXdefi) {
+    //           reject(new Error('No terra connector'))
+    //         }
 
-            const connector = terraWalletXdefi.connector()
-            const subscriber = connector[method](...data)
+    //         const connector = terraWalletXdefi.connector()
+    //         const subscriber = connector[method](...data)
 
-            subscriber.subscribe((r: any) => {
-              if (r.payload) {
-                resolve(r.payload)
-              }
-            })
-          })
-        }
-      }
-    },
+    //         subscriber.subscribe((r: any) => {
+    //           if (r.payload) {
+    //             resolve(r.payload)
+    //           }
+    //         })
+    //       })
+    //     }
+    //   }
+    // },
     [IChainType.ethereum]: EVM_TEMPLATE,
     [IChainType.binancesmartchain]: EVM_TEMPLATE,
     [IChainType.arbitrum]: EVM_TEMPLATE,
