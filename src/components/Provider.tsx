@@ -80,7 +80,7 @@ export function WalletProvider({
     needInstall
   ])
 
-  const isRecommended = id === 'xdefi'
+  const isRecommended = id === 'ctrl'
 
   const handleClickProvider = () => {
     if (isConnected || needInstall) return

@@ -78,7 +78,7 @@ export interface IProviderInfo {
   description?: string
   id: string
   type: string
-  check: string
+  check: string | ((provider: any) => boolean)
   package?: IProviderPackageOptions
   chains?: {
     [name: string]: ISupportedChain
