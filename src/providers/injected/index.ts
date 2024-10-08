@@ -21,6 +21,7 @@ import { ReactComponent as PortalLogo } from '../logos/portal.svg'
 import { ReactComponent as SequenceLogo } from '../logos/sequence.svg'
 import { ReactComponent as BraveLogo } from '../logos/brave.svg'
 import { ReactComponent as RabbyLogo } from '../logos/rabby.svg'
+import { ReactComponent as CtrlLogo } from '../logos/ctrl.svg'
 
 export const INJECTED: IProviderInfo = {
   id: 'injected',
@@ -197,7 +198,9 @@ export const XDEFI: IProviderInfo = {
   name: 'XDEFI',
   logo: XDEFILogo,
   type: 'injected',
-  check: '__XDEFI',
+  check: (provider) => {
+    return !!provider.__XDEFI && !provider.__CTRL
+  },
   installationLink: 'https://xdefi.io',
   getEthereumProvider: () => {
     return window.xfi ? window.xfi.ethereum : undefined
@@ -444,6 +447,15 @@ export const XDEFI: IProviderInfo = {
     [IChainType.fantom]: EVM_TEMPLATE,
     [IChainType.optimism]: EVM_TEMPLATE
   }
+}
+
+export const CTRL: IProviderInfo = {
+  ...XDEFI,
+  name: 'CTRL',
+  logo: CtrlLogo,
+  type: 'injected',
+  check: '__CTRL',
+  installationLink: 'https://ctrl.xyz'
 }
 
 export const BITPIE: IProviderInfo = {

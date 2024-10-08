@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import styled, { DefaultTheme } from 'styled-components'
 
 import { useWalletsOptions } from '../../hooks'
@@ -8,6 +8,7 @@ import { WalletProvider } from '../Provider'
 import ThemeProvider from '../theme'
 import { ReactComponent as BackArrowSvg } from '../icons/backArrow.svg'
 import { SelectChainSection } from './SelectChainSection'
+import { WalletsContext } from '../../manager'
 
 interface IProps {
   trigger: any
@@ -26,6 +27,7 @@ export const WalletsModal = ({
     useState<boolean>(false)
   const { providers: userOptions } = useWalletsOptions()
   const { isOpen, onClose, onOpen } = useWalletsModal()
+  const context = useContext(WalletsContext)
 
   const handleShowChainSelector = useCallback(() => {
     setIsChainSelectorVisible(true)
@@ -40,10 +42,20 @@ export const WalletsModal = ({
     onClose()
   }, [onClose, handleHideChainSelector])
 
-  const xdefiProvider = useMemo(() => {
+  const shouldShowXdefi = context?.isAvailableProvider('xdefi')
+
+  const xdefiLikeProvider = useMemo(() => {
     if (!userOptions || userOptions.length === 0) return null
-    return userOptions.find((item) => item.id === 'xdefi')
-  }, [userOptions])
+    return userOptions.find((item) =>
+      shouldShowXdefi ? item.id === 'xdefi' : item.id === 'ctrl'
+    )
+  }, [userOptions, shouldShowXdefi])
+
+  const userOptionsToRender = useMemo(() => {
+    return shouldShowXdefi
+      ? userOptions
+      : userOptions.filter((opt) => opt.id !== 'xdefi')
+  }, [userOptions, shouldShowXdefi])
 
   return (
     <ThemeProvider themeBuilder={themeBuilder} isDark={isDark}>
@@ -65,12 +77,12 @@ export const WalletsModal = ({
       >
         {isChainSelectorVisible ? (
           <SelectChainSection
-            provider={xdefiProvider}
+            provider={xdefiLikeProvider}
             onSelect={handleCloseModal}
           />
         ) : (
           <SRow>
-            {userOptions.map((provider: any) =>
+            {userOptionsToRender.map((provider: any) =>
               provider ? (
                 <WalletProvider
                   key={provider.name}

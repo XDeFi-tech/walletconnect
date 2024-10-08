@@ -14,6 +14,10 @@ export function isCurrentProviderActive(provider: any, injected: any): boolean {
     return false
   }
 
+  if (typeof target.check === 'function') {
+    return target.check(provider)
+  }
+
   return !!provider[target.check]
 }
 
