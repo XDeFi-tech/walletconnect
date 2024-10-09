@@ -25,8 +25,12 @@ export const ChainCard = ({
   }
 
   return (
-    <Container disabled={disabled} onClick={disabled ? undefined : handleClick}>
-      <ChainImage>
+    <Container
+      className='walletconnect__select-chain--card'
+      disabled={disabled}
+      onClick={disabled ? undefined : handleClick}
+    >
+      <ChainImage className='walletconnect__select-chain--card-icon-container'>
         {icon}
         {checked ? (
           <CheckmarkWrapper>
@@ -34,7 +38,9 @@ export const ChainCard = ({
           </CheckmarkWrapper>
         ) : null}
       </ChainImage>
-      <ChainName>{label}</ChainName>
+      <ChainName className='walletconnect__select-chain--card-label'>
+        {label}
+      </ChainName>
     </Container>
   )
 }

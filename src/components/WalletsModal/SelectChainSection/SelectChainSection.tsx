@@ -127,7 +127,7 @@ export const SelectChainSection = ({ provider, onSelect }: IProps) => {
 
   return (
     <Container>
-      <ChainContainer>
+      <ChainContainer className='walletconnect__select-chain--container'>
         {CHAIN_OPTIONS.map((chain) => (
           <ChainCard
             key={chain.value}
