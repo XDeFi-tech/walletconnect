@@ -114,18 +114,24 @@ export function WalletProvider({
 
     if (needInstall) {
       return installationLink ? (
-        <SLink href={installationLink} target='_blank'>
+        <SLink
+          className='walletconnect__provider-row--install-link'
+          href={installationLink}
+          target='_blank'
+        >
           <span>Please install {name}</span>
           <LinkOutSvg />
         </SLink>
       ) : (
-        <SLinkFallback>Please install {name}</SLinkFallback>
+        <SLinkFallback className='walletconnect__provider-row--install-link-fallback'>
+          Please install {name}
+        </SLinkFallback>
       )
     }
 
     if (isRecommended) {
       return (
-        <RecommendedWrapper>
+        <RecommendedWrapper className='walletconnect__provider-row--recommended'>
           <span>Recommended</span>
           <ArrowSvg />
         </RecommendedWrapper>
@@ -153,16 +159,17 @@ export function WalletProvider({
       onClick={handleClickProvider}
       available={isAvailable && !isConnected}
       active={isActive}
+      className='walletconnect__provider-row'
     >
-      <NameWrapper>
-        <SIcon>
+      <NameWrapper className='walletconnect__provider-row--name-wrapper'>
+        <SIcon className='walletconnect__provider-row--icon'>
           {typeof El !== 'string' ? (
             <El style={{ flexShrink: 0 }} />
           ) : (
             <img src={El} />
           )}
         </SIcon>
-        <SName>{name}</SName>
+        <SName className='walletconnect__provider-row--name'>{name}</SName>
       </NameWrapper>
       {rightPart}
     </SProviderWrapper>
