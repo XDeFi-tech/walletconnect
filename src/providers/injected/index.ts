@@ -451,7 +451,7 @@ export const XDEFI: IProviderInfo = {
 
 export const CTRL: IProviderInfo = {
   ...XDEFI,
-  name: 'CTRL',
+  name: 'Ctrl',
   logo: CtrlLogo,
   type: 'injected',
   check: '__CTRL',
