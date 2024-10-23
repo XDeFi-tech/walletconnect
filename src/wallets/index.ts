@@ -3,6 +3,7 @@ import {
   IChainToAccounts,
   IChainWithAccount,
   IConnectEventPayload,
+  IConnectorOptions,
   IProviderConfigs,
   IProviderOptions,
   IProviderWithAccounts,
@@ -14,6 +15,10 @@ import { IChainType, WALLETS_EVENTS } from '../constants'
 import { WalletConnect } from '../core'
 import { providers } from 'src/providers'
 
+const defaultConnectorOptions: IConnectorOptions = {
+  connectorDefaultChains: 'all'
+}
+
 export class WalletsConnector {
   public configs: IProviderConfigs = {}
 
@@ -22,7 +27,14 @@ export class WalletsConnector {
 
   private accounts: IProviderWithAccounts = {}
 
-  constructor(providerOptions: IProviderOptions, cacheProviders = true) {
+  private connectorOptions: IConnectorOptions
+
+  constructor(
+    providerOptions: IProviderOptions,
+    cacheProviders = true,
+    connectorOptions = defaultConnectorOptions
+  ) {
+    this.connectorOptions = connectorOptions
     const connector = new WalletConnect({
       cacheProviders,
       providerOptions
@@ -102,6 +114,10 @@ export class WalletsConnector {
 
   get cachedProviders() {
     return this.connector.cachedProviders
+  }
+
+  get chainSelectorOptions() {
+    return this.connectorOptions.connectorDefaultChains
   }
 
   private getSavedEthereumProvider = (providerId: string) => {
