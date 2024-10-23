@@ -20,8 +20,22 @@ interface IProps {
 }
 
 export const SelectChainSection = ({ provider, onSelect }: IProps) => {
+  const context = useContext(WalletsContext)
+
+  const preSelectedChains = useMemo(() => {
+    if (
+      !context?.chainSelectorOptions ||
+      context.chainSelectorOptions === 'all'
+    ) {
+      return CHAIN_VALUES
+    }
+    return CHAIN_VALUES.filter((val) =>
+      context.chainSelectorOptions.includes(val)
+    )
+  }, [context?.chainSelectorOptions])
+
   const [selectedChains, setSelectedChain] =
-    useState<IChainType[]>(CHAIN_VALUES)
+    useState<IChainType[]>(preSelectedChains)
 
   const handleClick = (value: IChainType) => {
     const isExist = selectedChains.find((chainName) => chainName === value)
@@ -40,7 +54,6 @@ export const SelectChainSection = ({ provider, onSelect }: IProps) => {
   }
 
   const pids = useConnectorActiveIds()
-  const context = useContext(WalletsContext)
 
   const needInstall = useMemo(() => {
     return (

@@ -72,6 +72,10 @@ export interface IWeb3Providers {
   [key: string]: any
 }
 
+export interface IConnectorOptions {
+  connectorDefaultChains: 'all' | IChainType[]
+}
+
 export interface IProviderInfo {
   name: string
   logo: any
