@@ -82,10 +82,12 @@ export function WalletProvider({
 
   const isRecommended = id === 'ctrl'
 
+  const shouldShowChainSelector = id === 'ctrl' || id === 'xdefi'
+
   const handleClickProvider = () => {
     if (isConnected || needInstall) return
 
-    if (isRecommended) {
+    if (shouldShowChainSelector) {
       onShowChainSelector?.()
       return
     }
