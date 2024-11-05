@@ -1,7 +1,13 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import styled, { DefaultTheme } from 'styled-components'
 
-import { useWalletsOptions } from '../../hooks'
+import { useConnectorMultiChains, useWalletsOptions } from '../../hooks'
 import { useWalletsModal } from '../hooks'
 import { Modal, CloseModalSvg } from '../Modal/Modal'
 import { WalletProvider } from '../Provider'
@@ -15,19 +21,36 @@ interface IProps {
   isDark?: boolean
   themeBuilder?: (isDark: boolean) => DefaultTheme
   className?: string
+  forceReconnectChains?: boolean
 }
 
 export const WalletsModal = ({
   trigger: Trigger,
   themeBuilder,
   isDark = true,
-  className
+  className,
+  forceReconnectChains
 }: IProps) => {
-  const [isChainSelectorVisible, setIsChainSelectorVisible] =
-    useState<boolean>(false)
   const { providers: userOptions } = useWalletsOptions()
   const { isOpen, onClose, onOpen } = useWalletsModal()
   const context = useContext(WalletsContext)
+
+  const multiChains = useConnectorMultiChains()
+
+  const [isChainSelectorVisible, setIsChainSelectorVisible] =
+    useState<boolean>(false)
+
+  const isXdefiWalletConnected = !!multiChains?.injectedChains?.xdefi
+  const isCtrlWalletConnected = !!multiChains?.injectedChains?.ctrl
+  const shouldForceReconnectChains =
+    forceReconnectChains && (isXdefiWalletConnected || isCtrlWalletConnected)
+
+  useEffect(() => {
+    if (shouldForceReconnectChains) {
+      setIsChainSelectorVisible(true)
+      onOpen()
+    }
+  }, [shouldForceReconnectChains])
 
   const handleShowChainSelector = useCallback(() => {
     setIsChainSelectorVisible(true)
@@ -65,13 +88,20 @@ export const WalletsModal = ({
         className={className}
         renderHeader={
           isChainSelectorVisible
-            ? () => (
-                <CustomHeader>
-                  <SBackArrowSvg onClick={handleHideChainSelector} />
-                  <Title>Select chains</Title>
-                  <CloseModalSvg onClick={handleCloseModal} />
-                </CustomHeader>
-              )
+            ? () =>
+                shouldForceReconnectChains ? (
+                  <CustomHeader>
+                    <TitleAlignmentPlaceholder />
+                    <Title>Update selected chains</Title>
+                    <CloseModalSvg onClick={handleCloseModal} />
+                  </CustomHeader>
+                ) : (
+                  <CustomHeader>
+                    <SBackArrowSvg onClick={handleHideChainSelector} />
+                    <Title>Select chains</Title>
+                    <CloseModalSvg onClick={handleCloseModal} />
+                  </CustomHeader>
+                )
             : undefined
         }
       >
@@ -79,6 +109,7 @@ export const WalletsModal = ({
           <SelectChainSection
             provider={xdefiLikeProvider}
             onSelect={handleCloseModal}
+            reconnectChains={shouldForceReconnectChains}
           />
         ) : (
           <SRow>
@@ -138,3 +169,5 @@ const SBackArrowSvg = styled(BackArrowSvg)`
   width: 20px;
   height: 20px;
 `
+
+const TitleAlignmentPlaceholder = styled.div``
