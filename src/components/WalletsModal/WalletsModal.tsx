@@ -42,15 +42,15 @@ export const WalletsModal = ({
 
   const isXdefiWalletConnected = !!multiChains?.injectedChains?.xdefi
   const isCtrlWalletConnected = !!multiChains?.injectedChains?.ctrl
-  const shouldShowChainSelector =
+  const shouldForceReconnectChains =
     forceReconnectChains && (isXdefiWalletConnected || isCtrlWalletConnected)
 
   useEffect(() => {
-    if (shouldShowChainSelector) {
+    if (shouldForceReconnectChains) {
       setIsChainSelectorVisible(true)
       onOpen()
     }
-  }, [shouldShowChainSelector])
+  }, [shouldForceReconnectChains])
 
   const handleShowChainSelector = useCallback(() => {
     setIsChainSelectorVisible(true)
@@ -89,7 +89,7 @@ export const WalletsModal = ({
         renderHeader={
           isChainSelectorVisible
             ? () =>
-                forceReconnectChains ? (
+                shouldForceReconnectChains ? (
                   <CustomHeader>
                     <TitleAlignmentPlaceholder />
                     <Title>Update selected chains</Title>
@@ -109,7 +109,7 @@ export const WalletsModal = ({
           <SelectChainSection
             provider={xdefiLikeProvider}
             onSelect={handleCloseModal}
-            reconnectChains={forceReconnectChains}
+            reconnectChains={shouldForceReconnectChains}
           />
         ) : (
           <SRow>
