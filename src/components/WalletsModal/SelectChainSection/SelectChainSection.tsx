@@ -17,21 +17,33 @@ import { IChainType } from 'src/constants'
 interface IProps {
   provider?: IProviderUserOptions | null
   onSelect: () => void
+  reconnectChains?: boolean
 }
 
-export const SelectChainSection = ({ provider, onSelect }: IProps) => {
+export const SelectChainSection = ({
+  provider,
+  onSelect,
+  reconnectChains
+}: IProps) => {
   const context = useContext(WalletsContext)
 
   const preSelectedChains = useMemo(() => {
+    const injectedChains = context?.getInjectedChains()
+    const connectedChains = injectedChains?.xdefi || injectedChains?.ctrl || []
+    if (connectedChains.length !== 0) {
+      return connectedChains
+    }
+
     if (
       !context?.chainSelectorOptions ||
       context.chainSelectorOptions === 'all'
     ) {
       return CHAIN_VALUES
     }
-    return CHAIN_VALUES.filter((val) =>
-      context.chainSelectorOptions.includes(val)
-    )
+
+    return CHAIN_VALUES.filter((val) => {
+      return context.chainSelectorOptions.includes(val)
+    })
   }, [context?.chainSelectorOptions])
 
   const [selectedChains, setSelectedChain] =
@@ -119,15 +131,22 @@ export const SelectChainSection = ({ provider, onSelect }: IProps) => {
 
   const isDisabled = useCallback(
     (chain) => {
+      if (reconnectChains) {
+        return false
+      }
       return Boolean(
         providerInjectedChains &&
           providerInjectedChains.some((chainName) => chain.value === chainName)
       )
     },
-    [providerInjectedChains]
+    [providerInjectedChains, reconnectChains]
   )
 
   useEffect(() => {
+    if (reconnectChains) {
+      return
+    }
+
     if (providerInjectedChains) {
       setSelectedChain((prev) => {
         return prev.filter(
@@ -136,7 +155,7 @@ export const SelectChainSection = ({ provider, onSelect }: IProps) => {
         )
       })
     }
-  }, [providerInjectedChains])
+  }, [providerInjectedChains, reconnectChains])
 
   return (
     <Container>
@@ -160,7 +179,7 @@ export const SelectChainSection = ({ provider, onSelect }: IProps) => {
       )}
       <ButtonWrapper>
         <PrimaryButton
-          label='Connect wallet'
+          label={reconnectChains ? 'Update chains selection' : 'Connect wallet'}
           fullWidth
           disabled={!selectedChains.length || loading}
           loading={loading}
